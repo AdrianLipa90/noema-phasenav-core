@@ -7,8 +7,16 @@ import json
 import math
 from pathlib import Path
 from typing import Any
+import sys
 
-import tomllib
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    try:
+        import tomli as tomllib
+    except ImportError as _e:
+        raise ImportError("tomli is required for Python < 3.11: pip install tomli") from _e
+
 try:
     import yaml
 except ImportError as _e:
