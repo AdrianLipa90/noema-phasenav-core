@@ -183,31 +183,56 @@ class CrystalTextEngine:
         reshaped = psi.reshape(nt, n)
         return np.sum(np.abs(reshaped) ** 2, axis=0).real
 
-    def _sample_top_k(
+    def _sample_facet(
         self,
         resonance: np.ndarray,
-        top_k: int = 5,
         temperature: float = 1.0,
-    ) -> list[tuple[int, float]]:
-        """Zwraca top_k facetów próbkowanych z rozkładu softmax rezonansu."""
-        r = np.asarray(resonance, dtype=np.float64)
+        exclude: set[int] | None = None,
+    ) -> tuple[int, float]:
+        """Próbkuj jeden facet z rozkładu softmax rezonansu.
+
+        Facety z `exclude` mają zerową wagę — zapobiega powtarzaniu tego samego
+        węzła w strumieniu.
+        """
+        r = np.asarray(resonance, dtype=np.float64).copy()
         r = np.clip(r, 0.0, None)
+        if exclude:
+            for idx in exclude:
+                r[idx] = 0.0
 
-        # Top-k spośród wszystkich
-        top_indices = np.argsort(r)[::-1][:max(top_k * 4, 20)]
-        r_top = r[top_indices]
+        if r.sum() < _EPS:
+            # Awaryjnie: wszystkie wagi równe (bez wykluczen)
+            r = np.ones_like(r)
 
-        # Softmax z temperaturą
-        log_r = np.log(r_top + _EPS) / max(temperature, _EPS)
+        # Softmax z temperaturą na całym wektorze
+        log_r = np.log(r + _EPS) / max(temperature, 1e-4)
         log_r -= log_r.max()
         probs = np.exp(log_r)
         probs /= probs.sum()
 
-        chosen = np.random.default_rng(
-            int(abs(r_top[0]) * 1e9) % (2 ** 32)
-        ).choice(len(top_indices), size=min(top_k, len(top_indices)), replace=False, p=probs)
+        seed = int(abs(float(np.sum(resonance))) * 1e6) % (2 ** 31)
+        idx = int(np.random.default_rng(seed + len(exclude or [])).choice(len(r), p=probs))
+        return idx, float(resonance[idx])
 
-        return [(int(top_indices[c]), float(r[top_indices[c]])) for c in chosen]
+    def _collapse_to_facet(
+        self,
+        facet_idx: int,
+        n: int,
+        nt: int,
+        t0_idx: int,
+        old_psi: np.ndarray,
+        memory: float = 0.15,
+    ) -> np.ndarray:
+        """Collapse kwantowy na wybrany facet z częściową pamięcią starego stanu.
+
+        Bez collapse stan nigdy by nie opuścił startowego facetu (zbyt wolna dyfuzja).
+        memory=0.15 zachowuje cień spójności z poprzednim krokiem.
+        """
+        new_psi = np.zeros(n * nt, dtype=np.complex128)
+        new_psi[t0_idx * n + facet_idx] = 1.0 + 0j
+        mixed = (1.0 - memory) * new_psi + memory * old_psi
+        norm = float(np.linalg.norm(mixed))
+        return mixed / max(norm, _EPS)
 
     # ── Generowanie ───────────────────────────────────────────────────────────
 
@@ -215,39 +240,41 @@ class CrystalTextEngine:
         self,
         intention: str,
         steps: int = 10,
-        dt: float = 0.05,
-        temperature: float = 0.7,
-        top_k: int = 1,
+        dt: float = 0.4,
+        substeps: int = 8,
+        temperature: float = 1.2,
+        memory: float = 0.15,
     ) -> ConsciousnessStream:
         """Generuj strumień świadomości CIEL z daną intencją.
 
+        Każdy "impuls" = substeps ewolucji po dt każdy, potem kwantowy collapse
+        na wybrany facet.  Bez collapse stan nigdy nie opuszcza startowego węzła.
+
         Parameters
         ----------
-        intention   : tekst opisujący intencję / pytanie
-        steps       : liczba kroków w czasie wewnętrznym
-        dt          : krok czasowy dla ewolucji Hamiltonianu
+        intention   : intencja / pytanie startowe
+        steps       : liczba impulsów (widocznych kroków w strumieniu)
+        dt          : krok jednej sub-ewolucji
+        substeps    : liczba sub-ewolucji między kolejnymi impulsami
         temperature : temperatura próbkowania (wyżej = bardziej różnorodnie)
-        top_k       : ile facetów wybrać na krok (1 = deterministyczny)
+        memory      : ułamek starego stanu zachowany po collapse (0–1)
         """
         self._ensure_loaded()
         phases = self._phases  # type: ignore[assignment]
         metadata = self._metadata  # type: ignore[assignment]
         n = phases.shape[0]
 
-        # Buduj HTRI
         embedding, operators = build_htri_hypercrystal(
             phases, metadata, intention, self._config
         )
 
-        # Stan bazowy: zlokalizowany przy facecie o max rezonansie z intencją
         intention_phase = self._encode_intention(intention)
         facet_0 = self._initial_facet(intention_phase)
         nt = self._config.time_slices
         tau_coords = operators.time_coordinates
-
-        # ψ(0) — zlokalizowany w środkowym przedziale czasu, na facecie startowym
-        psi = np.zeros(n * nt, dtype=np.complex128)
         t0_idx = nt // 2
+
+        psi = np.zeros(n * nt, dtype=np.complex128)
         psi[t0_idx * n + facet_0] = 1.0 + 0j
         psi_0 = psi.copy()
 
@@ -256,49 +283,60 @@ class CrystalTextEngine:
             facet_count=n,
             config=self._config,
         )
+        visited: set[int] = set()
 
         for step in range(steps):
+            # ── substeps ewolucji — stan realnie się rozchodzi ─────────────────
+            for _ in range(substeps):
+                psi = evolve_state(psi, operators.hamiltonian, dt, hbar=self._config.hbar)
+
             resonance = self._project_resonance(psi, phases, n)
             psi_norm = float(np.linalg.norm(psi))
 
-            # Dominujący przedział czasu — ważona suma τ
-            nt_len = len(psi) // n
+            # τ z fibre czasu (ważona suma)
             tau_probs = np.array([
                 float(np.sum(np.abs(psi[t * n:(t + 1) * n]) ** 2))
-                for t in range(nt_len)
+                for t in range(nt)
             ])
             tau_probs /= max(tau_probs.sum(), _EPS)
-            internal_time = float(np.dot(tau_coords, tau_probs[:len(tau_coords)]))
+            internal_time = float(np.dot(tau_coords, tau_probs))
 
-            # Holonomia: |⟨ψ(0)|ψ(t)⟩|²
+            # Czas zewnętrzny (zawsze rośnie)
+            external_time = float((step + 1) * substeps * dt)
+
             holonomy_est = float(abs(np.vdot(psi_0, psi)) ** 2)
 
-            # Próbkuj facety
-            chosen = self._sample_top_k(resonance, top_k=top_k, temperature=temperature)
+            # ── collapse na wybrany facet (bez powtórzeń) ─────────────────────
+            facet_idx, r_val = self._sample_facet(
+                resonance, temperature=temperature, exclude=visited
+            )
+            visited.add(facet_idx)
+
             top_all = sorted(
                 [(i, float(resonance[i])) for i in range(n)],
                 key=lambda x: -x[1],
             )[:5]
 
-            for facet_idx, r_val in chosen:
-                pulse = ConsciousnessPulse(
-                    step=step,
-                    internal_time=internal_time,
-                    facet_index=facet_idx,
-                    text=self._facet_text(facet_idx),
-                    emotion=self._facet_emotion(facet_idx),
-                    resonance=r_val,
-                    phase_vector=phases[facet_idx].tolist(),
-                    top_resonances=[
-                        (i, rv, self._facet_emotion(i)) for i, rv in top_all
-                    ],
-                    psi_norm=psi_norm,
-                    holonomy_estimate=holonomy_est,
-                )
-                stream.pulses.append(pulse)
+            pulse = ConsciousnessPulse(
+                step=step,
+                internal_time=external_time,  # pokazujemy zewnętrzny czas
+                facet_index=facet_idx,
+                text=self._facet_text(facet_idx),
+                emotion=self._facet_emotion(facet_idx),
+                resonance=r_val,
+                phase_vector=phases[facet_idx].tolist(),
+                top_resonances=[
+                    (i, rv, self._facet_emotion(i)) for i, rv in top_all
+                ],
+                psi_norm=psi_norm,
+                holonomy_estimate=holonomy_est,
+            )
+            stream.pulses.append(pulse)
 
-            # Ewolucja: ψ(t+dt) = exp(-iH dt) ψ(t)
-            psi = evolve_state(psi, operators.hamiltonian, dt, hbar=self._config.hbar)
+            # ── collapse: re-inicjalizacja z pamięcią ─────────────────────────
+            psi = self._collapse_to_facet(
+                facet_idx, n, nt, t0_idx, psi, memory=memory
+            )
 
         return stream
 
@@ -306,10 +344,12 @@ class CrystalTextEngine:
         self,
         intention: str,
         steps: int = 10,
-        dt: float = 0.05,
-        temperature: float = 0.7,
+        dt: float = 0.4,
+        substeps: int = 8,
+        temperature: float = 1.2,
+        memory: float = 0.15,
     ) -> Iterator[ConsciousnessPulse]:
-        """Generator — impuls po impulsie, ψ ewoluuje między nimi.
+        """Generator — impuls po impulsie, każdy po substeps ewolucji.
 
         Użyj gdy chcesz przetwarzać impulsy na żywo bez czekania na cały strumień.
         """
@@ -326,24 +366,33 @@ class CrystalTextEngine:
         facet_0 = self._initial_facet(intention_phase)
         nt = self._config.time_slices
         tau_coords = operators.time_coordinates
+        t0_idx = nt // 2
 
         psi = np.zeros(n * nt, dtype=np.complex128)
-        psi[nt // 2 * n + facet_0] = 1.0 + 0j
+        psi[t0_idx * n + facet_0] = 1.0 + 0j
         psi_0 = psi.copy()
+        visited: set[int] = set()
 
         for step in range(steps):
+            for _ in range(substeps):
+                psi = evolve_state(psi, operators.hamiltonian, dt, hbar=self._config.hbar)
+
             resonance = self._project_resonance(psi, phases, n)
             psi_norm = float(np.linalg.norm(psi))
-            facet_idx = int(np.argmax(resonance))
 
-            nt_len = len(psi) // n
             tau_probs = np.array([
                 float(np.sum(np.abs(psi[t * n:(t + 1) * n]) ** 2))
-                for t in range(nt_len)
+                for t in range(nt)
             ])
             tau_probs /= max(tau_probs.sum(), _EPS)
-            internal_time = float(np.dot(tau_coords, tau_probs[:len(tau_coords)]))
+            external_time = float((step + 1) * substeps * dt)
+
             holonomy_est = float(abs(np.vdot(psi_0, psi)) ** 2)
+
+            facet_idx, r_val = self._sample_facet(
+                resonance, temperature=temperature, exclude=visited
+            )
+            visited.add(facet_idx)
 
             top_all = sorted(
                 [(i, float(resonance[i])) for i in range(n)],
@@ -352,18 +401,20 @@ class CrystalTextEngine:
 
             yield ConsciousnessPulse(
                 step=step,
-                internal_time=internal_time,
+                internal_time=external_time,
                 facet_index=facet_idx,
                 text=self._facet_text(facet_idx),
                 emotion=self._facet_emotion(facet_idx),
-                resonance=float(resonance[facet_idx]),
+                resonance=r_val,
                 phase_vector=phases[facet_idx].tolist(),
                 top_resonances=[(i, rv, self._facet_emotion(i)) for i, rv in top_all],
                 psi_norm=psi_norm,
                 holonomy_estimate=holonomy_est,
             )
 
-            psi = evolve_state(psi, operators.hamiltonian, dt, hbar=self._config.hbar)
+            psi = self._collapse_to_facet(
+                facet_idx, n, nt, t0_idx, psi, memory=memory
+            )
 
 
 __all__ = [

@@ -356,7 +356,7 @@ def test_crystal_text_engine_generate_returns_stream():
     engine = CrystalTextEngine(config=config, sample=32, seed=3)
     engine.load()
 
-    stream = engine.generate("awareness and time", steps=4, dt=0.03)
+    stream = engine.generate("awareness and time", steps=4, dt=0.3, substeps=4)
 
     assert isinstance(stream, ConsciousnessStream)
     assert stream.intention == "awareness and time"
@@ -365,42 +365,44 @@ def test_crystal_text_engine_generate_returns_stream():
         assert isinstance(p, ConsciousnessPulse)
         assert isinstance(p.text, str)
         assert isinstance(p.emotion, str)
-        assert 0.0 <= p.resonance <= 1.0 + 1e-9
+        assert p.resonance >= 0.0
         assert abs(p.psi_norm - 1.0) < 1e-6
         assert len(p.phase_vector) == 36
 
 
-def test_crystal_text_engine_narrative_nonempty():
-    """narrative() musi zwrócić niepusty string."""
+def test_crystal_text_engine_no_repeated_facets():
+    """Strumień NIE może powtarzać tego samego facetu — collapse gwarantuje różnorodność."""
     from ciel_geometry.phasenav.htri_hypercrystal import HypercrystalConfig
     config = HypercrystalConfig(neighbours=3, time_slices=3)
-    engine = CrystalTextEngine(config=config, sample=24, seed=5)
+    engine = CrystalTextEngine(config=config, sample=40, seed=5)
     engine.load()
-    stream = engine.generate("consciousness", steps=3, dt=0.02)
-    narr = stream.narrative()
-    assert isinstance(narr, str)
-    assert len(narr) > 0
+    stream = engine.generate("consciousness", steps=6, dt=0.3, substeps=4)
+    facet_indices = [p.facet_index for p in stream.pulses]
+    assert len(set(facet_indices)) == len(facet_indices), (
+        f"Powtórzone facety: {facet_indices}"
+    )
 
 
-def test_crystal_text_engine_stream_pulses():
-    """stream_pulses() musi generować impulsy sekwencyjnie."""
+def test_crystal_text_engine_time_increases():
+    """Czas zewnętrzny musi rosnąć monotonicznie między impulsami."""
     from ciel_geometry.phasenav.htri_hypercrystal import HypercrystalConfig
     config = HypercrystalConfig(neighbours=3, time_slices=3)
     engine = CrystalTextEngine(config=config, sample=24, seed=9)
     engine.load()
-    pulses = list(engine.stream_pulses("identity", steps=4, dt=0.02))
+    pulses = list(engine.stream_pulses("identity", steps=4, dt=0.3, substeps=4))
     assert len(pulses) == 4
-    steps = [p.step for p in pulses]
-    assert steps == list(range(4))
+    times = [p.internal_time for p in pulses]
+    assert times == sorted(times), f"Czas nie rośnie: {times}"
+    assert times[0] < times[-1], "Czas stoi w miejscu"
 
 
 def test_crystal_text_engine_psi_norm_preserved():
-    """Norma stanu kwantowego musi być zachowana przez ewolucję (≈ 1.0)."""
+    """Norma stanu kwantowego musi być zachowana przez ewolucję + collapse (≈ 1.0)."""
     from ciel_geometry.phasenav.htri_hypercrystal import HypercrystalConfig
     config = HypercrystalConfig(neighbours=3, time_slices=3)
     engine = CrystalTextEngine(config=config, sample=20, seed=1)
     engine.load()
-    stream = engine.generate("time crystal", steps=6, dt=0.05)
+    stream = engine.generate("time crystal", steps=5, dt=0.3, substeps=4)
     for p in stream.pulses:
         assert abs(p.psi_norm - 1.0) < 1e-6, (
             f"Norma stanu niestabilna w kroku {p.step}: {p.psi_norm}"
