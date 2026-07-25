@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ciel-phasenav"
+version = "0.1.0"
+description = "PhaseNav 36D — Collatz-seeded oscillatory semantic phase space with Berry holonomy"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24"]
+
+[project.urls]
+Homepage = "https://github.com/AdrianLipa90/noema-phasenav-core"
+Repository = "https://github.com/AdrianLipa90/noema-phasenav-core"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"ciel_geometry.phasenav" = ["data/*.npy", "data/*.jsonl"]
+"ciel_geometry.phasenav.data" = ["*"]
