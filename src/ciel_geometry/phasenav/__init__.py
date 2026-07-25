@@ -38,6 +38,14 @@ from .phase_gate_engine import PhaseGateEngine
 from .phase_memory import PhaseMemoryHypercrystal, CRYSTAL_VEC_PATH, CRYSTAL_META_PATH
 from .semantic_mesh import SemanticMesh, SEMANTIC_AXES
 from .phase_voice import PhaseVoice, get_phase_voice
+from .htri_hypercrystal import (
+    HypercrystalConfig,
+    build_htri_hypercrystal,
+    hermiticity_error,
+    load_crystal_arrays as htri_load_crystal,
+    poincare_distance,
+    embed_poincare_disk,
+)
 
 __all__ = [
     "state_vector", "generate_state_map", "generate_state_jsonl",
@@ -70,4 +78,10 @@ __all__ = [
     "SEMANTIC_AXES",
     "PhaseVoice",
     "get_phase_voice",
+    "HypercrystalConfig",
+    "build_htri_hypercrystal",
+    "hermiticity_error",
+    "htri_load_crystal",
+    "poincare_distance",
+    "embed_poincare_disk",
 ]

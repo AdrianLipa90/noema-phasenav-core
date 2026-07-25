@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ciel-phasenav"
-version = "0.1.0"
+version = "0.2.0"
 description = "PhaseNav 36D — Collatz-seeded oscillatory semantic phase space with Berry holonomy"
 readme = "README.md"
 license = {file = "LICENSE"}

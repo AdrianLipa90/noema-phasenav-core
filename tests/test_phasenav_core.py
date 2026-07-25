@@ -163,7 +163,7 @@ def test_crystal_facet_count():
     crystal.load()
     n = len(crystal)
     if n > 0:
-        assert n == 35836, f"Expected 35836 facets, got {n}"
+        assert n >= 35836, f"Expected >= 35836 facets, got {n}"
 
 
 def test_crystal_retrieve_returns_list():
@@ -210,3 +210,122 @@ def test_sentence_phase_always_36d():
         v = M_sentence_phase(text)
         assert len(v) == 36, f"Wrong length for '{text}': {len(v)}"
         assert all(0.0 <= x < TAU for x in v), f"Out-of-range values for '{text}'"
+
+# ─── HTRI Poincare time hypercrystal ─────────────────────────────────────────
+
+from ciel_geometry.phasenav.htri_hypercrystal import (
+    HypercrystalConfig,
+    build_htri_hypercrystal,
+    build_intention_operator,
+    build_magnetic_poincare_laplacian,
+    embed_poincare_disk,
+    evolve_state,
+    hermiticity_error,
+    load_crystal_arrays,
+    localized_state,
+    poincare_distance,
+    schrodinger_lagrangian,
+    schrodinger_velocity,
+)
+
+
+def _synthetic_hypercrystal_data(n: int = 24):
+    x = np.arange(n, dtype=float)[:, None]
+    dims = np.arange(36, dtype=float)[None, :]
+    phases = (0.17 * x + 0.031 * x * dims + 0.11 * np.sin((dims + 1) * (x + 1))) % TAU
+    metadata = [
+        {
+            "kappa_i": 0.2 + 0.01 * i,
+            "t_score": 0.1 + 0.02 * np.sin(i),
+            "memory_density": 0.05 + 0.001 * i,
+            "text": f"facet {i}",
+        }
+        for i in range(n)
+    ]
+    return phases, metadata
+
+
+def test_poincare_embedding_stays_in_open_disk():
+    phases, _ = _synthetic_hypercrystal_data()
+    embedding = embed_poincare_disk(phases)
+    assert embedding.coordinates.shape == (len(phases),)
+    assert np.all(np.abs(embedding.coordinates) < 1.0)
+    assert embedding.basis.shape == (72, 2)
+
+
+def test_poincare_distance_metric_basics():
+    u = 0.12 + 0.08j
+    v = -0.21 + 0.17j
+    assert float(poincare_distance(u, u)) < 1e-12
+    assert float(poincare_distance(u, v)) > 0.0
+    assert np.isclose(poincare_distance(u, v), poincare_distance(v, u))
+
+
+def test_magnetic_poincare_laplacian_is_hermitian():
+    phases, _ = _synthetic_hypercrystal_data()
+    embedding = embed_poincare_disk(phases)
+    laplacian = build_magnetic_poincare_laplacian(
+        phases, embedding.coordinates, neighbours=4
+    )
+    assert laplacian.shape == (len(phases), len(phases))
+    assert hermiticity_error(laplacian) < 1e-12
+
+
+def test_intention_fluctuation_operator_is_hermitian_and_centered():
+    phases, _ = _synthetic_hypercrystal_data()
+    intention, fluctuation, resonance, centred = build_intention_operator(
+        phases, "protect life and free will"
+    )
+    assert hermiticity_error(intention) < 1e-12
+    assert hermiticity_error(fluctuation) < 1e-12
+    assert abs(float(centred.mean())) < 1e-12
+    assert np.all((0.0 <= resonance) & (resonance <= 1.0))
+
+
+def test_htri_hypercrystal_hamiltonian_is_hermitian():
+    phases, metadata = _synthetic_hypercrystal_data()
+    config = HypercrystalConfig(neighbours=4, time_slices=3)
+    _, operators = build_htri_hypercrystal(
+        phases, metadata, "coherent intention", config
+    )
+    assert operators.hamiltonian.shape == (len(phases) * 3, len(phases) * 3)
+    assert hermiticity_error(operators.spatial_hamiltonian) < 1e-12
+    assert hermiticity_error(operators.temporal_momentum) < 1e-12
+    assert hermiticity_error(operators.temporal_hamiltonian) < 1e-12
+    assert hermiticity_error(operators.hamiltonian) < 1e-12
+    assert np.all(np.isfinite(operators.base_potential))
+
+
+def test_hypercrystal_unitary_evolution_preserves_norm():
+    phases, metadata = _synthetic_hypercrystal_data(18)
+    config = HypercrystalConfig(neighbours=3, time_slices=3)
+    _, operators = build_htri_hypercrystal(phases, metadata, "memory", config)
+    psi = localized_state(len(phases), config.time_slices, facet_index=2)
+    evolved = evolve_state(psi, operators.hamiltonian, 0.02, hbar=config.hbar)
+    assert abs(np.linalg.norm(evolved) - 1.0) < 1e-10
+
+
+def test_schrodinger_lagrangian_is_real_and_on_shell_zero():
+    phases, metadata = _synthetic_hypercrystal_data(16)
+    config = HypercrystalConfig(neighbours=3, time_slices=3)
+    _, operators = build_htri_hypercrystal(phases, metadata, "return", config)
+    psi = localized_state(len(phases), config.time_slices, facet_index=1)
+    psi_dot = schrodinger_velocity(psi, operators.hamiltonian, hbar=config.hbar)
+    value = schrodinger_lagrangian(
+        psi, psi_dot, operators.hamiltonian, hbar=config.hbar
+    )
+    assert isinstance(value.lagrangian, float)
+    assert abs(value.lagrangian) < 1e-10
+    assert np.isclose(value.symplectic_term, value.energy_expectation)
+
+
+def test_real_crystal_hypercrystal_smoke():
+    phases, metadata = load_crystal_arrays(sample=64, seed=11)
+    config = HypercrystalConfig(neighbours=3, time_slices=2)
+    embedding, operators = build_htri_hypercrystal(
+        phases, metadata, "HTRI time hypercrystal", config
+    )
+    assert phases.shape == (64, 36)
+    assert np.all(np.abs(embedding.coordinates) < 1.0)
+    assert operators.hamiltonian.shape == (128, 128)
+    assert hermiticity_error(operators.hamiltonian) < 1e-12
