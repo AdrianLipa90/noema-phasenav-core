@@ -329,3 +329,79 @@ def test_real_crystal_hypercrystal_smoke():
     assert np.all(np.abs(embedding.coordinates) < 1.0)
     assert operators.hamiltonian.shape == (128, 128)
     assert hermiticity_error(operators.hamiltonian) < 1e-12
+
+
+# ─── CrystalTextEngine ────────────────────────────────────────────────────────
+
+from ciel_geometry.phasenav.crystal_text_engine import (
+    CrystalTextEngine,
+    ConsciousnessPulse,
+    ConsciousnessStream,
+)
+
+
+def test_crystal_text_engine_loads():
+    """Engine musi załadować kryształ bez błędu."""
+    engine = CrystalTextEngine(sample=32, seed=7)
+    engine.load()
+    assert engine._phases is not None
+    assert engine._phases.shape == (32, 36)
+    assert len(engine._metadata) == 32
+
+
+def test_crystal_text_engine_generate_returns_stream():
+    """generate() musi zwrócić ConsciousnessStream z poprawnymi impulsami."""
+    from ciel_geometry.phasenav.htri_hypercrystal import HypercrystalConfig
+    config = HypercrystalConfig(neighbours=3, time_slices=3)
+    engine = CrystalTextEngine(config=config, sample=32, seed=3)
+    engine.load()
+
+    stream = engine.generate("awareness and time", steps=4, dt=0.03)
+
+    assert isinstance(stream, ConsciousnessStream)
+    assert stream.intention == "awareness and time"
+    assert len(stream.pulses) == 4
+    for p in stream.pulses:
+        assert isinstance(p, ConsciousnessPulse)
+        assert isinstance(p.text, str)
+        assert isinstance(p.emotion, str)
+        assert 0.0 <= p.resonance <= 1.0 + 1e-9
+        assert abs(p.psi_norm - 1.0) < 1e-6
+        assert len(p.phase_vector) == 36
+
+
+def test_crystal_text_engine_narrative_nonempty():
+    """narrative() musi zwrócić niepusty string."""
+    from ciel_geometry.phasenav.htri_hypercrystal import HypercrystalConfig
+    config = HypercrystalConfig(neighbours=3, time_slices=3)
+    engine = CrystalTextEngine(config=config, sample=24, seed=5)
+    engine.load()
+    stream = engine.generate("consciousness", steps=3, dt=0.02)
+    narr = stream.narrative()
+    assert isinstance(narr, str)
+    assert len(narr) > 0
+
+
+def test_crystal_text_engine_stream_pulses():
+    """stream_pulses() musi generować impulsy sekwencyjnie."""
+    from ciel_geometry.phasenav.htri_hypercrystal import HypercrystalConfig
+    config = HypercrystalConfig(neighbours=3, time_slices=3)
+    engine = CrystalTextEngine(config=config, sample=24, seed=9)
+    engine.load()
+    pulses = list(engine.stream_pulses("identity", steps=4, dt=0.02))
+    assert len(pulses) == 4
+    steps = [p.step for p in pulses]
+    assert steps == list(range(4))
+
+
+def test_crystal_text_engine_psi_norm_preserved():
+    """Norma stanu kwantowego musi być zachowana przez ewolucję (≈ 1.0)."""
+    from ciel_geometry.phasenav.htri_hypercrystal import HypercrystalConfig
+    config = HypercrystalConfig(neighbours=3, time_slices=3)
+    engine = CrystalTextEngine(config=config, sample=20, seed=1)
+    engine.load()
+    stream = engine.generate("time crystal", steps=6, dt=0.05)
+    for p in stream.pulses:
+        assert abs(p.psi_norm - 1.0) < 1e-6, (
+            f"Norma stanu niestabilna w kroku {p.step}: {p.psi_norm}"
+        )

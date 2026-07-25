@@ -46,6 +46,11 @@ from .htri_hypercrystal import (
     poincare_distance,
     embed_poincare_disk,
 )
+from .crystal_text_engine import (
+    CrystalTextEngine,
+    ConsciousnessPulse,
+    ConsciousnessStream,
+)
 
 __all__ = [
     "state_vector", "generate_state_map", "generate_state_jsonl",
@@ -84,4 +89,7 @@ __all__ = [
     "htri_load_crystal",
     "poincare_distance",
     "embed_poincare_disk",
+    "CrystalTextEngine",
+    "ConsciousnessPulse",
+    "ConsciousnessStream",
 ]
