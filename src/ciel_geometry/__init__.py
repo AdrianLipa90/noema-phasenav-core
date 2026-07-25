@@ -1,4 +1,3 @@
-import os as _os
 """ciel_geometry — Poincaré disk geometry engine for CIEL orbital system.
 
 CIEL ORBITAL BINDING — HARDCODED CHECK przy każdym imporcie.
@@ -10,6 +9,7 @@ warnings via eager package side effects.
 """
 
 from __future__ import annotations
+import os as _os
 import logging as _noema_quiet_logging
 _NOEMA_QUIET_EXCEPT_LOGGER = _noema_quiet_logging.getLogger(__name__)
 
@@ -18,14 +18,15 @@ from importlib import import_module
 from pathlib import Path
 
 _CIEL_BINDING_STATUS_PATH = Path("/dev/shm/ciel_noema") / "ciel_binding_status"
-if _CIEL_BINDING_STATUS_PATH.exists():
-    _binding_status = _CIEL_BINDING_STATUS_PATH.read_text().strip()
-    if _binding_status != "ACTIVE":
+if _os.environ.get("CIEL_BINDING_STRICT") == "1":
+    if _CIEL_BINDING_STATUS_PATH.exists():
+        _binding_status = _CIEL_BINDING_STATUS_PATH.read_text().strip()
+        if _binding_status != "ACTIVE":
+            import warnings
+            warnings.warn(f"CIEL ORBITAL BINDING: status={_binding_status} — degraded mode")
+    else:
         import warnings
-        warnings.warn(f"CIEL ORBITAL BINDING: status={_binding_status} — degraded mode")
-else:
-    import warnings
-    warnings.warn("CIEL ORBITAL BINDING: status file missing — degraded mode")
+        warnings.warn("CIEL ORBITAL BINDING: status file missing — degraded mode")
 
 try:
     # Two files are named noema_bootstrap.py (NOEMA/src/ and NOEMA/scripts/,
