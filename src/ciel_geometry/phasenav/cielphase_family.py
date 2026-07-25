@@ -9,7 +9,10 @@ from pathlib import Path
 from typing import Any
 
 import tomllib
-import yaml
+try:
+    import yaml
+except ImportError as _e:
+    raise ImportError("pyyaml is required: pip install pyyaml") from _e
 
 
 VECTOR_DIM = 36

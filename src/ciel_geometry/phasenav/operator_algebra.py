@@ -192,11 +192,20 @@ def connection_matrix(ops: dict[str, list[float]] | None = None) -> list[list[fl
 
 
 def surface_holonomy(phi: np.ndarray) -> tuple[float, int]:
-    """Holonomy of the Berry connection around S¹ given current surface φ."""
+    """Holonomy of the Berry connection around S¹ given current surface φ.
+
+    Wraps each step to [-π, π] before summing so the result measures actual
+    winding around the ring instead of a telescoping sum that cancels to zero.
+    """
     dphi = np.diff(phi, append=phi[0])
-    gamma = float(np.sum(dphi))
-    winding = round(gamma / (2 * np.pi))
-    return float(np.mod(gamma, 2 * np.pi)), winding
+    dphi_wrapped = ((dphi + np.pi) % (2 * np.pi)) - np.pi
+    gamma = float(np.sum(dphi_wrapped))
+    winding = int(round(gamma / (2 * np.pi)))
+    gamma_mod = float(gamma % (2 * np.pi))
+    # Clamp near-2π back to 0 to avoid returning 6.283... instead of 0.000
+    if gamma_mod > 2 * np.pi - 1e-9:
+        gamma_mod = 0.0
+    return gamma_mod, winding
 
 
 def statistical_closure(v36: list[float]) -> float:

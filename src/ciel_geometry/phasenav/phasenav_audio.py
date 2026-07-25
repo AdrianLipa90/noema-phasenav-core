@@ -112,7 +112,7 @@ def operator_transform(
         shift = strength * np.linspace(-math.pi, math.pi, N_OSCILLATORS)
         result = (phi + shift) % (2.0 * math.pi)
     elif operator_id == "AFFECT":
-        warm = np.array([1.5, 1.3, 1.2, 1.1, 1.0, 1.0] * 4, dtype=np.float64)[:36]
+        warm = np.array([1.5, 1.3, 1.2, 1.1, 1.0, 1.0] * 6, dtype=np.float64)[:N_OSCILLATORS]
         result = phi * (1.0 + strength * (warm - 1.0))
     elif operator_id == "MEMORY":
         smear = np.random.default_rng().uniform(-0.1, 0.1, N_OSCILLATORS) * strength
@@ -128,7 +128,7 @@ def operator_transform(
         gain = 1.0 / (1.0 + strength * 2.0)
         result = result * gain
     elif operator_id == "DIFFERENCE":
-        offset = strength * np.array([1, -1] * 12, dtype=np.float64) * 0.3
+        offset = strength * np.array([1, -1] * 18, dtype=np.float64)[:N_OSCILLATORS] * 0.3
         result = (phi + offset) % (2.0 * math.pi)
     elif operator_id == "COMPOSITION":
         mix = np.roll(phi, int(strength * 6))
