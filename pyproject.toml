@@ -11,6 +11,12 @@ license = {file = "LICENSE"}
 requires-python = ">=3.10"
 dependencies = ["numpy>=1.24", "scipy>=1.9", "pyyaml>=6.0"]
 
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
 [project.urls]
 Homepage = "https://github.com/AdrianLipa90/noema-phasenav-core"
 Repository = "https://github.com/AdrianLipa90/noema-phasenav-core"

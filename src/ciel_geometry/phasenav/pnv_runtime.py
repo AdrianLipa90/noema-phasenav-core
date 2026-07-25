@@ -117,6 +117,23 @@ def M_collatz_hash(s):
         h = h % (2**61 - 1)
     return h
 
+def _phase_precise(h_int, i):
+    """(h_int * KAPPA * TAU * (i+1)) % TAU via Decimal to avoid float64 precision loss.
+
+    With h_int up to 2^61 and float64 having 53 bits, direct multiplication loses
+    the low bits before modulo reduction — errors up to ~2 rad for long hashes.
+    This uses Python's stdlib `decimal` module for ~38 significant digits.
+
+    KAPPA * TAU = ln(2)/(24π) * 2π = ln(2)/12  (exact algebraic simplification).
+    """
+    import decimal as _dec
+    _dec.getcontext().prec = 38
+    _LN2_OVER_12 = _dec.Decimal("0.05776226504666210911810267678818141")
+    _TAU_D = _dec.Decimal("6.2831853071795864769252867665590057")
+    k = h_int * (i + 1)  # exact Python integer — no float conversion until final step
+    return float((_dec.Decimal(k) * _LN2_OVER_12) % _TAU_D)
+
+
 def _phase36_from_id(eid):
     """36D phase vector from Metatime constants + concept ID.
     phi_i(k) = (κ·TAU + α_M·TAU·(i mod L₃) + (L₄/L₃)·TAU·⌊i/L₃⌋ + (q_k mod L₅)·TAU/L₃) mod TAU
@@ -132,11 +149,10 @@ def _phase36_from_id(eid):
         s = str(eid).lstrip("Ff")
         k = max(1, int(s))
     except (ValueError, TypeError):
-        # Non-numeric IDs (operator names, concept strings): use Collatz phasor directly.
-        # Same formula as M_sentence_phase() for one word — produces unique 36D vector
-        # per name, no forward reference needed (only uses already-defined primitives).
+        # Non-numeric IDs (operator names, concept strings): use Collatz phasor with
+        # high-precision Decimal arithmetic to avoid float64 catastrophic cancellation.
         h = M_collatz_hash(str(eid).lower())
-        return [round((h * KAPPA * TAU * (i + 1)) % TAU, 10) for i in range(36)]
+        return [round(_phase_precise(h, i), 10) for i in range(36)]
     qk = _quark_prime(k)
     vec = []
     for i in range(36):
@@ -836,6 +852,11 @@ def M_sentence_phase(text):
     """Tokenizuj tekst → 36D wektor fazowy via superpozycja phasorów Collatz.
     Każde słowo w: h=M_collatz_hash(w) → phi_i(w)=(h·κ·TAU·(i+1)) mod TAU.
     Wynik: phasor-mean po wszystkich słowach.
+
+    NOTE: uses float64 arithmetic — for large Collatz hashes this can lose up to
+    ~2 rad of phase precision. The crystal (phase_crystal_36d.npy) was built with
+    this encoding (v0). Use M_sentence_phase_precise() for new work; rebuild the
+    crystal with scripts/rebuild_crystal.py to migrate.
     """
     words = text.lower().split()
     if not words:
@@ -846,6 +867,28 @@ def M_sentence_phase(text):
         h = M_collatz_hash(w)
         for i in range(36):
             phi = (h * KAPPA * TAU * (i + 1)) % TAU
+            sums_s[i] += _sin(phi)
+            sums_c[i] += _cos(phi)
+    n = len(words)
+    return [_atan2(sums_s[i] / n, sums_c[i] / n) % TAU for i in range(36)]
+
+
+def M_sentence_phase_precise(text):
+    """High-precision variant of M_sentence_phase using Decimal arithmetic.
+
+    Uses _phase_precise() to avoid float64 precision loss for large Collatz hashes.
+    Not backward-compatible with the existing crystal (v0 encoding); use this when
+    rebuilding the crystal with scripts/rebuild_crystal.py.
+    """
+    words = text.lower().split()
+    if not words:
+        return _phase36_from_id("1")
+    sums_s = [0.0] * 36
+    sums_c = [0.0] * 36
+    for w in words:
+        h = M_collatz_hash(w)
+        for i in range(36):
+            phi = _phase_precise(h, i)
             sums_s[i] += _sin(phi)
             sums_c[i] += _cos(phi)
     n = len(words)

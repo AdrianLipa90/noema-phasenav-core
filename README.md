@@ -112,7 +112,7 @@ cd noema-phasenav-core
 pip install -e .
 ```
 
-**Requirements:** Python ≥ 3.10, numpy ≥ 1.24
+**Requirements:** Python ≥ 3.10, numpy ≥ 1.24, scipy ≥ 1.9, pyyaml ≥ 6.0
 
 ---
 
