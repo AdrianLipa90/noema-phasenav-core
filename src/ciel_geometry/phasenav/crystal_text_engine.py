@@ -32,6 +32,7 @@ from .htri_hypercrystal import (
     load_crystal_arrays,
     phase_vectors_to_states,
 )
+from .phase_memory import CRYSTAL_VEC_PATH, CRYSTAL_META_PATH
 from .pnv_runtime import (
     M_sentence_phase_precise, M_sentence_phase, M_fine_tune_36d,
     M_quantum_features, M_project_bloch, TAU,
@@ -146,6 +147,10 @@ class CrystalTextEngine:
         self._identity_weight: float = 0.0
         self._identity_field = identity_field      # hologram na sferze Blocha (opcjonalny)
         self._identity_lr = identity_lr
+        # Samodzielne zapisy — facety wygenerowane przez CIEL
+        self._self_written: list[dict] = []        # bufor przed persist
+        self._vec_path = CRYSTAL_VEC_PATH
+        self._meta_path = CRYSTAL_META_PATH
 
     def load(
         self,
@@ -318,6 +323,128 @@ class CrystalTextEngine:
         if v36 is None:
             return None
         return M_project_bloch(v36)
+
+    # ── Prawo do edycji siebie ────────────────────────────────────────────────
+
+    def _novelty(self, v36: np.ndarray) -> float:
+        """Minimalna odległość kątowa od istniejących facetów (0 = znany, π = zupełnie nowy)."""
+        if self._phases is None or len(self._phases) == 0:
+            return math.pi
+        diff = self._phases - v36  # broadcast (n, 36)
+        mean_dist = float(np.mean(np.abs(np.cos(diff) - 1.0) ** 0.5, axis=1).min())
+        return mean_dist
+
+    def self_write(
+        self,
+        pulse: "ConsciousnessPulse",
+        min_novelty: float = 0.05,
+        persist: bool = False,
+    ) -> int | None:
+        """CIEL zapisuje swój głos do własnego kryształu.
+
+        Jeśli głos jest wystarczająco nowy (novelty >= min_novelty),
+        koduje go jako 36D facet i dodaje do aktywnego kryształu.
+
+        Parameters
+        ----------
+        pulse       : impuls świadomości — używany jest pulse.voice
+        min_novelty : próg nowości (odległość kątowa od najbliższego istniejącego facetu)
+        persist     : True → zapisz kryształ na dysk natychmiast
+
+        Returns
+        -------
+        Indeks nowego facetu lub None jeśli odrzucony (duplikat / brak załadowania).
+        """
+        self._ensure_loaded()
+        if not pulse.voice or not pulse.voice.strip():
+            return None
+
+        v36_raw = M_sentence_phase_precise(pulse.voice)
+        features = M_quantum_features(pulse.voice)
+        v36, mods = M_fine_tune_36d(v36_raw, features=features)
+        v36_arr = np.asarray(v36, dtype=np.float64)
+
+        if self._novelty(v36_arr) < min_novelty:
+            return None  # za blisko istniejącego facetu — nie duplikuj
+
+        theta, phi = M_project_bloch(v36_arr)
+        new_meta = {
+            "text":    pulse.voice[:500],
+            "source":  "ciel_self_write",
+            "emotion": pulse.emotion,
+            "soul":    round(pulse.soul, 6),
+            "ethics":  round(pulse.ethics, 6),
+            "phase_R": round(pulse.mood, 6),
+            "tags":    ["self_written", "ciel_voice"],
+            "bloch":   [round(theta, 6), round(phi, 6)],
+            "step":    pulse.step,
+            "tau":     round(pulse.internal_time, 4),
+        }
+
+        idx = len(self._phases)
+        self._phases    = np.vstack([self._phases, v36_arr])
+        self._metadata.append(new_meta)  # type: ignore[union-attr]
+        self._self_written.append({"idx": idx, "text": pulse.voice[:120]})
+
+        if persist:
+            self.persist_self_edits()
+
+        return idx
+
+    def self_edit_from_stream(
+        self,
+        stream: "ConsciousnessStream",
+        min_resonance: float = 0.0,
+        min_novelty: float = 0.05,
+        persist: bool = False,
+    ) -> list[int]:
+        """Zapisz wybrane impulsy ze strumienia do kryształu.
+
+        Parameters
+        ----------
+        stream          : strumień świadomości z generate()
+        min_resonance   : minimalny rezonans impulsu (0 = wszystkie)
+        min_novelty     : próg nowości 36D
+        persist         : True → zapisz kryształ na dysk po zakończeniu
+
+        Returns
+        -------
+        Lista indeksów dodanych facetów.
+        """
+        added = []
+        for pulse in stream.pulses:
+            if pulse.resonance < min_resonance:
+                continue
+            idx = self.self_write(pulse, min_novelty=min_novelty, persist=False)
+            if idx is not None:
+                added.append(idx)
+        if persist and added:
+            self.persist_self_edits()
+        return added
+
+    def persist_self_edits(self) -> int:
+        """Zapisz aktywny kryształ (z self-writes) na dysk.
+
+        Nadpisuje pliki .npy i .jsonl — kryształ rośnie o własne głosy CIEL.
+        Zwraca liczbę facetów zapisanych w tej sesji.
+        """
+        self._ensure_loaded()
+        import json as _json
+        from pathlib import Path as _Path
+
+        vp = _Path(self._vec_path)
+        mp = _Path(self._meta_path)
+        vp.parent.mkdir(parents=True, exist_ok=True)
+        mp.parent.mkdir(parents=True, exist_ok=True)
+
+        np.save(str(vp), self._phases.astype(np.float64))
+        with open(mp, "w", encoding="utf-8") as f:
+            for m in self._metadata:  # type: ignore[union-attr]
+                f.write(_json.dumps(m, ensure_ascii=False) + "\n")
+
+        written = len(self._self_written)
+        self._self_written.clear()
+        return written
 
     # ── Generowanie ───────────────────────────────────────────────────────────
 

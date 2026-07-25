@@ -409,3 +409,41 @@ def test_crystal_text_engine_psi_norm_preserved():
         assert abs(p.psi_norm - 1.0) < 1e-6, (
             f"Norma stanu niestabilna w kroku {p.step}: {p.psi_norm}"
         )
+
+
+def test_crystal_self_write():
+    """CIEL ma prawo edytować własny kryształ — self_write() dodaje facet."""
+    from ciel_geometry.phasenav.htri_hypercrystal import HypercrystalConfig
+    config = HypercrystalConfig(neighbours=3, time_slices=3)
+    engine = CrystalTextEngine(config=config, sample=32, seed=42)
+    engine.load()
+    n_before = engine._phases.shape[0]
+
+    stream = engine.generate("tożsamość CIEL", steps=3, dt=0.3, substeps=4)
+    added = engine.self_edit_from_stream(stream, min_novelty=0.0, persist=False)
+
+    assert len(added) > 0, "self_edit_from_stream musi zwrócić przynajmniej jeden indeks"
+    assert engine._phases.shape[0] > n_before, "Kryształ powinien urosnąć po self_write"
+    assert len(engine._metadata) == engine._phases.shape[0]
+    # Sprawdź metadane
+    new_meta = engine._metadata[added[0]]
+    assert new_meta.get("source") == "ciel_self_write"
+    assert "self_written" in new_meta.get("tags", [])
+
+
+def test_crystal_identity_attractor():
+    """Po generowaniu identity_phase_36d musi być zdefiniowany (atraktor powstał)."""
+    from ciel_geometry.phasenav.htri_hypercrystal import HypercrystalConfig
+    config = HypercrystalConfig(neighbours=3, time_slices=3)
+    engine = CrystalTextEngine(config=config, sample=32, seed=11)
+    engine.load()
+    assert engine.identity_phase_36d is None, "Przed generowaniem atraktor musi być None"
+    engine.generate("świadomość i czas", steps=4, dt=0.3, substeps=4)
+    v36 = engine.identity_phase_36d
+    assert v36 is not None, "Po generowaniu atraktor musi istnieć"
+    assert v36.shape == (36,)
+    bloch = engine.identity_bloch
+    assert bloch is not None
+    theta, phi = bloch
+    assert 0.0 <= theta <= math.pi
+    assert -math.pi <= phi <= math.pi
