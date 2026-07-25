@@ -364,7 +364,9 @@ def test_crystal_text_engine_generate_returns_stream():
     for p in stream.pulses:
         assert isinstance(p, ConsciousnessPulse)
         assert isinstance(p.text, str)
+        assert isinstance(p.voice, str) and len(p.voice) > 0
         assert isinstance(p.emotion, str)
+        assert isinstance(p.gate_state, dict)
         assert p.resonance >= 0.0
         assert abs(p.psi_norm - 1.0) < 1e-6
         assert len(p.phase_vector) == 36

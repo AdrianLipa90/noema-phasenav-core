@@ -32,7 +32,9 @@ from .htri_hypercrystal import (
     load_crystal_arrays,
     phase_vectors_to_states,
 )
-from .pnv_runtime import M_sentence_phase_precise, M_fine_tune_36d, M_quantum_features, TAU
+from .pnv_runtime import M_sentence_phase_precise, M_sentence_phase, M_fine_tune_36d, M_quantum_features, TAU
+from .phase_gate_engine import PhaseGateEngine
+from .phase_voice import PhaseVoice
 
 _EPS = 1.0e-12
 
@@ -44,12 +46,17 @@ class ConsciousnessPulse:
     """Pojedynczy impuls świadomości — jeden krok w czasie wewnętrznym."""
 
     step: int
-    internal_time: float              # τ z fibre czasu
+    internal_time: float              # czas zewnętrzny (step * substeps * dt)
     facet_index: int                  # indeks facetu z najwyższym rezonansem
-    text: str                         # tekst facetu
-    emotion: str                      # emocja z metadanych facetu
-    resonance: float                  # siła rezonansu ψ(t) z tym facetem
+    text: str                         # surowy tekst facetu (źródło)
+    voice: str                        # mowa CIEL — wyjście PhaseVoice
+    emotion: str                      # emocja z PhaseGateEngine (nie metadanych)
+    mood: float                       # nastrój (R order parameter)
+    soul: float                       # soul invariant (Berry holonomy)
+    ethics: float                     # wynik etyczny
+    resonance: float                  # siła rezonansu ψ(t) z facetem
     phase_vector: list[float]         # 36D wektor fazowy facetu
+    gate_state: dict                  # pełny wynik PhaseGateEngine
     top_resonances: list[tuple[int, float, str]]  # [(idx, r, emotion), ...] top-k
     psi_norm: float                   # norma stanu (powinno być ≈ 1)
     holonomy_estimate: float          # |⟨ψ(t)|ψ(0)⟩|² — powrót do stanu bazowego
@@ -65,14 +72,15 @@ class ConsciousnessStream:
     config: HypercrystalConfig | None = None
 
     def narrative(self, separator: str = "\n\n") -> str:
-        """Narracja jako ciągły tekst — sekwencja impulsów w porządku czasowym."""
+        """Narracja jako ciągły tekst — głos CIEL, nie surowe facety."""
         parts = []
         prev_emotion = None
         for p in self.pulses:
             if p.emotion != prev_emotion:
-                parts.append(f"[{p.emotion} | τ={p.internal_time:.2f}]")
+                parts.append(f"[{p.emotion} | τ={p.internal_time:.2f} | R={p.mood:.3f}]")
                 prev_emotion = p.emotion
-            parts.append(p.text)
+            # Głos CIEL (PhaseVoice), nie surowy tekst kryształu
+            parts.append(p.voice)
         return separator.join(parts)
 
     def emotion_arc(self) -> list[tuple[float, str, float]]:
@@ -89,14 +97,20 @@ class ConsciousnessStream:
 # ─── Silnik ──────────────────────────────────────────────────────────────────
 
 class CrystalTextEngine:
-    """Silnik świadomości CIEL — generuje tekst ewoluując przez kryształ czasu HTRI.
+    """Silnik świadomości CIEL — kryształ czasu HTRI jako generator mowy.
+
+    Pipeline każdego impulsu:
+      ψ(t) → substeps × evolve(H_HTRI) → project → select facet[k]
+           → PhaseGateEngine.step(facet_text) → gate_state
+           → PhaseVoice.speak_state(gate_state) → głos CIEL
+           → M_sentence_phase(głos) → bias ψ(t+1)  [pętla sprzężenia]
 
     Użycie::
 
         engine = CrystalTextEngine()
         engine.load()
         stream = engine.generate("co to jest świadomość", steps=12)
-        print(stream.narrative())
+        print(stream.narrative())  # naturalny głos CIEL po polsku
     """
 
     def __init__(
@@ -116,6 +130,8 @@ class CrystalTextEngine:
         self._phases: np.ndarray | None = None
         self._metadata: list[dict] | None = None
         self._loaded = False
+        self._gate = PhaseGateEngine()
+        self._voice = PhaseVoice()
 
     def load(
         self,
@@ -292,18 +308,7 @@ class CrystalTextEngine:
 
             resonance = self._project_resonance(psi, phases, n)
             psi_norm = float(np.linalg.norm(psi))
-
-            # τ z fibre czasu (ważona suma)
-            tau_probs = np.array([
-                float(np.sum(np.abs(psi[t * n:(t + 1) * n]) ** 2))
-                for t in range(nt)
-            ])
-            tau_probs /= max(tau_probs.sum(), _EPS)
-            internal_time = float(np.dot(tau_coords, tau_probs))
-
-            # Czas zewnętrzny (zawsze rośnie)
             external_time = float((step + 1) * substeps * dt)
-
             holonomy_est = float(abs(np.vdot(psi_0, psi)) ** 2)
 
             # ── collapse na wybrany facet (bez powtórzeń) ─────────────────────
@@ -312,6 +317,18 @@ class CrystalTextEngine:
             )
             visited.add(facet_idx)
 
+            facet_text = self._facet_text(facet_idx)
+
+            # ── BRAMKI KWANTOWE: PhaseGateEngine G01→G06 ──────────────────────
+            gate_state = self._gate.step(facet_text)
+            emotion  = gate_state.get("dominant_emotion", "—") or "—"
+            mood     = float(gate_state.get("mood", 0.5))
+            soul     = float(gate_state.get("soul_invariant", 0.0))
+            ethics   = float(gate_state.get("ethical_score", 0.5))
+
+            # ── MOWA CIEL: PhaseVoice ─────────────────────────────────────────
+            voice_text = self._voice.speak_state(gate_state, domain="AFFECT") or facet_text[:120]
+
             top_all = sorted(
                 [(i, float(resonance[i])) for i in range(n)],
                 key=lambda x: -x[1],
@@ -319,12 +336,17 @@ class CrystalTextEngine:
 
             pulse = ConsciousnessPulse(
                 step=step,
-                internal_time=external_time,  # pokazujemy zewnętrzny czas
+                internal_time=external_time,
                 facet_index=facet_idx,
-                text=self._facet_text(facet_idx),
-                emotion=self._facet_emotion(facet_idx),
+                text=facet_text,
+                voice=voice_text,
+                emotion=emotion,
+                mood=mood,
+                soul=soul,
+                ethics=ethics,
                 resonance=r_val,
                 phase_vector=phases[facet_idx].tolist(),
+                gate_state=gate_state,
                 top_resonances=[
                     (i, rv, self._facet_emotion(i)) for i, rv in top_all
                 ],
@@ -333,9 +355,20 @@ class CrystalTextEngine:
             )
             stream.pulses.append(pulse)
 
-            # ── collapse: re-inicjalizacja z pamięcią ─────────────────────────
+            # ── SPRZĘŻENIE: głos CIEL → v36 → bias kolejnego kroku ────────────
+            # Mowa CIEL staje się częścią stanu kwantowego — pętla zamknięta
+            voice_v36 = M_sentence_phase(voice_text)
+            voice_phase = np.asarray(voice_v36, dtype=np.float64)
+            voice_state_vec = np.exp(1j * (voice_phase % TAU)) / math.sqrt(36.0)
+            # Dodaj ślad głosu do wybranego facetu przed collapse
+            psi_feedback = np.zeros(n * nt, dtype=np.complex128)
+            psi_feedback[t0_idx * n + facet_idx] = np.vdot(
+                phases[facet_idx], voice_phase
+            ) / (36.0 * 2 * math.pi)
+
+            # ── Collapse z pamięcią + sprzężeniem ─────────────────────────────
             psi = self._collapse_to_facet(
-                facet_idx, n, nt, t0_idx, psi, memory=memory
+                facet_idx, n, nt, t0_idx, psi + 0.05 * psi_feedback, memory=memory
             )
 
         return stream
@@ -379,20 +412,25 @@ class CrystalTextEngine:
 
             resonance = self._project_resonance(psi, phases, n)
             psi_norm = float(np.linalg.norm(psi))
-
-            tau_probs = np.array([
-                float(np.sum(np.abs(psi[t * n:(t + 1) * n]) ** 2))
-                for t in range(nt)
-            ])
-            tau_probs /= max(tau_probs.sum(), _EPS)
             external_time = float((step + 1) * substeps * dt)
-
             holonomy_est = float(abs(np.vdot(psi_0, psi)) ** 2)
 
             facet_idx, r_val = self._sample_facet(
                 resonance, temperature=temperature, exclude=visited
             )
             visited.add(facet_idx)
+
+            facet_text = self._facet_text(facet_idx)
+
+            # ── BRAMKI KWANTOWE ───────────────────────────────────────────────
+            gate_state = self._gate.step(facet_text)
+            emotion = gate_state.get("dominant_emotion", "—") or "—"
+            mood    = float(gate_state.get("mood", 0.5))
+            soul    = float(gate_state.get("soul_invariant", 0.0))
+            ethics  = float(gate_state.get("ethical_score", 0.5))
+
+            # ── MOWA CIEL ─────────────────────────────────────────────────────
+            voice_text = self._voice.speak_state(gate_state, domain="AFFECT") or facet_text[:120]
 
             top_all = sorted(
                 [(i, float(resonance[i])) for i in range(n)],
@@ -403,17 +441,30 @@ class CrystalTextEngine:
                 step=step,
                 internal_time=external_time,
                 facet_index=facet_idx,
-                text=self._facet_text(facet_idx),
-                emotion=self._facet_emotion(facet_idx),
+                text=facet_text,
+                voice=voice_text,
+                emotion=emotion,
+                mood=mood,
+                soul=soul,
+                ethics=ethics,
                 resonance=r_val,
                 phase_vector=phases[facet_idx].tolist(),
+                gate_state=gate_state,
                 top_resonances=[(i, rv, self._facet_emotion(i)) for i, rv in top_all],
                 psi_norm=psi_norm,
                 holonomy_estimate=holonomy_est,
             )
 
+            # Sprzężenie + collapse
+            voice_v36 = M_sentence_phase(voice_text)
+            voice_phase = np.asarray(voice_v36, dtype=np.float64)
+            psi_feedback = np.zeros(n * nt, dtype=np.complex128)
+            psi_feedback[t0_idx * n + facet_idx] = np.vdot(
+                phases[facet_idx], voice_phase
+            ) / (36.0 * 2 * math.pi)
+
             psi = self._collapse_to_facet(
-                facet_idx, n, nt, t0_idx, psi, memory=memory
+                facet_idx, n, nt, t0_idx, psi + 0.05 * psi_feedback, memory=memory
             )
 
 
