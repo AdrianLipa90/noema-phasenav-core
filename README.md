@@ -1,5 +1,10 @@
 # noema-phasenav-core
 
+> **Research prototype.** This is an experimental implementation of PhaseNav 36D
+> concepts. The public API is unstable, mathematical claims are unvalidated against
+> external benchmarks, and several modules depend on a running NOEMA host system.
+> Do not rely on v0.1.0 for production use.
+
 **PhaseNav 36D** — oscillatory semantic phase space engine.
 
 Text → 36-dimensional phase vector via Collatz-seeded phasor superposition.  

@@ -52,11 +52,19 @@ def example_trajectory_retrieval():
 
 def example_solver():
     print("\n=== Solver ===")
-    solver = PhaseNavSolver()
-    trace = solver.trace("curiosity", "understanding")
-    print(f"steps: {len(trace.steps)}, total distance: {trace.total_distance:.4f}")
+    # PhaseNavSolver.load() reads NOEMA data files from /dev/shm/ciel_noema/phasenav/
+    # Those files are written by pnv_runtime._init() on import when NOEMA is running.
+    # Without NOEMA, the solver loads but may find no edges (empty trace).
+    try:
+        solver = PhaseNavSolver.load()
+    except Exception as e:
+        print(f"  Solver unavailable (requires NOEMA data files): {e}")
+        return
+    # trace() takes a list of card IDs (concept strings or glossary IDs)
+    trace = solver.trace(["curiosity", "understanding"])
+    print(f"steps: {len(trace.steps)}, total path integral: {trace.total_path_integral:.4f}")
     for step in trace.steps[:3]:
-        print(f"  {step.operator:12s}  d={step.distance:.4f}")
+        print(f"  {step.operator_hook:12s}  Δφ={step.phase_delta:.4f}  viscosity={step.holonomic_viscosity:.4f}")
 
 
 if __name__ == "__main__":

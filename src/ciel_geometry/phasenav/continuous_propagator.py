@@ -101,9 +101,9 @@ def self_test():
     print(f"Continuous spline: min={phi_cont.min():.3f} max={phi_cont.max():.3f}")
     print(f"C² continuity: derr={np.max(np.abs(cs.derivative(2)(theta_test) - cs.derivative(2)(theta_test + 0.01))):.6f}")
 
-    phi_next = evolve_continuous(phi_knots, dt=0.05)
+    phi_next, max_dphi, d2_norm = evolve_continuous(phi_knots, dt=0.05)
     delta = float(np.mean(np.abs(phi_next - phi_knots)))
-    print(f"Evolution (1 step): mean |Δφ| = {delta:.4f}")
+    print(f"Evolution (1 step): mean |Δφ| = {delta:.4f}, max_dphi={max_dphi:.4f}, d2_norm={d2_norm:.4f}")
     print(f"  min={phi_next.min():.3f} max={phi_next.max():.3f}")
 
     return delta

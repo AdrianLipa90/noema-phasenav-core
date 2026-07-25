@@ -132,7 +132,11 @@ def _phase36_from_id(eid):
         s = str(eid).lstrip("Ff")
         k = max(1, int(s))
     except (ValueError, TypeError):
-        k = 1
+        # Non-numeric IDs (operator names, concept strings): use Collatz phasor directly.
+        # Same formula as M_sentence_phase() for one word — produces unique 36D vector
+        # per name, no forward reference needed (only uses already-defined primitives).
+        h = M_collatz_hash(str(eid).lower())
+        return [round((h * KAPPA * TAU * (i + 1)) % TAU, 10) for i in range(36)]
     qk = _quark_prime(k)
     vec = []
     for i in range(36):
