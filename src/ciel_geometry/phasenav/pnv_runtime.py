@@ -203,7 +203,7 @@ def M_36d_order_parameter(vec):
     for v in vec:
         s += _sin(v)
         c += _cos(v)
-    n = len(vec) if vec else 1
+    n = len(vec) if len(vec) > 0 else 1
     return _sqrt(s*s + c*c) / n
 
 def M_36d_distance(v1, v2):

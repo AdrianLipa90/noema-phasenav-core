@@ -158,12 +158,12 @@ def test_crystal_loads_without_crash():
 
 
 def test_crystal_facet_count():
-    """Crystal should load all 35,836 facets if data files are present."""
+    """Crystal should have at least 34,770 facets after deduplication."""
     crystal = PhaseMemoryHypercrystal()
     crystal.load()
     n = len(crystal)
     if n > 0:
-        assert n >= 35836, f"Expected >= 35836 facets, got {n}"
+        assert n >= 34770, f"Expected >= 34770 facets (po deduplikacji), got {n}"
 
 
 def test_crystal_retrieve_returns_list():

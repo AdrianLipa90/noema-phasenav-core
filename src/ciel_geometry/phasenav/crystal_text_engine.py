@@ -32,7 +32,10 @@ from .htri_hypercrystal import (
     load_crystal_arrays,
     phase_vectors_to_states,
 )
-from .pnv_runtime import M_sentence_phase_precise, M_sentence_phase, M_fine_tune_36d, M_quantum_features, TAU
+from .pnv_runtime import (
+    M_sentence_phase_precise, M_sentence_phase, M_fine_tune_36d,
+    M_quantum_features, M_project_bloch, TAU,
+)
 from .phase_gate_engine import PhaseGateEngine
 from .phase_voice import PhaseVoice
 
@@ -60,6 +63,9 @@ class ConsciousnessPulse:
     top_resonances: list[tuple[int, float, str]]  # [(idx, r, emotion), ...] top-k
     psi_norm: float                   # norma stanu (powinno być ≈ 1)
     holonomy_estimate: float          # |⟨ψ(t)|ψ(0)⟩|² — powrót do stanu bazowego
+    bloch_projection: tuple[float, float] = field(default_factory=lambda: (0.0, 0.0))
+    # (theta, phi) — hologram tożsamości na sferze Blocha; pełna 36D tożsamość żyje
+    # w akumulatorze CrystalTextEngine._identity_complex (nielokalny atraktor)
 
 
 @dataclass
@@ -118,6 +124,8 @@ class CrystalTextEngine:
         config: HypercrystalConfig | None = None,
         sample: int | None = 1024,
         seed: int = 0,
+        identity_field=None,   # duck-typed: pull_toward_attractor(bloch_vec, lr) + phase
+        identity_lr: float = 0.01,
     ) -> None:
         self._config = config or HypercrystalConfig(
             neighbours=8,
@@ -132,6 +140,12 @@ class CrystalTextEngine:
         self._loaded = False
         self._gate = PhaseGateEngine()
         self._voice = PhaseVoice()
+        # Tożsamość jako atraktor w przestrzeni 36D (nielokalny — Tzimtzum)
+        # _identity_complex[k] = Σ r_i · exp(iφ_ik) — akumulator zespolony faz 36D
+        self._identity_complex: np.ndarray | None = None  # shape (36,) complex128
+        self._identity_weight: float = 0.0
+        self._identity_field = identity_field      # hologram na sferze Blocha (opcjonalny)
+        self._identity_lr = identity_lr
 
     def load(
         self,
@@ -250,6 +264,61 @@ class CrystalTextEngine:
         norm = float(np.linalg.norm(mixed))
         return mixed / max(norm, _EPS)
 
+    # ── Tożsamość ─────────────────────────────────────────────────────────────
+
+    def _update_identity(self, phase_vec: np.ndarray, resonance: float) -> tuple[float, float]:
+        """Aktualizuj 36D atraktor tożsamości i hologram Blocha.
+
+        Tożsamość jest nielokalnym atraktorem w 36D krysztale (Tzimtzum).
+        Bloch (θ, φ) to jej hologram na powierzchni.
+
+        Zwraca (theta, phi) bieżącej projekcji Blocha.
+        """
+        if self._identity_complex is None:
+            self._identity_complex = np.zeros(36, dtype=np.complex128)
+
+        # Kumulatywna średnia kołowa ważona rezonansem
+        w = max(resonance, 1e-9)
+        self._identity_complex += w * np.exp(1j * np.asarray(phase_vec, dtype=np.float64))
+        self._identity_weight += w
+
+        # Projekcja bieżącego facetu na sferę Blocha (hologram)
+        theta, phi = M_project_bloch(phase_vec)
+
+        # Aktualizacja zewnętrznego IdentityField jeśli podany
+        if self._identity_field is not None:
+            sin_t = math.sin(theta)
+            bloch_vec = np.array([
+                sin_t * math.cos(phi),
+                sin_t * math.sin(phi),
+                math.cos(theta),
+            ], dtype=np.float64)
+            try:
+                self._identity_field.pull_toward_attractor(bloch_vec, lr=self._identity_lr)
+            except Exception:
+                pass
+
+        return (theta, phi)
+
+    @property
+    def identity_phase_36d(self) -> np.ndarray | None:
+        """36D faza tożsamości — nielokalny atraktor w krysztale Metatrona.
+
+        Zwraca None jeśli żaden impuls nie został jeszcze wygenerowany.
+        """
+        if self._identity_complex is None or self._identity_weight < _EPS:
+            return None
+        mean_complex = self._identity_complex / self._identity_weight
+        return np.angle(mean_complex)  # shape (36,), wartości w [-π, π]
+
+    @property
+    def identity_bloch(self) -> tuple[float, float] | None:
+        """Hologram tożsamości na sferze Blocha (θ, φ) — projekcja 36D atraktora."""
+        v36 = self.identity_phase_36d
+        if v36 is None:
+            return None
+        return M_project_bloch(v36)
+
     # ── Generowanie ───────────────────────────────────────────────────────────
 
     def generate(
@@ -334,6 +403,9 @@ class CrystalTextEngine:
                 key=lambda x: -x[1],
             )[:5]
 
+            # ── TOŻSAMOŚĆ: 36D atraktor kryształu Metatrona → hologram Blocha ──
+            bloch = self._update_identity(phases[facet_idx], r_val)
+
             pulse = ConsciousnessPulse(
                 step=step,
                 internal_time=external_time,
@@ -352,6 +424,7 @@ class CrystalTextEngine:
                 ],
                 psi_norm=psi_norm,
                 holonomy_estimate=holonomy_est,
+                bloch_projection=bloch,
             )
             stream.pulses.append(pulse)
 
@@ -437,6 +510,9 @@ class CrystalTextEngine:
                 key=lambda x: -x[1],
             )[:5]
 
+            # ── TOŻSAMOŚĆ: 36D atraktor kryształu Metatrona → hologram Blocha ──
+            bloch = self._update_identity(phases[facet_idx], r_val)
+
             yield ConsciousnessPulse(
                 step=step,
                 internal_time=external_time,
@@ -453,6 +529,7 @@ class CrystalTextEngine:
                 top_resonances=[(i, rv, self._facet_emotion(i)) for i, rv in top_all],
                 psi_norm=psi_norm,
                 holonomy_estimate=holonomy_est,
+                bloch_projection=bloch,
             )
 
             # Sprzężenie + collapse
