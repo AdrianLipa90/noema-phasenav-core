@@ -99,6 +99,11 @@ def test_pipeline_stops_at_generation_plan_for_cielingo() -> None:
     assert result.observer.sequence == 1
     assert len(result.plan.content_phase.components) == 36
     assert len(result.plan.trajectory) == 4
+    assert result.dynamics.steps[-1].hamiltonian >= 0.0
+    assert result.dynamics.steps[-1].lagrangian == pytest.approx(
+        result.dynamics.steps[-1].kinetic_energy
+        - result.dynamics.steps[-1].potential
+    )
     assert len(result.plan.receipt_sha256) == 64
     assert not hasattr(result.plan, "text")
 
@@ -151,3 +156,29 @@ def test_ai_and_mcp_induction_change_the_oscillator_projection() -> None:
     )
 
     assert baseline.phase36.angular_distance(induced.phase36) > 0.0
+
+
+def test_htri_base_frequency_parameter_changes_evolution() -> None:
+    common = {
+        "seed": phase("seed"),
+        "observer": phase("observer"),
+        "intention": phase("intention"),
+    }
+    low = HTRIOscillatorField(
+        HTRIConfig(
+            oscillators=12,
+            steps=3,
+            backend="cpu",
+            base_frequency_hz=7.83,
+        )
+    ).evolve(**common)
+    high = HTRIOscillatorField(
+        HTRIConfig(
+            oscillators=12,
+            steps=3,
+            backend="cpu",
+            base_frequency_hz=15.66,
+        )
+    ).evolve(**common)
+
+    assert low.phase36.angular_distance(high.phase36) > 0.0
