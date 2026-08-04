@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ciel-phasenav"
-version = "0.2.0"
-description = "PhaseNav 36D — Collatz-seeded oscillatory semantic phase space with Berry holonomy"
+version = "0.3.0"
+description = "PhaseNav canonical H2048 source state with T36 semantic phase navigation"
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.10"
@@ -32,3 +32,4 @@ where = ["src"]
 [tool.setuptools.package-data]
 "ciel_geometry.phasenav" = ["data/*.npy", "data/*.jsonl"]
 "ciel_geometry.phasenav.data" = ["*"]
+"ciel_geometry.phasenav.canon" = ["CURRENT", "canon_manifest.json"]
