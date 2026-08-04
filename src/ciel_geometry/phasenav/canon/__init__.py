@@ -54,6 +54,26 @@ from .observer_generation import (
     Provenance,
     evolve_generation_state,
 )
+from .operator_calculus import (
+    OPERATOR_CALCULUS_VERSION,
+    CompressedPhase,
+    HolonomyCache,
+    HolonomyCacheEntry,
+    LinearPhaseOperator,
+    MergeResult,
+    ProjectionResult,
+    ScheduledState,
+    SemanticDelta,
+    SemanticScheduler,
+    compress_phase,
+    decompress_phase,
+    gauge_transform,
+    project_forbidden_directions,
+    semantic_crc,
+    semantic_diff,
+    semantic_merge,
+    trajectory_curvature,
+)
 
 __all__ = [
     "ALPHA_M", "CANON_VERSION", "ETA_M_36D", "HILBERT_BITS", "HILBERT_DIM",
@@ -69,4 +89,9 @@ __all__ = [
     "HTRIOscillatorField", "HTRIState", "IntentionState", "MemoryCluster",
     "MemoryRecall", "Observation", "ObserverState", "ObserverToGenerationPipeline",
     "PerceivedState", "PipelineResult", "Provenance", "evolve_generation_state",
+    "OPERATOR_CALCULUS_VERSION", "CompressedPhase", "HolonomyCache",
+    "HolonomyCacheEntry", "LinearPhaseOperator", "MergeResult", "ProjectionResult",
+    "ScheduledState", "SemanticDelta", "SemanticScheduler", "compress_phase",
+    "decompress_phase", "gauge_transform", "project_forbidden_directions",
+    "semantic_crc", "semantic_diff", "semantic_merge", "trajectory_curvature",
 ]
