@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ciel-phasenav"
-version = "0.3.1"
-description = "PhaseNav canonical H2048 source state with T36 contextual potential dynamics"
+version = "0.4.0"
+description = "PhaseNav canonical observer-to-CIELingo generation-state dynamics with holonomic memory and HTRI"
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.10"
@@ -18,6 +18,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=7.0"]
+gpu = ["cupy>=12.0"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
