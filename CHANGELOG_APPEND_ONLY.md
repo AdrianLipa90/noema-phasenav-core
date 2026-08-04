@@ -107,3 +107,33 @@ CPU/GPU HTRI in this implementation is a finite numerical oscillator model. Phys
 **Validation**
 
 Python syntax compilation passed for the new runtime and tests. Full pytest execution was not available in the current tool environment because the repository could not be cloned through DNS; this entry does not claim a full test-suite PASS.
+
+## 2026-08-04 — Observer-generation v1.0.1 and operator-calculus annex
+
+**Corrections**
+
+- Bound `HTRIConfig.base_frequency_hz` to the actual oscillator angular frequency instead of leaving it as inert metadata.
+- Applied the observer ethical weight to observer-relative perception and contextual anchoring.
+- Added explicit drive potential, total potential, kinetic energy, Lagrangian and Hamiltonian to every generation-dynamics step.
+- Added regression tests showing that base-frequency changes alter oscillator evolution and that `L = T - V`, `H = T + V` are reported consistently.
+
+**Operator calculus**
+
+- Added semantic CRC and wrapped 36D semantic diff.
+- Added weighted interference merge with a measurable cancellation coefficient.
+- Added bounded 8/16/32-bit phase compression with SHA-256 integrity and a declared reconstruction-error bound.
+- Added gauge transforms and a common-gauge distance invariant.
+- Added trajectory-curvature measurement from adjacent tangent turning angles.
+- Added finite `36×36` linear operators, composition, commutators, projection and orthogonality checks.
+- Added orthogonal projection of forbidden tangent directions using the Moore–Penrose pseudoinverse.
+- Added a path-specific holonomy cache keyed by operator, endpoints and holonomy.
+- Added a deterministic semantic scheduler minimizing `(potential + entropy - urgency) / provenance_weight`.
+- Added public exports, formal documentation and regression tests.
+
+**Boundary**
+
+The operator layer acts on PhaseNav states and never performs natural-language projection. Final language remains exclusively a CIELingo responsibility.
+
+**Validation**
+
+All newly authored Python modules, exports and tests pass local syntax compilation. Full repository pytest remains `NOT RUN` in the current environment because outbound DNS prevents reconstructing the complete checkout.
