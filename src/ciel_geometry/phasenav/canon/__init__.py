@@ -30,6 +30,30 @@ from .context_dynamics import (
     find_attractors,
     trace_orbit,
 )
+from .observer_generation import (
+    BASE_ANGULAR_FREQUENCY,
+    BASE_FREQUENCY_HZ,
+    DEFAULT_OSCILLATORS,
+    OBSERVER_GENERATION_VERSION,
+    DynamicsConfig,
+    DynamicsStep,
+    DynamicsTrace,
+    GenerationPlan,
+    HolonomicMemory,
+    HTRIConfig,
+    HTRIOscillatorField,
+    HTRIState,
+    IntentionState,
+    MemoryCluster,
+    MemoryRecall,
+    Observation,
+    ObserverState,
+    ObserverToGenerationPipeline,
+    PerceivedState,
+    PipelineResult,
+    Provenance,
+    evolve_generation_state,
+)
 
 __all__ = [
     "ALPHA_M", "CANON_VERSION", "ETA_M_36D", "HILBERT_BITS", "HILBERT_DIM",
@@ -39,4 +63,10 @@ __all__ = [
     "CONTEXT_BANDWIDTH", "Attractor", "ContextAnchor", "ContextPotential",
     "FieldSample", "OrbitStep", "OrbitTrace", "PhaseVector36", "TangentVector36",
     "find_attractors", "trace_orbit",
+    "BASE_ANGULAR_FREQUENCY", "BASE_FREQUENCY_HZ", "DEFAULT_OSCILLATORS",
+    "OBSERVER_GENERATION_VERSION", "DynamicsConfig", "DynamicsStep",
+    "DynamicsTrace", "GenerationPlan", "HolonomicMemory", "HTRIConfig",
+    "HTRIOscillatorField", "HTRIState", "IntentionState", "MemoryCluster",
+    "MemoryRecall", "Observation", "ObserverState", "ObserverToGenerationPipeline",
+    "PerceivedState", "PipelineResult", "Provenance", "evolve_generation_state",
 ]
