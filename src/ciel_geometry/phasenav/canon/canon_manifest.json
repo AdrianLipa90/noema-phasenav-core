@@ -49,6 +49,28 @@
     "physical_claims": "separate falsifiable bridge obligations",
     "status": "CANON_CANDIDATE"
   },
+  "operator_calculus": {
+    "version": "1.0.0",
+    "space": "T^36 and local tangent R^36",
+    "operators": [
+      "semantic_crc",
+      "semantic_diff",
+      "interference_merge",
+      "bounded_phase_compression",
+      "gauge_transform",
+      "trajectory_curvature",
+      "linear_operator_composition",
+      "commutator",
+      "forbidden_direction_projection",
+      "holonomy_cache",
+      "semantic_scheduler"
+    ],
+    "compression_schema": "phasenav.phase-compressed/v1",
+    "firewall": "orthogonal tangent projection using Moore-Penrose pseudoinverse",
+    "scheduler": "minimize (potential+entropy-urgency)/provenance_weight",
+    "language_projection": false,
+    "status": "CANON_CANDIDATE"
+  },
   "orbital_audit": {"mutation": false, "free_epsilon": false},
   "status": "CANON"
 }
