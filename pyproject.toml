@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ciel-phasenav"
-version = "0.3.0"
-description = "PhaseNav canonical H2048 source state with T36 semantic phase navigation"
+version = "0.3.1"
+description = "PhaseNav canonical H2048 source state with T36 contextual potential dynamics"
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.10"
