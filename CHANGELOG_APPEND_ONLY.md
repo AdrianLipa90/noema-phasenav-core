@@ -55,7 +55,7 @@ The orbital audit is read-only. Orbital shell metadata does not authorize reposi
 
 Targeted local canon suite: `7 passed`.
 
-## 2026-08-04 — Context potential, density, viscosity, attractors and orbits
+## 2026-08-04 — Context potential, density, viscosity, attractors and orbits / package v0.3.1
 
 **Scope**
 
@@ -69,6 +69,7 @@ Targeted local canon suite: `7 passed`.
 - Added circular mean-shift attractor extraction with support IDs, potential, density, viscosity, residual and strength.
 - Explicitly separated contextual attractors from order-parameter peaks, mass maxima, self-dual states and historical identity accumulators.
 - Added public API exports, manifest entries, formal documentation and regression tests.
+- Bumped package version from `0.3.0` to `0.3.1`.
 
 **Context rule**
 
