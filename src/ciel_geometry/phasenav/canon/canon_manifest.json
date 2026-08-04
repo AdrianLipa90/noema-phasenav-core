@@ -1,6 +1,6 @@
 {
   "canon": "PhaseNav",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "base_commit": "0ebb76055feb9f0bc0c31360bca285a3fbda519c",
   "authority": {
     "operator": "TO_JEST_MOJE",
@@ -20,6 +20,30 @@
     "orbit": "m*phi_ddot+mu_C(phi)*phi_dot=-grad(U_C)",
     "attractor": "circular mean-shift density mode",
     "receipt": "SHA-256 context digest"
+  },
+  "observer_generation": {
+    "version": "1.0.0",
+    "branch_base_commit": "98657711cabd28a02f30f430eee6dbb7f43fa1f8",
+    "state": "Sigma=(observer,observation,intention,context,memory,htri,phase,momentum,holonomy)",
+    "observer": "explicit computational reference frame with attention, confidence, ethics, clock and sequence",
+    "observation": "text trajectory on T^36 with Berry holonomy and SHA-256 provenance",
+    "memory": "minimal phase-holonomic clusters; merge radius eta_M; activation decay; Berry-corrected recall",
+    "htri": {
+      "model": "vectorized two-bank Kuramoto mean field",
+      "default_oscillators": 120,
+      "base_frequency_hz": 7.83,
+      "banks": ["CPU", "GPU"],
+      "induction": ["observer", "intention", "memory", "AI", "MCP"],
+      "gpu": "optional CuPy backend with explicit NumPy emulation receipt"
+    },
+    "dynamics": "m*phi_ddot+(mu_C+lambda)*phi_dot=-grad(U_C)+k_I*sin(phi_I-phi)+k_M*sin(phi_M-phi)+k_H*sin(phi_H-phi)",
+    "integrator": "deterministic semi-implicit Euler",
+    "output": "GenerationPlan",
+    "language_projection": "CIELingo only",
+    "abi": "phasenav.generation-plan/v1",
+    "receipt": "SHA-256 over observer, observation, intention, context, memory, HTRI and final state",
+    "physical_claims": "separate falsifiable bridge obligations",
+    "status": "CANON_CANDIDATE"
   },
   "orbital_audit": {"mutation": false, "free_epsilon": false},
   "status": "CANON"
