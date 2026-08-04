@@ -22,7 +22,7 @@
     "receipt": "SHA-256 context digest"
   },
   "observer_generation": {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "branch_base_commit": "98657711cabd28a02f30f430eee6dbb7f43fa1f8",
     "state": "Sigma=(observer,observation,intention,context,memory,htri,phase,momentum,holonomy)",
     "observer": "explicit computational reference frame with attention, confidence, ethics, clock and sequence",
@@ -32,11 +32,15 @@
       "model": "vectorized two-bank Kuramoto mean field",
       "default_oscillators": 120,
       "base_frequency_hz": 7.83,
+      "base_frequency_executable": true,
       "banks": ["CPU", "GPU"],
       "induction": ["observer", "intention", "memory", "AI", "MCP"],
       "gpu": "optional CuPy backend with explicit NumPy emulation receipt"
     },
     "dynamics": "m*phi_ddot+(mu_C+lambda)*phi_dot=-grad(U_C)+k_I*sin(phi_I-phi)+k_M*sin(phi_M-phi)+k_H*sin(phi_H-phi)",
+    "drive_potential": "V_D=sum_s k_s*mean(1-cos(phi_s-phi))",
+    "lagrangian": "L=T-(U_C+V_D)",
+    "hamiltonian": "H=T+(U_C+V_D)",
     "integrator": "deterministic semi-implicit Euler",
     "output": "GenerationPlan",
     "language_projection": "CIELingo only",
