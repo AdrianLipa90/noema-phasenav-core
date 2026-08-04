@@ -38,6 +38,19 @@ from .phase_gate_engine import PhaseGateEngine
 from .phase_memory import PhaseMemoryHypercrystal, CRYSTAL_VEC_PATH, CRYSTAL_META_PATH
 from .semantic_mesh import SemanticMesh, SEMANTIC_AXES
 from .phase_voice import PhaseVoice, get_phase_voice
+from .canonical_cards import (
+    CanonicalCard,
+    Phase36Marker,
+    canonicalize_record,
+    canonicalize_crystal_facet,
+    merge_card_views,
+)
+from .emergent_glossary import (
+    EmergentGlossary,
+    EmergentEdge,
+    GlossaryPath,
+    Phase36PathMarker,
+)
 from .htri_hypercrystal import (
     HypercrystalConfig,
     build_htri_hypercrystal,
@@ -83,6 +96,15 @@ __all__ = [
     "SEMANTIC_AXES",
     "PhaseVoice",
     "get_phase_voice",
+    "CanonicalCard",
+    "Phase36Marker",
+    "canonicalize_record",
+    "canonicalize_crystal_facet",
+    "merge_card_views",
+    "EmergentGlossary",
+    "EmergentEdge",
+    "GlossaryPath",
+    "Phase36PathMarker",
     "HypercrystalConfig",
     "build_htri_hypercrystal",
     "hermiticity_error",
