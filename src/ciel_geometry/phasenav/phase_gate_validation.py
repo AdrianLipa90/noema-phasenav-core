@@ -2,10 +2,10 @@
 
 Security boundary
 -----------------
-This module is an experiment.  PhaseNav contributes deterministic domain
-separation and receipts.  Confidentiality and integrity are provided by Python
+This module is an experiment. PhaseNav contributes deterministic domain
+separation and receipts. Confidentiality and integrity are provided by Python
 stdlib primitives (PBKDF2-HMAC-SHA256, HMAC-SHA256 and a counter-mode HMAC
-keystream).  This construction has not been independently cryptanalyzed and is
+keystream). This construction has not been independently cryptanalyzed and is
 not a replacement for a standard AEAD implementation.
 """
 from __future__ import annotations
@@ -39,7 +39,14 @@ def _canonical_json(value: object) -> bytes:
 
 
 def _gate_receipt(data: bytes, *, domain: str) -> dict:
-    text = data.decode("utf-8", errors="surrogateescape")
+    """Build a PhaseNav receipt over arbitrary bytes without surrogate text.
+
+    Raw binary is represented by canonical URL-safe base64 before entering the
+    text-only phase gate. This mapping is deterministic, injective for byte
+    strings and valid UTF-8 for every possible payload.
+    """
+
+    text = "bytes:b64:" + base64.urlsafe_b64encode(data).decode("ascii")
     result = PhaseGateEngine().step(f"{domain}\x1f{text}")
     stable = {
         "domain": domain,
