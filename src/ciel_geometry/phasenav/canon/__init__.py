@@ -1,0 +1,27 @@
+"""PhaseNav hard canon v1."""
+from .model import (
+    ALPHA_M,
+    CANON_VERSION,
+    ETA_M_36D,
+    HILBERT_BITS,
+    HILBERT_DIM,
+    KAPPA,
+    L3,
+    L4,
+    L5,
+    PHASE_DIM,
+    CanonicalConceptState,
+    Hilbert2048State,
+    semantic_mass,
+)
+from .orbital import OrbitalRecord, architectural_role, audit_orbits
+from .corpus import CORPUS
+
+__all__ = [
+    "ALPHA_M", "CANON_VERSION", "ETA_M_36D", "HILBERT_BITS", "HILBERT_DIM",
+    "KAPPA", "L3", "L4", "L5", "PHASE_DIM", "CanonicalConceptState",
+    "Hilbert2048State", "semantic_mass", "OrbitalRecord", "architectural_role",
+    "audit_orbits", "CORPUS",
+]
+from .cards import card_by_id, emergent_path, load_canonical_cards
+__all__ += ["card_by_id", "emergent_path", "load_canonical_cards"]
