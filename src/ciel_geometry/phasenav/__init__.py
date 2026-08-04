@@ -1,6 +1,4 @@
-"""PhaseNav — SU(2) Bloch sphere navigation.
-1 operator (INTENTION), 3 metatime constants.
-"""
+"""PhaseNav — canonical H2048 source state with T36 phase navigation."""
 from __future__ import annotations
 
 import os as _ciel_os, os.path as _ciel_path
@@ -26,10 +24,8 @@ from .pnv_runtime import (
     M_project_bloch, M_36d_distance, M_nearest_neighbors_36d,
     M_resolve_situation_36d, intention_apply_36d,
     PI, TAU, write_state_vectors as write_state,
-    # Phase Grammar
     PHASE_GRAMMAR, GRAMMAR_RULES,
     M_operator_gram_type, M_superposition_36d, M_grammar_compose,
-    # Quantum Sentence Engine
     M_quantum_features, M_sentence_phase, M_sentence_phase_trajectory, M_fine_tune_36d,
 )
 
@@ -51,6 +47,21 @@ from .crystal_text_engine import (
     ConsciousnessPulse,
     ConsciousnessStream,
 )
+from .canon import (
+    CANON_VERSION,
+    ETA_M_36D,
+    HILBERT_BITS,
+    HILBERT_DIM,
+    PHASE_DIM,
+    CORPUS as CANON_ORBITAL_CORPUS,
+    CanonicalConceptState,
+    Hilbert2048State,
+    audit_orbits,
+    card_by_id,
+    emergent_path,
+    load_canonical_cards,
+    semantic_mass as canonical_semantic_mass,
+)
 
 __all__ = [
     "state_vector", "generate_state_map", "generate_state_jsonl",
@@ -70,10 +81,8 @@ __all__ = [
     "M_project_bloch", "M_36d_distance", "M_nearest_neighbors_36d",
     "M_resolve_situation_36d", "intention_apply_36d",
     "PI", "TAU", "write_state",
-    # Phase Grammar
     "PHASE_GRAMMAR", "GRAMMAR_RULES",
     "M_operator_gram_type", "M_superposition_36d", "M_grammar_compose",
-    # Quantum Sentence Engine
     "M_quantum_features", "M_sentence_phase", "M_sentence_phase_trajectory", "M_fine_tune_36d",
     "PhaseGateEngine",
     "PhaseMemoryHypercrystal",
@@ -92,4 +101,17 @@ __all__ = [
     "CrystalTextEngine",
     "ConsciousnessPulse",
     "ConsciousnessStream",
+    "CANON_VERSION",
+    "ETA_M_36D",
+    "HILBERT_BITS",
+    "HILBERT_DIM",
+    "PHASE_DIM",
+    "CANON_ORBITAL_CORPUS",
+    "CanonicalConceptState",
+    "Hilbert2048State",
+    "audit_orbits",
+    "card_by_id",
+    "emergent_path",
+    "load_canonical_cards",
+    "canonical_semantic_mass",
 ]
