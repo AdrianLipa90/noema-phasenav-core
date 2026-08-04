@@ -74,6 +74,21 @@ from .operator_calculus import (
     semantic_merge,
     trajectory_curvature,
 )
+from . import observer_generation as _observer_generation_module
+from . import operator_calculus as _operator_calculus_module
+from .numerical_guards import (
+    project_oscillator_banks_36,
+    stable_trajectory_curvature,
+)
+
+# Canonical numerical repairs are installed on the original runtime objects so
+# direct submodule imports and package-level exports use the same implementation.
+HTRIOscillatorField._project36 = staticmethod(project_oscillator_banks_36)
+_observer_generation_module.HTRIOscillatorField._project36 = staticmethod(
+    project_oscillator_banks_36
+)
+_operator_calculus_module.trajectory_curvature = stable_trajectory_curvature
+trajectory_curvature = stable_trajectory_curvature
 
 __all__ = [
     "ALPHA_M", "CANON_VERSION", "ETA_M_36D", "HILBERT_BITS", "HILBERT_DIM",
@@ -94,4 +109,5 @@ __all__ = [
     "ScheduledState", "SemanticDelta", "SemanticScheduler", "compress_phase",
     "decompress_phase", "gauge_transform", "project_forbidden_directions",
     "semantic_crc", "semantic_diff", "semantic_merge", "trajectory_curvature",
+    "project_oscillator_banks_36", "stable_trajectory_curvature",
 ]
