@@ -1,4 +1,4 @@
-# PhaseNav Observer-to-Generation Canon v1
+# PhaseNav Observer-to-Generation Canon v1.0.1
 
 ## 1. Scope
 
@@ -360,6 +360,32 @@ Here:
 - \(k_I,k_M,k_H\ge0\) are explicit couplings;
 - \(\lambda\ge0\) is extra numerical damping.
 
+The explicit drive potential is
+
+\[
+V_D(\phi)=
+k_I\left\langle1-\cos(\phi_I-\phi)\right\rangle
++
+k_M\left\langle1-\cos(\phi_M-\phi)\right\rangle
++
+k_H\left\langle1-\cos(\phi_H-\phi)\right\rangle.
+\]
+
+The total potential, kinetic term, Lagrangian and Hamiltonian reported by every
+dynamical step are
+
+\[
+V_{\mathrm{tot}}=U_C+V_D,
+\qquad
+T=\frac{m_\Psi}{2}\left\langle\dot\phi^2\right\rangle,
+\]
+
+\[
+\mathcal L=T-V_{\mathrm{tot}},
+\qquad
+\mathcal H=T+V_{\mathrm{tot}}.
+\]
+
 The reference integrator is deterministic semi-implicit Euler:
 
 \[
@@ -468,7 +494,8 @@ The receipt hashes:
 - dynamical holonomy.
 
 Equal initial state, inputs, backend and numerical environment should produce the
-same receipt. Backend changes must be visible.
+same receipt. The configured `base_frequency_hz` is part of the executable HTRI
+dynamics and may not be treated as inert metadata. Backend changes must be visible.
 
 ## 14. Computational invariants
 
@@ -493,7 +520,9 @@ The following are directly testable computational claims:
 - CPU/GPU bank dimensions;
 - bounded order parameters;
 - influence of AI/MCP induction;
+- influence of configured HTRI base frequency;
 - deterministic orbit length;
+- Lagrangian and Hamiltonian consistency;
 - absence of text in `GenerationPlan`;
 - JSON serializability of the CIELingo payload;
 - receipt stability under equal initial conditions.
