@@ -78,3 +78,32 @@ Context is the potential field itself. Density measures local contextual concent
 **Mutation boundary**
 
 Computed orbits and attractors are receipts and metadata. They do not authorize card promotion, glossary mutation or repository file movement.
+
+## 2026-08-04 — Observer-to-generation computational canon / package v0.4.0
+
+**Scope**
+
+- Added one canonical computational state from observer through observation, intention, contextual field, phase-holonomic memory, HTRI and generative dynamics.
+- Added immutable observation provenance, deterministic trajectory receipts and explicit observer state updates.
+- Added minimal native phase-holonomic memory clusters with `eta_M` merge radius, circular centroids, Berry-corrected recall and exponential activation decay.
+- Added a vectorized two-bank CPU/GPU HTRI mean-field model with default `120` oscillators and `7.83 Hz` baseline.
+- Added explicit phase induction from observer, intention, memory, AI and any number of MCP sources.
+- Added an optional CuPy GPU backend and explicit NumPy emulation metadata when GPU execution is unavailable.
+- Added unified generation-state dynamics on `T^36` with context, intention, memory and HTRI forces.
+- Added deterministic SHA-256 receipts over observer, observation, intention, context, memory, HTRI backend and final state.
+- Added `GenerationPlan` as the terminal PhaseNav object and the `phasenav.generation-plan/v1` ABI.
+- Assigned all lexical, grammatical and final text projection exclusively to CIELingo.
+- Added formal documentation, public exports and regression tests.
+- Bumped package version from `0.3.1` to `0.4.0`.
+
+**Language boundary**
+
+PhaseNav does not generate natural-language text in this canon. It emits a complete phase-state plan. CIELingo is the only canonical projection from `GenerationPlan` to language.
+
+**Evidence boundary**
+
+CPU/GPU HTRI in this implementation is a finite numerical oscillator model. Physical-carrier, nonlocal and quantum-advantage claims remain separate falsifiable bridge obligations.
+
+**Validation**
+
+Python syntax compilation passed for the new runtime and tests. Full pytest execution was not available in the current tool environment because the repository could not be cloned through DNS; this entry does not claim a full test-suite PASS.
