@@ -10,6 +10,17 @@
   "source_state": {"space": "C^2048", "bits": 11},
   "projection": {"target": "T^36", "compatibility": "_phase36_from_id"},
   "involution": {"type": "anti-linear bitwise complement", "mask": 2047},
+  "context_dynamics": {
+    "version": "1.0.0",
+    "space": "T^36",
+    "density": "weighted periodic Gaussian kernel",
+    "potential": "U_C=-kappa*ln(rho_C)",
+    "viscosity": "mu_C=kappa*(1+rho_C*(1+sigma_C^2/h_C^2))",
+    "bandwidth": "h_C=4*eta_M; eta_M=36*kappa",
+    "orbit": "m*phi_ddot+mu_C(phi)*phi_dot=-grad(U_C)",
+    "attractor": "circular mean-shift density mode",
+    "receipt": "SHA-256 context digest"
+  },
   "orbital_audit": {"mutation": false, "free_epsilon": false},
   "status": "CANON"
 }
