@@ -98,6 +98,18 @@ from .identity_cycle import (
     verify_runtime_identity,
     winding_frequency,
 )
+from .identity_relations import (
+    IDENTITY_NAMESPACE,
+    IDENTITY_RELATIONS_VERSION,
+    IDENTITY_RELATION_SEEDS,
+    IdentityRelationSeed,
+    PairPathReceipt,
+    audit_declared_pairs,
+    build_identity_relation_glossary,
+    generated_pair_paths,
+    identity_relation_cards,
+    standard_spinor_projective_holonomy,
+)
 from . import observer_generation as _observer_generation_module
 from . import operator_calculus as _operator_calculus_module
 from .numerical_guards import (
@@ -142,4 +154,8 @@ __all__ = [
     "phase_from_cycle", "phase_information_density",
     "projective_cycles_from_information", "spinor_parity",
     "verify_runtime_identity", "winding_frequency",
+    "IDENTITY_NAMESPACE", "IDENTITY_RELATIONS_VERSION", "IDENTITY_RELATION_SEEDS",
+    "IdentityRelationSeed", "PairPathReceipt", "audit_declared_pairs",
+    "build_identity_relation_glossary", "generated_pair_paths",
+    "identity_relation_cards", "standard_spinor_projective_holonomy",
 ]
