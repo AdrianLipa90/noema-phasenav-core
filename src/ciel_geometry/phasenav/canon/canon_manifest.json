@@ -1,6 +1,6 @@
 {
   "canon": "PhaseNav",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "base_commit": "0ebb76055feb9f0bc0c31360bca285a3fbda519c",
   "authority": {
     "operator": "TO_JEST_MOJE",
@@ -72,29 +72,36 @@
     "status": "CANON_CANDIDATE"
   },
   "identity_cycle": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "sigma_axis": 0.5,
-    "semantics": "Sigma is an evolving identity axis; state representatives may evolve while the fixed complement axis remains sigma=1/2",
-    "cycle_coordinate": "q in R/Z",
+    "semantics": "Sigma is modeled as an evolving identity axis; the exact binary complement sigma->1-sigma has the unique fixed point sigma=1/2",
+    "cycle_coordinate": "q on universal cover R; projective class R/Z; spinor class R/(2Z)",
     "frequency": "f_q=delta_winding/delta_time; no angular convention required",
     "projective_cycles_per_information_cycle": 12,
     "spinor_cycles_per_information_cycle": 6,
     "mix_count": 8,
     "flavour_count": 3,
-    "cross_derivation": "8*3 = 12*2 = 6*4 = 24",
-    "information_per_projective_cycle": "ln(2)/12",
+    "cross_factorisation": "8*3 = 12*2 = 6*4 = 24",
+    "cross_factorisation_status": "MODEL_DEPENDENT_CROSS_CONSISTENCY",
+    "information_per_projective_cycle": "ln(2)/12 (PhaseNav model normalization)",
     "angular_projection": "phi=C*q; C=TAU recovers the radian convention",
     "runtime_identity": "(ln(2)/12)/TAU = KAPPA = ln(2)/(24*pi)",
+    "spinor_phase_boundary": "2*pi spinor sign phase is not identified with generic Berry phase",
+    "open_obligations": [
+      "independent derivation of integer 12",
+      "independent completeness/independence proof for 8 mixes and 3 flavours",
+      "physical derivation of time t from tau"
+    ],
     "time_from_tau": "DEFERRED_TO_TIR",
     "jarlskog": "OUT_OF_SCOPE",
-    "physical_claims": "model semantics are separate from exact arithmetic and standard spinor periodicity",
     "status": "CANON_CANDIDATE"
   },
   "identity_relations": {
-    "version": "1.0.0",
+    "version": "2.0.0",
     "scope": "sigma=1/2 identity-cycle slice",
-    "pair_rule": "every declared semantic seed has one reciprocal pair; sigma_axis is explicitly self-dual",
-    "geometry_source": "CanonicalConceptState.from_id -> C^2048 -> T^36; no hand-authored phase coordinates",
+    "pair_rule": "every semantic node has degree >= 1; a node may participate in multiple semantic pairs; sigma_axis may be self-dual",
+    "geometry_source": "CanonicalConceptState.from_id -> C^2048 -> T^36",
+    "geometry_evidence_rule": "stable-ID generated coordinates are deterministic model coordinates and are not semantic evidence",
     "edge_generator": "EmergentGlossary.build symmetric kNN",
     "generated_fields": [
       "weighted torus distance",
@@ -105,10 +112,28 @@
       "PhaseNav affordance",
       "path integral"
     ],
-    "holonomy_policy": "generated Berry holonomy remains chyba/canon_allowed=false until independently promoted",
-    "standard_spinor_holonomy": "one projective loop -> pi representative U(1) phase; two loops -> 0 mod 2*pi",
+    "holonomy_policy": {
+      "generator": "diagnostic only; chyba; canon_allowed=false",
+      "spinor": "double-cover phase kept separate from Berry phase",
+      "u1_half_turn": "exp(i*pi)=-1",
+      "u1_full_closure": "24*pi is 12 full U(1) turns and closes to +1",
+      "berry_half_turn": "-1 only conditionally for paths whose Berry phase is pi mod 2*pi"
+    },
+    "semantic_bridges": {
+      "arithmetic_information_to_energy_matter": "MODEL_BRIDGE",
+      "phase_geometry_to_time_space": "MODEL_BRIDGE; t from tau deferred"
+    },
     "wij": "TIR W_[ij] bridge referenced conceptually only; not identified with generated PhaseNav edges",
     "status": "CANON_CANDIDATE"
+  },
+  "review": {
+    "sigma_half_reconsideration": "PASS_WITH_OPEN_BRIDGES",
+    "critical_corrections": [
+      "cross-derivation renamed cross-consistency until independent counts are derived",
+      "spinor rotation phase separated from generic Berry holonomy",
+      "pair registry generalized from one-pair-per-node to a semantic graph",
+      "ID-generated PhaseNav geometry explicitly marked non-evidentiary"
+    ]
   },
   "orbital_audit": {"mutation": false, "free_epsilon": false},
   "status": "CANON"
