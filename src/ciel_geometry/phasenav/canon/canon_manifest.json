@@ -1,6 +1,6 @@
 {
   "canon": "PhaseNav",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "base_commit": "0ebb76055feb9f0bc0c31360bca285a3fbda519c",
   "authority": {
     "operator": "TO_JEST_MOJE",
@@ -10,6 +10,30 @@
   "source_state": {"space": "C^2048", "bits": 11},
   "projection": {"target": "T^36", "compatibility": "_phase36_from_id"},
   "involution": {"type": "anti-linear bitwise complement", "mask": 2047},
+  "geometry_dependencies": {
+    "version": "1.0.0",
+    "package": "ciel_geometry.phasenav.dependencies",
+    "dependency_direction": [
+      "identity_axis_and_centered_displacement",
+      "normalized_cycle_R_mod_Z_and_winding",
+      "phase_crystal_R_mod_Z_power_N",
+      "typed_relation_graph_with_optional_normalized_holonomy",
+      "tangent_log_map_vectorization",
+      "semantic_and_runtime_operators"
+    ],
+    "scalar_semantics": {
+      "negative": "orientation on the negative side of a selected axis or shortest tangent",
+      "zero": "fixed axis or vanishing tangent displacement",
+      "positive": "orientation on the positive side of a selected axis or shortest tangent",
+      "claim_boundary": "computational coordinate architecture; not a theorem about the physical origin of the real numbers"
+    },
+    "phase_primitive": "q in R/Z; radians are an explicit downstream PhaseClosure representation",
+    "crystal": "PhaseCrystal on (R/Z)^N; default PhaseNav N=36",
+    "vectorization": "shortest oriented tangent/log-map coordinates; opaque identifiers are not evidence-bearing vector coordinates",
+    "epistemic_statuses": ["EXACT", "STANDARD", "MODEL", "OPEN"],
+    "generated_geometry_policy": "diagnostic until independent semantic provenance is supplied",
+    "status": "CANON_CANDIDATE"
+  },
   "context_dynamics": {
     "version": "1.0.0",
     "space": "T^36",
@@ -97,12 +121,14 @@
     "status": "CANON_CANDIDATE"
   },
   "identity_relations": {
-    "version": "2.0.0",
+    "version": "2.1.0",
     "scope": "sigma=1/2 identity-cycle slice",
     "pair_rule": "every semantic node has degree >= 1; a node may participate in multiple semantic pairs; sigma_axis may be self-dual",
     "geometry_source": "CanonicalConceptState.from_id -> C^2048 -> T^36",
     "geometry_evidence_rule": "stable-ID generated coordinates are deterministic model coordinates and are not semantic evidence",
     "edge_generator": "EmergentGlossary.build symmetric kNN",
+    "dependency_bridge": "identity_dependency_bridge converts declared relations to typed geometry-dependency edges",
+    "holonomy_representation": "primitive bridge stores normalized turns; half-turn=0.5, full closure=0 mod 1; radians are downstream representation",
     "generated_fields": [
       "weighted torus distance",
       "Berry connection",
@@ -114,10 +140,10 @@
     ],
     "holonomy_policy": {
       "generator": "diagnostic only; chyba; canon_allowed=false",
-      "spinor": "double-cover phase kept separate from Berry phase",
-      "u1_half_turn": "exp(i*pi)=-1",
-      "u1_full_closure": "24*pi is 12 full U(1) turns and closes to +1",
-      "berry_half_turn": "-1 only conditionally for paths whose Berry phase is pi mod 2*pi"
+      "spinor": "double-cover phase kept separate from generic Berry phase",
+      "u1_half_turn": "normalized turn 0.5; radian representative pi gives exp(i*pi)=-1",
+      "u1_full_closure": "normalized turn 0 mod 1; 24*pi is 12 full U(1) turns",
+      "berry_half_turn": "0.5 turn only conditionally for paths whose Berry phase is pi mod 2*pi"
     },
     "semantic_bridges": {
       "arithmetic_information_to_energy_matter": "MODEL_BRIDGE",
@@ -132,7 +158,9 @@
       "cross-derivation renamed cross-consistency until independent counts are derived",
       "spinor rotation phase separated from generic Berry holonomy",
       "pair registry generalized from one-pair-per-node to a semantic graph",
-      "ID-generated PhaseNav geometry explicitly marked non-evidentiary"
+      "ID-generated PhaseNav geometry explicitly marked non-evidentiary",
+      "signed vectorization moved downstream of oriented geometry",
+      "primitive phase and holonomy moved to normalized turns before radian representation"
     ]
   },
   "orbital_audit": {"mutation": false, "free_epsilon": false},
