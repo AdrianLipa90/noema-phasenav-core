@@ -127,6 +127,7 @@ from .identity_relations import (
     identity_relation_cards,
     standard_spinor_projective_holonomy,
 )
+from .identity_dependency_bridge import dependency_relation_graph, sigma_axis_vector
 from . import observer_generation as _observer_generation_module
 from . import operator_calculus as _operator_calculus_module
 from .numerical_guards import (
@@ -179,5 +180,6 @@ __all__ = [
     "RelationPathReceipt", "audit_declared_pairs", "audit_relation_graph",
     "build_identity_relation_glossary", "generated_pair_paths", "generated_relation_paths",
     "holonomy_eligible_relations", "identity_relation_cards",
-    "standard_spinor_projective_holonomy",
+    "standard_spinor_projective_holonomy", "dependency_relation_graph",
+    "sigma_axis_vector",
 ]
