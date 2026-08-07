@@ -1,6 +1,6 @@
 {
   "canon": "PhaseNav",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "base_commit": "0ebb76055feb9f0bc0c31360bca285a3fbda519c",
   "authority": {
     "operator": "TO_JEST_MOJE",
@@ -69,6 +69,25 @@
     "firewall": "orthogonal tangent projection using Moore-Penrose pseudoinverse",
     "scheduler": "minimize (potential+entropy-urgency)/provenance_weight",
     "language_projection": false,
+    "status": "CANON_CANDIDATE"
+  },
+  "identity_cycle": {
+    "version": "1.0.0",
+    "sigma_axis": 0.5,
+    "semantics": "Sigma is an evolving identity axis; state representatives may evolve while the fixed complement axis remains sigma=1/2",
+    "cycle_coordinate": "q in R/Z",
+    "frequency": "f_q=delta_winding/delta_time; no angular convention required",
+    "projective_cycles_per_information_cycle": 12,
+    "spinor_cycles_per_information_cycle": 6,
+    "mix_count": 8,
+    "flavour_count": 3,
+    "cross_derivation": "8*3 = 12*2 = 6*4 = 24",
+    "information_per_projective_cycle": "ln(2)/12",
+    "angular_projection": "phi=C*q; C=TAU recovers the radian convention",
+    "runtime_identity": "(ln(2)/12)/TAU = KAPPA = ln(2)/(24*pi)",
+    "time_from_tau": "DEFERRED_TO_TIR",
+    "jarlskog": "OUT_OF_SCOPE",
+    "physical_claims": "model semantics are separate from exact arithmetic and standard spinor periodicity",
     "status": "CANON_CANDIDATE"
   },
   "orbital_audit": {"mutation": false, "free_epsilon": false},
