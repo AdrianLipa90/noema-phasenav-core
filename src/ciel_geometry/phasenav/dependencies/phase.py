@@ -1,9 +1,12 @@
-"""Normalized phase primitives independent of radian convention."""
+"""Normalized phase primitives independent of radian convention.
+
+The dependency layer stops at turns, winding and covering-sheet structure.
+A radian/complex U(1) representation is a downstream representation choice,
+not part of the primitive cycle definition.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass
-import cmath
-import math
 
 
 @dataclass(frozen=True)
@@ -22,7 +25,7 @@ class CycleCoordinate:
 
 @dataclass(frozen=True)
 class PhaseClosure:
-    """Map normalized turns to an angular coordinate with period C."""
+    """Map normalized turns to any chosen angular coordinate with period C."""
 
     period: float
 
@@ -52,11 +55,6 @@ def spinor_sheet(projective_winding: int) -> int:
     return -1 if projective_winding % 2 else 1
 
 
-def u1_holonomy(turns: float) -> complex:
-    """U(1) holonomy from normalized turns; one turn closes to +1."""
-    return cmath.exp(2j * math.pi * float(turns))
-
-
 def spinor_holonomy(projective_winding: int) -> complex:
-    """Holonomy of the lifted spinor after projective windings."""
+    """Complex representation of the sheet sign; no angular constant required."""
     return complex(spinor_sheet(projective_winding), 0.0)
