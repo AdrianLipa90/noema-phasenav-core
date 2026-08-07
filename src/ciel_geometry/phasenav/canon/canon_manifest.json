@@ -1,6 +1,6 @@
 {
   "canon": "PhaseNav",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "base_commit": "0ebb76055feb9f0bc0c31360bca285a3fbda519c",
   "authority": {
     "operator": "TO_JEST_MOJE",
@@ -88,6 +88,26 @@
     "time_from_tau": "DEFERRED_TO_TIR",
     "jarlskog": "OUT_OF_SCOPE",
     "physical_claims": "model semantics are separate from exact arithmetic and standard spinor periodicity",
+    "status": "CANON_CANDIDATE"
+  },
+  "identity_relations": {
+    "version": "1.0.0",
+    "scope": "sigma=1/2 identity-cycle slice",
+    "pair_rule": "every declared semantic seed has one reciprocal pair; sigma_axis is explicitly self-dual",
+    "geometry_source": "CanonicalConceptState.from_id -> C^2048 -> T^36; no hand-authored phase coordinates",
+    "edge_generator": "EmergentGlossary.build symmetric kNN",
+    "generated_fields": [
+      "weighted torus distance",
+      "Berry connection",
+      "winding signature",
+      "coherence",
+      "holonomic viscosity",
+      "PhaseNav affordance",
+      "path integral"
+    ],
+    "holonomy_policy": "generated Berry holonomy remains chyba/canon_allowed=false until independently promoted",
+    "standard_spinor_holonomy": "one projective loop -> pi representative U(1) phase; two loops -> 0 mod 2*pi",
+    "wij": "TIR W_[ij] bridge referenced conceptually only; not identified with generated PhaseNav edges",
     "status": "CANON_CANDIDATE"
   },
   "orbital_audit": {"mutation": false, "free_epsilon": false},
