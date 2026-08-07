@@ -1,20 +1,17 @@
-"""PhaseNav Sigma identity-axis and normalized cycle canon.
+"""PhaseNav Sigma identity-axis and normalized-cycle canon.
 
-This module separates cycle arithmetic from angular convention.
+The module keeps three layers deliberately separate:
 
-Exact algebra already present in PhaseNav:
-    KAPPA * TAU = ln(2) / 12
+1. exact arithmetic / topology (complement fixed point, R/Z cycle coordinate,
+   integer factorisations, spinor double-cover parity),
+2. PhaseNav model identifications (8 mixes, 3 flavours, one ln(2) information
+   cycle per twelve projective recurrences),
+3. angular convention (phi = C q, with C = 2*pi for radians).
 
-The normalized cycle coordinate q lives in R/Z.  Frequency can therefore be
-defined as completed windings per unit time without inserting 2*pi.  Angular
-phase is a later geometric projection phi = closure * q.
-
-Epistemic boundary:
-- integer factorisations and conversions are exact;
-- spin-1/2 double-cover periodicity is standard mathematics/physics;
-- Sigma-as-identity-axis, the 8-mix/3-flavour count, and the interpretation of
-  ln(2) as one complete PhaseNav information cycle are canonical TIR/PhaseNav
-  model statements, not claims of established fundamental physics.
+A crucial claim boundary is enforced in the API: the sign acquired by a
+spin-1/2 representative after a 2*pi spatial rotation is a double-cover phase,
+not the Berry phase of an arbitrary closed path. Berry holonomy remains
+path-dependent and belongs to the geometric/path layer.
 """
 
 from __future__ import annotations
@@ -35,18 +32,26 @@ INFORMATION_QUANTUM = math.log(2.0)
 INFORMATION_PER_PROJECTIVE_CYCLE = (
     INFORMATION_QUANTUM / PROJECTIVE_CYCLES_PER_INFORMATION_CYCLE
 )
-IDENTITY_CYCLE_VERSION = "1.0.0"
+IDENTITY_CYCLE_VERSION = "1.1.0"
+
+# This is a consistency/cross-factorisation status, not an independence proof.
+CROSS_DERIVATION_STATUS = "MODEL_DEPENDENT_CROSS_CONSISTENCY"
 
 
 @dataclass(frozen=True)
 class IdentityAxis:
-    """Binary identity axis.
+    """Fixed axis of the binary complement sigma -> 1-sigma.
 
-    ``sigma`` may evolve as a state coordinate.  The axis is the fixed locus of
-    the complement sigma -> 1-sigma and therefore sits at 1/2.
+    The canonical axis is not configurable: for the stated complement the
+    unique fixed point is exactly 1/2. A state coordinate sigma may evolve on
+    either side of the axis; the axis itself remains the reference locus.
     """
 
     center: float = SIGMA_AXIS
+
+    def __post_init__(self) -> None:
+        if not math.isclose(self.center, SIGMA_AXIS, rel_tol=0.0, abs_tol=0.0):
+            raise ValueError("the complement sigma -> 1-sigma has fixed axis 1/2")
 
     def centered(self, sigma: float) -> float:
         return float(sigma) - self.center
@@ -65,14 +70,17 @@ class IdentityAxis:
 
 @dataclass(frozen=True)
 class CycleCoordinate:
-    """Unwrapped normalized cycle coordinate q.
+    """Unwrapped normalized projective cycle coordinate q.
 
-    One projective cycle is q -> q+1.  A spin-1/2 representative requires two
-    projective cycles to return to the same vector rather than merely the same
-    projective ray.
+    q lives on the universal cover R while ``projective`` is its class in R/Z.
+    The spinor representative uses the double cover R/(2Z).
     """
 
     q: float
+
+    def __post_init__(self) -> None:
+        if not math.isfinite(self.q):
+            raise ValueError("q must be finite")
 
     @property
     def projective(self) -> float:
@@ -83,8 +91,19 @@ class CycleCoordinate:
         return self.q % 2.0
 
     @property
-    def completed_projective_cycles(self) -> int:
+    def projective_cell(self) -> int:
+        """Lower integer cell containing q (floor convention)."""
         return math.floor(self.q)
+
+    @property
+    def signed_completed_projective_cycles(self) -> int:
+        """Whole traversals from q=0, symmetric under reversal near the origin."""
+        return math.trunc(self.q)
+
+    @property
+    def completed_projective_cycles(self) -> int:
+        """Compatibility alias for signed_completed_projective_cycles."""
+        return self.signed_completed_projective_cycles
 
     def phase(self, *, closure: float = TAU) -> float:
         if closure <= 0.0 or not math.isfinite(closure):
@@ -94,7 +113,12 @@ class CycleCoordinate:
 
 @dataclass(frozen=True)
 class CrossDerivation24:
-    """Arithmetic certificate for the common 24 half-turn units."""
+    """Cross-consistency certificate for 24 half-turn units.
+
+    The equalities are exact once the counts are supplied. They do *not* prove
+    that 8 mixes / 3 flavours or 12 projective recurrences are independently
+    fundamental. Those counts remain PhaseNav model obligations.
+    """
 
     mixes: int = MIX_COUNT
     flavours: int = FLAVOUR_COUNT
@@ -121,21 +145,35 @@ class CrossDerivation24:
             self.spinor_units,
         )
         if len(set(values)) != 1:
-            raise ValueError(f"inconsistent cycle derivation: {values!r}")
+            raise ValueError(f"inconsistent cycle factorisation: {values!r}")
         return values[0]
 
     @property
-    def phase_closure(self) -> float:
-        """Angular image after selecting the radian half-turn pi."""
+    def status(self) -> str:
+        return CROSS_DERIVATION_STATUS
+
+    @property
+    def information_phase_span_rad(self) -> float:
+        """Model phase span after selecting the radian half-turn pi."""
         return self.common_units * math.pi
 
     @property
+    def phase_closure(self) -> float:
+        """Compatibility alias; prefer information_phase_span_rad."""
+        return self.information_phase_span_rad
+
+    @property
+    def kappa_candidate(self) -> float:
+        return INFORMATION_QUANTUM / self.information_phase_span_rad
+
+    @property
     def kappa(self) -> float:
-        return INFORMATION_QUANTUM / self.phase_closure
+        """Compatibility alias for the model-dependent kappa candidate."""
+        return self.kappa_candidate
 
 
 def winding_frequency(delta_cycles: float, delta_time: float) -> float:
-    """Frequency as winding-count rate, with no angular convention required."""
+    """Frequency as signed winding-count rate; no angular unit is required."""
     if delta_time <= 0.0 or not math.isfinite(delta_time):
         raise ValueError("delta_time must be finite and positive")
     if not math.isfinite(delta_cycles):
@@ -144,54 +182,131 @@ def winding_frequency(delta_cycles: float, delta_time: float) -> float:
 
 
 def cycle_from_phase(phase: float, *, closure: float = TAU) -> float:
-    """Convert angular phase to normalized cycle coordinate."""
+    """Convert angular phase to normalized cycles after choosing closure C."""
     if closure <= 0.0 or not math.isfinite(closure):
         raise ValueError("closure must be finite and positive")
+    if not math.isfinite(phase):
+        raise ValueError("phase must be finite")
     return float(phase) / float(closure)
 
 
 def phase_from_cycle(cycle: float, *, closure: float = TAU) -> float:
-    """Project normalized cycles into an angular convention."""
+    """Project normalized cycles into an angular convention phi=C*q."""
     if closure <= 0.0 or not math.isfinite(closure):
         raise ValueError("closure must be finite and positive")
+    if not math.isfinite(cycle):
+        raise ValueError("cycle must be finite")
     return float(cycle) * float(closure)
 
 
 def information_from_projective_cycles(cycles: float) -> float:
-    """Accumulate the canonical ln(2) information cycle in q-space."""
+    """PhaseNav model accumulation: dI/dq = ln(2)/12."""
+    if not math.isfinite(cycles):
+        raise ValueError("cycles must be finite")
     return float(cycles) * INFORMATION_PER_PROJECTIVE_CYCLE
 
 
 def projective_cycles_from_information(information: float) -> float:
+    if not math.isfinite(information):
+        raise ValueError("information must be finite")
     return float(information) / INFORMATION_PER_PROJECTIVE_CYCLE
 
 
 def information_rate(frequency_hz: float) -> float:
-    """dI/dt = (ln 2 / 12) f for projective winding frequency f."""
+    """PhaseNav model rate dI/dt = (ln 2 / 12) f_q."""
     if not math.isfinite(frequency_hz):
         raise ValueError("frequency_hz must be finite")
     return INFORMATION_PER_PROJECTIVE_CYCLE * float(frequency_hz)
 
 
 def phase_information_density(*, closure: float = TAU) -> float:
-    """dI/dphi obtained only after choosing a geometric cycle closure."""
+    """dI/dphi after selecting geometric closure C for one q-cycle."""
     if closure <= 0.0 or not math.isfinite(closure):
         raise ValueError("closure must be finite and positive")
     return INFORMATION_PER_PROJECTIVE_CYCLE / float(closure)
 
 
 def spinor_parity(projective_cycles: int) -> int:
-    """Return +1/-1 after an integer number of projective 2*pi cycles."""
+    """Return representative sign (+1/-1) after integer projective rotations."""
     if isinstance(projective_cycles, bool) or not isinstance(projective_cycles, int):
         raise TypeError("projective_cycles must be an integer")
     return 1 if projective_cycles % 2 == 0 else -1
 
 
+def spinor_rotation_phase(projective_cycles: int = 1) -> float:
+    """U(1) representative phase induced by the spin-1/2 double cover.
+
+    This is *not* a generic Berry phase. A Berry phase depends on the actual
+    closed path in projective state space; this function encodes only the
+    standard sign change under successive 2*pi spatial rotations.
+    """
+    if isinstance(projective_cycles, bool) or not isinstance(projective_cycles, int):
+        raise TypeError("projective_cycles must be an integer")
+    return (projective_cycles * math.pi) % TAU
+
+
 def verify_runtime_identity(*, atol: float = 1e-15) -> bool:
-    """Check that the normalized-cycle derivation reproduces runtime KAPPA."""
+    """Check that the selected PhaseNav model normalization reproduces KAPPA."""
     return math.isclose(
         phase_information_density(closure=TAU),
         KAPPA,
         rel_tol=0.0,
         abs_tol=atol,
     )
+
+
+def identity_cycle_claims() -> dict[str, tuple[str, ...]]:
+    """Machine-readable claim ledger used by tests and documentation."""
+    return {
+        "exact": (
+            "sigma=1/2 is the unique fixed point of sigma->1-sigma",
+            "q projective class is R/Z",
+            "spinor class uses the double cover R/(2Z)",
+            "8*3=12*2=6*4=24 for the configured counts",
+            "KAPPA*TAU=ln(2)/12 for the current runtime constants",
+        ),
+        "standard": (
+            "spin-1/2 representatives change sign under one 2*pi spatial rotation",
+            "two such rotations restore the representative",
+        ),
+        "model": (
+            "Sigma is interpreted as an evolving axis of system identity",
+            "the complete branch uses 8 mixes and 3 flavours",
+            "one ln(2) information cycle contains 12 projective recurrences",
+            "the configured cross-factorisation is physically fundamental",
+        ),
+        "open": (
+            "independent derivation of the integer 12",
+            "independent completeness proof for 8 mixes and 3 flavours",
+            "physical derivation of time t from tau",
+        ),
+    }
+
+
+__all__ = [
+    "SIGMA_AXIS",
+    "MIX_COUNT",
+    "FLAVOUR_COUNT",
+    "PROJECTIVE_CYCLES_PER_INFORMATION_CYCLE",
+    "SPINOR_CYCLES_PER_INFORMATION_CYCLE",
+    "PROJECTIVE_HALF_TURNS",
+    "SPINOR_HALF_TURNS",
+    "INFORMATION_QUANTUM",
+    "INFORMATION_PER_PROJECTIVE_CYCLE",
+    "IDENTITY_CYCLE_VERSION",
+    "CROSS_DERIVATION_STATUS",
+    "IdentityAxis",
+    "CycleCoordinate",
+    "CrossDerivation24",
+    "winding_frequency",
+    "cycle_from_phase",
+    "phase_from_cycle",
+    "information_from_projective_cycles",
+    "projective_cycles_from_information",
+    "information_rate",
+    "phase_information_density",
+    "spinor_parity",
+    "spinor_rotation_phase",
+    "verify_runtime_identity",
+    "identity_cycle_claims",
+]
