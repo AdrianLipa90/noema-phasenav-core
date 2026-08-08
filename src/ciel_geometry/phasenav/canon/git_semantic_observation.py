@@ -106,8 +106,8 @@ class GitBlobSemanticObservation:
         if not language_id:
             raise ValueError("language_id is required for a semantic observation")
         commit_alg, commit = normalize_git_digest(repository_head_commit)
-        if commit_alg not in {"sha1", "sha256"}:
-            raise AssertionError(commit_alg)
+        if commit_alg != git_hash_algorithm:
+            raise ValueError("repository commit and blob use different Git object formats")
         return cls(
             repository_head_commit=commit,
             blob_digest=canonical_blob,
