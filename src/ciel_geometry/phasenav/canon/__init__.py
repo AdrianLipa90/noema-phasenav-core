@@ -74,6 +74,16 @@ from .operator_calculus import (
     semantic_merge,
     trajectory_curvature,
 )
+from .tir_half_dependencies import (
+    INTRINSIC_COEFFICIENT_DIM,
+    TIR_HALF_DEPENDENCY_GRAPH,
+    TIR_HALF_DEPENDENCY_VERSION,
+    DependencyEdge,
+    DependencyGraph,
+    DependencyNode,
+    EpistemicStatus,
+    build_tir_half_dependency_graph,
+)
 from . import observer_generation as _observer_generation_module
 from . import operator_calculus as _operator_calculus_module
 from .numerical_guards import (
@@ -110,4 +120,7 @@ __all__ = [
     "decompress_phase", "gauge_transform", "project_forbidden_directions",
     "semantic_crc", "semantic_diff", "semantic_merge", "trajectory_curvature",
     "project_oscillator_banks_36", "stable_trajectory_curvature",
+    "INTRINSIC_COEFFICIENT_DIM", "TIR_HALF_DEPENDENCY_GRAPH",
+    "TIR_HALF_DEPENDENCY_VERSION", "DependencyEdge", "DependencyGraph",
+    "DependencyNode", "EpistemicStatus", "build_tir_half_dependency_graph",
 ]
