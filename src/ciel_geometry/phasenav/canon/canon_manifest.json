@@ -1,7 +1,7 @@
 {
   "canon": "PhaseNav",
-  "version": "1.4.0",
-  "base_commit": "611c4e0ac75d02d3386c15bd8744e5e9e98ccb78",
+  "version": "1.5.0",
+  "base_commit": "2cf1e433e21f4f3feab2f248218a38f5263e66ea",
   "authority": {
     "operator": "TO_JEST_MOJE",
     "issuer": "Adrian Lipa",
@@ -97,14 +97,15 @@
     "noema_parent": "42a0a8916e81ca27f2213bf0f28538f046c2e89a",
     "tir_parent": "df8a6e1321ecf2e2c8819f4e9d5ec7d4f997d170",
     "secret_of_a_half_parent": "a1b0aeba192766163893fab1468b8f9cd9b8853b",
-    "source_anchor_vectorization": "native CanonicalConceptState.from_id -> T^36",
+    "source_anchor_vectorization": "historical CanonicalConceptState.from_id -> T^36",
     "dependency_node_vectorization": "preserve v0.7 native node vectors",
-    "path_vectorization": "deterministic routing identity only; no implication of edge truth",
+    "path_vectorization": "historical deterministic routing identity only; no implication of edge truth",
+    "git_content_identity_superseded_by": "git_object_vectorization/v0.9",
     "routing_dimension": 36,
     "intrinsic_coefficient_dimension": 4,
     "intrinsic_equals_routing": false,
     "scientific_promotion": "NOT_PERFORMED",
-    "status": "CANON_CROSSREPO_CLOSURE"
+    "status": "CANON_CROSSREPO_CLOSURE_HISTORICAL"
   },
   "atomic_orbital_adapter": {
     "version": "0.8.0",
@@ -146,6 +147,29 @@
     "edge_vector_policy": "no invented edge vector; use endpoint object vectors plus typed edge metadata",
     "scientific_promotion": "NOT_PERFORMED",
     "status": "CANON_CONTENT_IDENTITY_ROUTING"
+  },
+  "git_checkout_vectorization": {
+    "version": "0.10.0",
+    "schema": "phasenav.git-checkout-object-graph/v0.10",
+    "discovery": "git rev-parse plus git ls-tree -r -t -z --full-tree",
+    "frozen_head_source": "private_repository_snapshot/v0.9",
+    "frozen_real_head_count": 39,
+    "commit_to_root_tree_edge": "native Git relation",
+    "tree_to_child_edges": "native Git relations",
+    "duplicate_blob_policy": "one object vector, multiple path occurrences",
+    "rename_policy": "rename without content change preserves blob vector and changes tree/commit state",
+    "path_is_vector_parent": false,
+    "file_name_is_vector_parent": false,
+    "extension_is_vector_parent": false,
+    "size_is_vector_parent": false,
+    "manual_file_selection": false,
+    "invented_edge_vector": false,
+    "moving_head_allowed_for_canonical_scan": false,
+    "partial_scan_can_claim_complete": false,
+    "focused_validation": "PASS_13_OF_13",
+    "full_39_checkout_execution": "NOT_RUN",
+    "scientific_promotion": "NOT_PERFORMED",
+    "status": "CANON_SCANNER"
   },
   "orbital_audit": {"mutation": false, "free_epsilon": false},
   "status": "CANON"
