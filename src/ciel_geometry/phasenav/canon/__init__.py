@@ -84,6 +84,19 @@ from .tir_half_dependencies import (
     EpistemicStatus,
     build_tir_half_dependency_graph,
 )
+from .tir_half_closure import (
+    NOEMA_PARENT,
+    PHASENAV_RUNTIME_PARENT,
+    SECRET_HALF_PARENT,
+    TIR_HALF_CLOSURE,
+    TIR_HALF_CLOSURE_SCHEMA,
+    TIR_HALF_CLOSURE_VERSION,
+    TIR_PARENT,
+    PathVector,
+    SourceAnchor,
+    TIRHalfClosure,
+    build_tir_half_closure,
+)
 from . import observer_generation as _observer_generation_module
 from . import operator_calculus as _operator_calculus_module
 from .numerical_guards import (
@@ -123,4 +136,7 @@ __all__ = [
     "INTRINSIC_COEFFICIENT_DIM", "TIR_HALF_DEPENDENCY_GRAPH",
     "TIR_HALF_DEPENDENCY_VERSION", "DependencyEdge", "DependencyGraph",
     "DependencyNode", "EpistemicStatus", "build_tir_half_dependency_graph",
+    "NOEMA_PARENT", "PHASENAV_RUNTIME_PARENT", "SECRET_HALF_PARENT", "TIR_PARENT",
+    "TIR_HALF_CLOSURE", "TIR_HALF_CLOSURE_SCHEMA", "TIR_HALF_CLOSURE_VERSION",
+    "PathVector", "SourceAnchor", "TIRHalfClosure", "build_tir_half_closure",
 ]
