@@ -1,7 +1,7 @@
 {
   "canon": "PhaseNav",
-  "version": "1.3.0",
-  "base_commit": "54f65f2ca7d35cdd98f0ab8984cc1a8d74444a96",
+  "version": "1.4.0",
+  "base_commit": "611c4e0ac75d02d3386c15bd8744e5e9e98ccb78",
   "authority": {
     "operator": "TO_JEST_MOJE",
     "issuer": "Adrian Lipa",
@@ -122,6 +122,30 @@
     "generic_shell_policy": "atomic shell n is not generic semantic/orbital shell",
     "scientific_promotion": "NOT_PERFORMED",
     "status": "CANON_CANDIDATE"
+  },
+  "git_object_vectorization": {
+    "version": "0.9.0",
+    "schema": "phasenav.git-object-vector/v0.9",
+    "repository_snapshot_schema": "phasenav.private-repository-head-snapshot/v0.9",
+    "scope": "all visible private AdrianLipa90 repositories; archived retained",
+    "repository_count": 40,
+    "head_present_count": 39,
+    "archived_empty_count": 1,
+    "inventory_sha256": "d47ace603e52fdb3fbe77556b370ac272d4ac5f3d0232b0bda4fbc998a05ab70",
+    "vector_set_sha256": "a7e458063b3fb94d817f132c3c4dceee5a6ed7ade32237bec4acaff392640e0b",
+    "vector_parent": "native Git object digest only",
+    "phase_law": "phi_i=(N_git*(i+1)*ln(2)/12) mod 2pi",
+    "object_types": ["blob", "tree", "commit", "tag"],
+    "hash_formats": ["sha1", "sha256"],
+    "repository_name_vector_parent": false,
+    "repository_id_vector_parent": false,
+    "default_branch_vector_parent": false,
+    "repository_size_vector_parent": false,
+    "path_label_vector_parent": false,
+    "collatz_string_hash_used": false,
+    "edge_vector_policy": "no invented edge vector; use endpoint object vectors plus typed edge metadata",
+    "scientific_promotion": "NOT_PERFORMED",
+    "status": "CANON_CONTENT_IDENTITY_ROUTING"
   },
   "orbital_audit": {"mutation": false, "free_epsilon": false},
   "status": "CANON"
