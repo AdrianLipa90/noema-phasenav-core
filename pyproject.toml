@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ciel-phasenav"
-version = "0.4.0"
-description = "PhaseNav canonical observer-to-CIELingo generation-state dynamics with holonomic memory and HTRI"
+version = "0.5.0"
+description = "PhaseNav canonical observer-to-CIELingo generation-state dynamics with holonomic memory, HTRI, and typed TIR×½ dependency firewall"
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.10"
