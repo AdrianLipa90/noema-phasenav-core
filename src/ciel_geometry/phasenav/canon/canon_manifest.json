@@ -106,6 +106,23 @@
     "scientific_promotion": "NOT_PERFORMED",
     "status": "CANON_CROSSREPO_CLOSURE"
   },
+  "atomic_orbital_adapter": {
+    "version": "0.8.0",
+    "module": "ciel_geometry.phasenav.canon.orbital",
+    "address_modes": ["coulomb", "central", "full"],
+    "coulomb_address": "k=n",
+    "central_address": "k=n(n-1)/2+l+1",
+    "magnetic_phase_winding": "w_phi=m",
+    "radial_compactification": "rho=x/(1+x), x=r/r_ref",
+    "centered_dual_coordinate": "u=2*rho-1",
+    "orbital_inversion": "(rho,phi)->(1-rho,-phi)",
+    "hydrogenic_fixed_Z_radius": "rho_n=n^2/(n^2+1) with r_ref=r_1",
+    "principal_inverse": "n=sqrt(rho/(1-rho))",
+    "semantic_mass_policy": "semantic_mass remains distinct from physical radial energy/mass",
+    "generic_shell_policy": "atomic shell n is not generic semantic/orbital shell",
+    "scientific_promotion": "NOT_PERFORMED",
+    "status": "CANON_CANDIDATE"
+  },
   "orbital_audit": {"mutation": false, "free_epsilon": false},
   "status": "CANON"
 }
