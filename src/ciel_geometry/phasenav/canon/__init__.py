@@ -118,6 +118,26 @@ from .tir_half_closure import (
     TIRHalfClosure,
     build_tir_half_closure,
 )
+from .git_object_vectorization import (
+    GIT_OBJECT_VECTORIZATION_SCHEMA,
+    GIT_OBJECT_VECTORIZATION_VERSION,
+    GitObjectVector,
+    GitRepositorySnapshot,
+    git_digest_phase36,
+    normalize_git_digest,
+    vector_sha256,
+)
+from .private_repository_snapshot import (
+    EXPECTED_HEAD_PRESENT_COUNT,
+    EXPECTED_INVENTORY_SHA256,
+    EXPECTED_REPOSITORY_COUNT,
+    EXPECTED_VECTOR_SET_SHA256,
+    PRIVATE_REPOSITORY_HEADS,
+    PRIVATE_REPOSITORY_SNAPSHOT,
+    PRIVATE_REPOSITORY_SNAPSHOT_VERSION,
+    PrivateRepositoryHead,
+    build_private_repository_snapshot,
+)
 from . import observer_generation as _observer_generation_module
 from . import operator_calculus as _operator_calculus_module
 from .numerical_guards import (
@@ -168,4 +188,11 @@ __all__ = [
     "NOEMA_PARENT", "PHASENAV_RUNTIME_PARENT", "SECRET_HALF_PARENT", "TIR_PARENT",
     "TIR_HALF_CLOSURE", "TIR_HALF_CLOSURE_SCHEMA", "TIR_HALF_CLOSURE_VERSION",
     "PathVector", "SourceAnchor", "TIRHalfClosure", "build_tir_half_closure",
+    "GIT_OBJECT_VECTORIZATION_SCHEMA", "GIT_OBJECT_VECTORIZATION_VERSION",
+    "GitObjectVector", "GitRepositorySnapshot", "git_digest_phase36",
+    "normalize_git_digest", "vector_sha256", "EXPECTED_HEAD_PRESENT_COUNT",
+    "EXPECTED_INVENTORY_SHA256", "EXPECTED_REPOSITORY_COUNT",
+    "EXPECTED_VECTOR_SET_SHA256", "PRIVATE_REPOSITORY_HEADS",
+    "PRIVATE_REPOSITORY_SNAPSHOT", "PRIVATE_REPOSITORY_SNAPSHOT_VERSION",
+    "PrivateRepositoryHead", "build_private_repository_snapshot",
 ]
