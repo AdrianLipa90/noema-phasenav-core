@@ -1,7 +1,7 @@
 {
   "canon": "PhaseNav",
-  "version": "1.2.0",
-  "base_commit": "7210e8c62ac7ae6516469ecf502bbb38df98f2fd",
+  "version": "1.3.0",
+  "base_commit": "54f65f2ca7d35cdd98f0ab8984cc1a8d74444a96",
   "authority": {
     "operator": "TO_JEST_MOJE",
     "issuer": "Adrian Lipa",
@@ -89,6 +89,22 @@
     "noema_projection": "status/provenance receipt only; no memory IO or scientific promotion",
     "forbidden_derivation_inputs": ["measured_mass", "measured_yukawa", "coefficient_enriched_vector"],
     "status": "CANON_DEPENDENCY_FIREWALL"
+  },
+  "tir_half_closure": {
+    "version": "0.8.0",
+    "schema": "phasenav.tir-half-closure/v0.8",
+    "runtime_parent": "54f65f2ca7d35cdd98f0ab8984cc1a8d74444a96",
+    "noema_parent": "42a0a8916e81ca27f2213bf0f28538f046c2e89a",
+    "tir_parent": "df8a6e1321ecf2e2c8819f4e9d5ec7d4f997d170",
+    "secret_of_a_half_parent": "a1b0aeba192766163893fab1468b8f9cd9b8853b",
+    "source_anchor_vectorization": "native CanonicalConceptState.from_id -> T^36",
+    "dependency_node_vectorization": "preserve v0.7 native node vectors",
+    "path_vectorization": "deterministic routing identity only; no implication of edge truth",
+    "routing_dimension": 36,
+    "intrinsic_coefficient_dimension": 4,
+    "intrinsic_equals_routing": false,
+    "scientific_promotion": "NOT_PERFORMED",
+    "status": "CANON_CROSSREPO_CLOSURE"
   },
   "orbital_audit": {"mutation": false, "free_epsilon": false},
   "status": "CANON"
