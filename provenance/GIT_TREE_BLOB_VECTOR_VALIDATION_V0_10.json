@@ -1,10 +1,11 @@
 {
   "schema": "phasenav.validation.git-tree-blob-vectorization/v0.10",
   "date": "2026-08-08",
-  "status": "PASS_FOCUSED_PRIVATE_CHECKOUT_EXECUTION_NOT_RUN",
+  "status": "PASS_FOCUSED_FULL_CI_INFRA_BLOCKED_PRIVATE_CHECKOUT_EXECUTION_NOT_RUN",
   "repository": "AdrianLipa90/noema-phasenav-core",
   "branch": "canon/git-tree-blob-vectorization-v0.10",
   "pre_receipt_head": "0afd0544f89d4d16eb512c934e7ef09564dbdbe3",
+  "ci_observed_head": "9cc8799f35680e64445a01fd85864c8f7284b734",
   "canon_version": "1.5.0",
   "package_version": "0.8.0",
   "scanner_version": "0.10.0",
@@ -50,7 +51,20 @@
   },
   "scientific_promotion": "NOT_PERFORMED",
   "github_actions": {
-    "status": "PENDING_EXACT_HEAD_RUN",
-    "full_ci_pass_claimed": false
+    "canon_run": 31259267308,
+    "tests_run": 31259267345,
+    "canon_job": {
+      "job_id": 93107408527,
+      "conclusion": "failure",
+      "steps": null,
+      "classification": "FAILURE_BEFORE_RUNNER_STEPS"
+    },
+    "tests_jobs": {
+      "python_3_11": {"job_id": 93107408720, "conclusion": "failure", "steps": null},
+      "python_3_12": {"job_id": 93107408721, "conclusion": "cancelled", "steps": null},
+      "python_3_10": {"job_id": 93107408771, "conclusion": "cancelled", "steps": null}
+    },
+    "full_ci_pass_claimed": false,
+    "interpretation": "infrastructure block before repository code/test steps; no code assertion failure observed"
   }
 }
