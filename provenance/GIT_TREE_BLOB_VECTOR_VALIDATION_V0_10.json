@@ -1,0 +1,56 @@
+{
+  "schema": "phasenav.validation.git-tree-blob-vectorization/v0.10",
+  "date": "2026-08-08",
+  "status": "PASS_FOCUSED_PRIVATE_CHECKOUT_EXECUTION_NOT_RUN",
+  "repository": "AdrianLipa90/noema-phasenav-core",
+  "branch": "canon/git-tree-blob-vectorization-v0.10",
+  "pre_receipt_head": "0afd0544f89d4d16eb512c934e7ef09564dbdbe3",
+  "canon_version": "1.5.0",
+  "package_version": "0.8.0",
+  "scanner_version": "0.10.0",
+  "parent_canon": {
+    "git_object_vectorization_merge": "2cf1e433e21f4f3feab2f248218a38f5263e66ea",
+    "private_inventory_sha256": "d47ace603e52fdb3fbe77556b370ac272d4ac5f3d0232b0bda4fbc998a05ab70",
+    "private_vector_set_sha256": "a7e458063b3fb94d817f132c3c4dceee5a6ed7ade32237bec4acaff392640e0b",
+    "frozen_real_head_count": 39
+  },
+  "focused_validation": {
+    "status": "PASS_13_OF_13",
+    "discovery_from_git_object_database": true,
+    "identical_content_same_blob": true,
+    "identical_blob_same_vector": true,
+    "rename_preserves_blob_vector": true,
+    "rename_changes_tree_and_commit": true,
+    "content_change_changes_blob_vector": true,
+    "untracked_file_excluded": true,
+    "commit_to_root_tree_edge": true,
+    "tree_to_child_edges_complete": true,
+    "edge_geometry_from_endpoints": true,
+    "receipt_deterministic": true,
+    "frozen_head_exact_match_passes": true,
+    "moving_head_rejected": true,
+    "partial_complete_snapshot_rejected": true
+  },
+  "arbitrariness_firewall": {
+    "manual_file_selection": false,
+    "path_as_vector_parent": false,
+    "file_name_as_vector_parent": false,
+    "extension_as_vector_parent": false,
+    "file_size_as_vector_parent": false,
+    "manual_importance_weight": false,
+    "relation_label_as_vector_parent": false,
+    "invented_edge_vector": false,
+    "moving_head_allowed": false,
+    "partial_scan_can_claim_complete": false
+  },
+  "execution_state": {
+    "complete_39_private_checkout_scan": "NOT_RUN",
+    "reason": "private repository trees are not exposed by the current connector as local Git object databases and directory listing is unavailable",
+    "manual_path_substitution_used": false
+  },
+  "scientific_promotion": "NOT_PERFORMED",
+  "github_actions": {
+    "status": "PENDING_EXACT_HEAD_RUN",
+    "full_ci_pass_claimed": false
+  }
+}
