@@ -52,6 +52,10 @@ K_a(\phi)=\exp\left[-\frac{d_c^2(\phi,a)}{2h_C^2}\right],
 Default anchor weight is its semantic mass. Explicit weights are allowed only
 as recorded context inputs and are included in the context digest.
 
+The historical `memory_density` count in `phase_memory.py` remains a finite
+neighbour statistic. `rho_C` is the smooth canonical field density used by the
+dynamical equations; the two values must not be silently interchanged.
+
 ## Potential
 
 The canonical contextual potential is the information potential
@@ -157,7 +161,7 @@ identify them by definition.
 Every context has a SHA-256 digest over:
 
 - bandwidth;
-- anchor IDs;
+- sorted anchor IDs;
 - weights;
 - semantic masses;
 - 36D anchor vectors.

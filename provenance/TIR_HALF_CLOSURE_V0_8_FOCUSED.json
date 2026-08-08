@@ -1,0 +1,78 @@
+{
+  "schema": "phasenav.validation.tir-half-closure/v0.8",
+  "date": "2026-08-08",
+  "status": "PASS_FOCUSED_FULL_CI_INFRA_BLOCKED",
+  "repository": "AdrianLipa90/noema-phasenav-core",
+  "branch": "canon/tir-half-closure-v0.8",
+  "pre_receipt_head": "9bb60b0cc35e72c157f1086d08eb1a8453aa7204",
+  "source_parents": {
+    "phasenav_runtime": "54f65f2ca7d35cdd98f0ab8984cc1a8d74444a96",
+    "noema": "42a0a8916e81ca27f2213bf0f28538f046c2e89a",
+    "tir": "df8a6e1321ecf2e2c8819f4e9d5ec7d4f997d170",
+    "secret_of_a_half": "a1b0aeba192766163893fab1468b8f9cd9b8853b"
+  },
+  "validation_method": {
+    "routing_source": "current pnv_runtime.py non-numeric-ID path",
+    "identity_hash": "M_collatz_hash(casefolded identity)",
+    "phase_law": "Decimal((h*(i+1))*(ln2/12)) mod 2pi, rounded to 10 decimals",
+    "equivalence_basis": "CanonicalConceptState.from_id asserts H2048->T36 projection equals _phase36_from_id",
+    "routing_dimension": 36,
+    "intrinsic_coefficient_dimension": 4
+  },
+  "source_state_sha256": "d0c624dffcbc889309ebab418d48e16d9c172cf902590f90883b8e34c88c4638",
+  "closure_sha256": "1619fa17f609baf1fc4db12dac7b3a166b26b44c84f9ffb80fc7533fb3767361",
+  "vector_counts": {
+    "source_anchors": 4,
+    "dependency_nodes": 11,
+    "dependency_paths": 7,
+    "total": 22,
+    "unique_sha256": 22,
+    "finite_36d": 22
+  },
+  "source_vector_sha256": {
+    "PHASENAV_RUNTIME": "f9a35e6e0034607ad57b20d139a8f7e562744fdcb35dddc97709f93dbd9a378b",
+    "NOEMA": "dbe1153e7a8d0b0d624f236c9be6ce09e6a1129d66e46fae16208c4358572363",
+    "TIR": "427db207f4ce24b9842cf1834d24939eab7a5115ee7f12e09a6e69ad02bb17e7",
+    "SECRET_OF_A_HALF": "88756d36626652ceb5ae7cdbeead359484cf792ec7e23425bd04bd7e291b5954"
+  },
+  "node_vector_sha256": {
+    "HALF": "1403812b4ae7cb40377ea7217461c5e0ab716c764dd664035ecc1461dd77a41c",
+    "KAPPA": "b760c95e3b25e8cbdcd5e6669720dec7b2eb31fd5db6d94f0fdc42d6514ec1b4",
+    "ROLE_ROUTER_HABC": "2948558371840ebf5f935b3edf796326a68ac71e9ac8e426c8321cedf2ef28d8",
+    "ORBIT_DIRECTION": "6b650f7b88282b412b1952b94176d5faedd00fbf64ac7f6808b699f5c7545731",
+    "RELATIONAL_GRADIENT": "72dd640b0c99b531e1920a16b3b2a091a7f1de15701d9b0188dc28760d7aebb1",
+    "TIR_SLOT_BINDING": "4ce79275587209f1066664c1dcf4e19604696d4767cd6692a447654cb6221ab8",
+    "COLLATZ_STOPPING_ORIENTATION": "42dfe4df32aeee6ac6ce6bdbba11cd0291ba490729f14165e4d32d4f628fefa8",
+    "SOH_C004": "3fb42dd20f3487d20d16c7ed9a61793ae33329f4bfd5e5bf83f3b43c6f339427",
+    "SOH_C005": "558913972d5e06350971b4f9dd61a6d38f25fe04f1410236f9921348359be19e",
+    "TIR_COMMON_LIKELIHOOD": "1d91766698a8facbdf92e68285c6b37f1b7f7629b1ff2bb049d590847d755b2c",
+    "TIR_NEUTRON_EDM": "243820a95357f4d373840ea22acf2b92a3477511105eb27973ea41756aec1138"
+  },
+  "path_vector_sha256": {
+    "HALF->KAPPA": "1be579ea3bfd9b59fba20c1850ce6ec41c790351a222e76608cd123a9064e2b8",
+    "KAPPA->ROLE_ROUTER_HABC": "b38d2ddc0655bf5b63f03f8d2f3b5634b9ae0e3bd5175837926c3ed34237c5cd",
+    "ROLE_ROUTER_HABC->TIR_SLOT_BINDING": "4e7ab86d8caa823a05a101a648e5fa529801569184742d69da07171d04c03f33",
+    "ORBIT_DIRECTION->TIR_SLOT_BINDING": "580decc7a3678bbfa65b145699c1eb217dfa97039480008918ae3f6785694df1",
+    "RELATIONAL_GRADIENT->TIR_SLOT_BINDING": "c87ffec4fb9ec750a4ce7a1a07ca4281bccb6b250b4f3309131417668f94b518",
+    "TIR_SLOT_BINDING->COLLATZ_STOPPING_ORIENTATION": "255a7a87685748e123d15d0accf98b6745aab74f70194519dd81a273898c49dc",
+    "SOH_C005->SOH_C004": "c971dda53981c2ffd79e02b0c10c47d925a7e38deec9c8651d6dfdc4bac8b04d"
+  },
+  "firewall_checks": {
+    "intrinsic_state_equals_routing_envelope": false,
+    "vectorization_implies_scientific_promotion": false,
+    "path_vector_implies_edge_truth": false,
+    "SOH_C004": "OPEN_BLOCKED",
+    "SOH_C005": "OPEN_BLOCKED",
+    "TIR_SLOT_BINDING": "OPEN_BLOCKED",
+    "TIR_NEUTRON_EDM": "PHYSICAL_FAIL_BLOCKED",
+    "KAPPA": "PROJECT_DERIVED_EXACT_ALGEBRA"
+  },
+  "github_actions": {
+    "phase_nav_canon_validation_run": 31249900830,
+    "tests_run": 31249900827,
+    "observed_failure_mode": "FAILURE_BEFORE_RUNNER_STEPS",
+    "jobs_steps": null,
+    "job_log_endpoint": "BlobNotFound",
+    "full_ci_pass_claimed": false
+  }
+}

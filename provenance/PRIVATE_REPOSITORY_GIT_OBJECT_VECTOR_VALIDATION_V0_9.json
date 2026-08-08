@@ -1,0 +1,70 @@
+{
+  "schema": "phasenav.validation.private-repository-git-object-vector/v0.9",
+  "date": "2026-08-08",
+  "status": "PASS_FOCUSED_FULL_CI_INFRA_BLOCKED",
+  "repository": "AdrianLipa90/noema-phasenav-core",
+  "branch": "canon/git-object-native-vectorization-v0.9",
+  "pre_receipt_head": "73e9478917bd84b6a6c98aab5c7e4b8347432889",
+  "ci_observed_head": "2c6a9df6dba51a33039cd8033b129a6c5af2cf86",
+  "canon_version": "1.4.0",
+  "package_version": "0.7.0",
+  "vectorization_version": "0.9.0",
+  "scope": {
+    "owner": "AdrianLipa90",
+    "visibility": "private",
+    "repository_count": 40,
+    "head_present_count": 39,
+    "archived_empty_count": 1
+  },
+  "inventory_sha256": "d47ace603e52fdb3fbe77556b370ac272d4ac5f3d0232b0bda4fbc998a05ab70",
+  "vector_set_sha256": "a7e458063b3fb94d817f132c3c4dceee5a6ed7ade32237bec4acaff392640e0b",
+  "focused_validation": {
+    "repository_rows": 40,
+    "native_git_heads": 39,
+    "finite_36d_vectors": 39,
+    "unique_vector_sha256": 39,
+    "archived_empty_without_invented_vector": 1,
+    "inventory_digest_reproduced": true,
+    "vector_set_digest_reproduced": true,
+    "digest_change_forces_vector_change": true,
+    "repository_alias_does_not_change_vector": true,
+    "repository_id_does_not_change_vector": true,
+    "branch_name_does_not_change_vector": true
+  },
+  "parent_rule": {
+    "repository_state": "native Git commit digest",
+    "file_state": "native Git blob digest",
+    "directory_state": "native Git tree digest",
+    "annotated_tag_state": "native Git tag digest",
+    "phase_law": "phi_i=(N_git*(i+1)*ln(2)/12) mod 2pi",
+    "routing_dimension": 36
+  },
+  "arbitrariness_firewall": {
+    "repository_name_vector_parent": false,
+    "repository_id_vector_parent": false,
+    "default_branch_vector_parent": false,
+    "repository_size_vector_parent": false,
+    "path_label_vector_parent": false,
+    "manual_importance_weight": false,
+    "manual_numeric_id": false,
+    "collatz_string_hash_for_git_content": false,
+    "invented_edge_vector": false,
+    "empty_repository_vector": false
+  },
+  "edge_policy": "actual endpoint Git-object vectors plus typed evidence metadata; PhaseNav distance/Berry/holonomy derived from endpoints",
+  "historical_policy": "v0.8 label-derived closure receipts remain immutable historical provenance; v0.9 supersedes label seeding only for Git content identity",
+  "scientific_promotion": "NOT_PERFORMED",
+  "github_actions": {
+    "tests_run": 31258750209,
+    "canon_run": 31258750223,
+    "tests_jobs": {
+      "python_3_10": "FAILURE_BEFORE_RUNNER_STEPS",
+      "python_3_11": "CANCELLED_BEFORE_RUNNER_STEPS",
+      "python_3_12": "CANCELLED_BEFORE_RUNNER_STEPS"
+    },
+    "canon_job": "FAILURE_BEFORE_RUNNER_STEPS",
+    "jobs_steps": null,
+    "full_ci_pass_claimed": false,
+    "interpretation": "infrastructure block; no repository code or test assertion executed"
+  }
+}

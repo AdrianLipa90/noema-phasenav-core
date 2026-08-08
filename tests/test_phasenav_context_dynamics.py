@@ -2,7 +2,6 @@ import math
 
 from ciel_geometry.phasenav.canon import (
     KAPPA,
-    Attractor,
     ContextAnchor,
     ContextPotential,
     PhaseVector36,
@@ -39,17 +38,20 @@ def test_single_anchor_is_exact_context_attractor():
 
 
 def test_context_gradient_matches_finite_difference():
-    context = ContextPotential((
-        _anchor("left", 0.2, 1.0),
-        _anchor("right", 0.8, 2.0),
-    ))
+    context = ContextPotential(
+        (
+            _anchor("left", 0.2, 1.0),
+            _anchor("right", 0.8, 2.0),
+        )
+    )
     point = PhaseVector36((0.45,) + (0.5,) * 35)
     sample = context.sample(point)
     eps = 1e-6
     plus = PhaseVector36((0.45 + eps,) + (0.5,) * 35)
     minus = PhaseVector36((0.45 - eps,) + (0.5,) * 35)
     numerical = (
-        context.sample(plus).potential - context.sample(minus).potential
+        context.sample(plus).potential
+        - context.sample(minus).potential
     ) / (2.0 * eps)
     assert math.isclose(
         sample.gradient.components[0],
@@ -60,11 +62,13 @@ def test_context_gradient_matches_finite_difference():
 
 
 def test_density_and_viscosity_are_positive_context_observables():
-    context = ContextPotential((
-        _anchor("a", 0.0),
-        _anchor("b", 1.0),
-        _anchor("c", 2.0),
-    ))
+    context = ContextPotential(
+        (
+            _anchor("a", 0.0),
+            _anchor("b", 1.0),
+            _anchor("c", 2.0),
+        )
+    )
     for point in (_vector(0.0), _vector(1.0), _vector(math.pi)):
         sample = context.sample(point)
         assert 0.0 < sample.density <= 1.0
@@ -92,15 +96,17 @@ def test_mean_shift_resolves_two_context_attractors():
     )
     attractors = find_attractors(context, merge_radius=0.10)
     assert len(attractors) == 2
-    assert sorted(len(a.support_ids) for a in attractors) == [2, 2]
-    assert all(a.gradient_norm < 1e-8 for a in attractors)
+    assert sorted(len(attractor.support_ids) for attractor in attractors) == [2, 2]
+    assert all(attractor.gradient_norm < 1e-8 for attractor in attractors)
 
 
 def test_damped_orbit_falls_into_single_context_basin():
     attractor_vector = _vector(0.2)
-    context = ContextPotential((
-        ContextAnchor("core", attractor_vector, 1.0, 0.02),
-    ))
+    context = ContextPotential(
+        (
+            ContextAnchor("core", attractor_vector, 1.0, 0.02),
+        )
+    )
     initial = _vector(1.2)
     initial_distance = initial.angular_distance(attractor_vector)
     attractors = find_attractors(context)
@@ -115,15 +121,31 @@ def test_damped_orbit_falls_into_single_context_basin():
         attractors=attractors,
     )
     final = trace.steps[-1]
-    assert final.position.angular_distance(attractor_vector) < initial_distance * 0.01
+    assert (
+        final.position.angular_distance(attractor_vector)
+        < initial_distance * 0.01
+    )
     assert final.total_energy < trace.steps[0].total_energy
     assert trace.converged
     assert trace.terminal_attractor == "A000"
 
 
 def test_context_digest_and_orbit_receipt_are_deterministic():
-    context = ContextPotential((_anchor("x", 0.1), _anchor("y", 0.7)))
-    assert context.digest_sha256 == context.digest_sha256
-    first = trace_orbit(context, _vector(0.4), semantic_mass=0.03, max_steps=3)
-    second = trace_orbit(context, _vector(0.4), semantic_mass=0.03, max_steps=3)
+    anchor_x = _anchor("x", 0.1)
+    anchor_y = _anchor("y", 0.7)
+    context = ContextPotential((anchor_x, anchor_y))
+    reversed_context = ContextPotential((anchor_y, anchor_x))
+    assert context.digest_sha256 == reversed_context.digest_sha256
+    first = trace_orbit(
+        context,
+        _vector(0.4),
+        semantic_mass=0.03,
+        max_steps=3,
+    )
+    second = trace_orbit(
+        reversed_context,
+        _vector(0.4),
+        semantic_mass=0.03,
+        max_steps=3,
+    )
     assert first.to_dict() == second.to_dict()

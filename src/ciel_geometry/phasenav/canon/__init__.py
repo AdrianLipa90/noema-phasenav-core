@@ -14,7 +14,28 @@ from .model import (
     Hilbert2048State,
     semantic_mass,
 )
-from .orbital import OrbitalRecord, architectural_role, audit_orbits
+from .orbital import (
+    ATOMIC_ORBITAL_ADAPTER_STATUS,
+    ATOMIC_ORBITAL_ADAPTER_VERSION,
+    AtomicAddressMode,
+    AtomicOrbitalState,
+    OrbitalRecord,
+    architectural_role,
+    atomic_poincare_radius,
+    atomic_quantum_address,
+    audit_orbits,
+    cayley_radius_from_ratio,
+    centered_dual_coordinate,
+    central_phase_address,
+    coulomb_phase_address,
+    energy_ratio_from_poincare,
+    full_spin_orbital_address,
+    orbital_inversion,
+    period_ratio_from_poincare,
+    principal_coordinate_from_poincare,
+    quantized_principal_shell,
+    radial_ratio_from_poincare,
+)
 from .corpus import CORPUS
 from .cards import card_by_id, emergent_path, load_canonical_cards
 from .context_dynamics import (
@@ -30,13 +51,148 @@ from .context_dynamics import (
     find_attractors,
     trace_orbit,
 )
+from .observer_generation import (
+    BASE_ANGULAR_FREQUENCY,
+    BASE_FREQUENCY_HZ,
+    DEFAULT_OSCILLATORS,
+    OBSERVER_GENERATION_VERSION,
+    DynamicsConfig,
+    DynamicsStep,
+    DynamicsTrace,
+    GenerationPlan,
+    HolonomicMemory,
+    HTRIConfig,
+    HTRIOscillatorField,
+    HTRIState,
+    IntentionState,
+    MemoryCluster,
+    MemoryRecall,
+    Observation,
+    ObserverState,
+    ObserverToGenerationPipeline,
+    PerceivedState,
+    PipelineResult,
+    Provenance,
+    evolve_generation_state,
+)
+from .operator_calculus import (
+    OPERATOR_CALCULUS_VERSION,
+    CompressedPhase,
+    HolonomyCache,
+    HolonomyCacheEntry,
+    LinearPhaseOperator,
+    MergeResult,
+    ProjectionResult,
+    ScheduledState,
+    SemanticDelta,
+    SemanticScheduler,
+    compress_phase,
+    decompress_phase,
+    gauge_transform,
+    project_forbidden_directions,
+    semantic_crc,
+    semantic_diff,
+    semantic_merge,
+    trajectory_curvature,
+)
+from .tir_half_dependencies import (
+    INTRINSIC_COEFFICIENT_DIM,
+    TIR_HALF_DEPENDENCY_GRAPH,
+    TIR_HALF_DEPENDENCY_VERSION,
+    DependencyEdge,
+    DependencyGraph,
+    DependencyNode,
+    EpistemicStatus,
+    build_tir_half_dependency_graph,
+)
+from .tir_half_closure import (
+    NOEMA_PARENT,
+    PHASENAV_RUNTIME_PARENT,
+    SECRET_HALF_PARENT,
+    TIR_HALF_CLOSURE,
+    TIR_HALF_CLOSURE_SCHEMA,
+    TIR_HALF_CLOSURE_VERSION,
+    TIR_PARENT,
+    PathVector,
+    SourceAnchor,
+    TIRHalfClosure,
+    build_tir_half_closure,
+)
+from .git_object_vectorization import (
+    GIT_OBJECT_VECTORIZATION_SCHEMA,
+    GIT_OBJECT_VECTORIZATION_VERSION,
+    GitObjectVector,
+    GitRepositorySnapshot,
+    git_digest_phase36,
+    normalize_git_digest,
+    vector_sha256,
+)
+from .private_repository_snapshot import (
+    EXPECTED_HEAD_PRESENT_COUNT,
+    EXPECTED_INVENTORY_SHA256,
+    EXPECTED_REPOSITORY_COUNT,
+    EXPECTED_VECTOR_SET_SHA256,
+    PRIVATE_REPOSITORY_HEADS,
+    PRIVATE_REPOSITORY_SNAPSHOT,
+    PRIVATE_REPOSITORY_SNAPSHOT_VERSION,
+    PrivateRepositoryHead,
+    build_private_repository_snapshot,
+)
+from . import observer_generation as _observer_generation_module
+from . import operator_calculus as _operator_calculus_module
+from .numerical_guards import (
+    project_oscillator_banks_36,
+    stable_trajectory_curvature,
+)
+
+# Canonical numerical repairs are installed on the original runtime objects so
+# direct submodule imports and package-level exports use the same implementation.
+HTRIOscillatorField._project36 = staticmethod(project_oscillator_banks_36)
+_observer_generation_module.HTRIOscillatorField._project36 = staticmethod(
+    project_oscillator_banks_36
+)
+_operator_calculus_module.trajectory_curvature = stable_trajectory_curvature
+trajectory_curvature = stable_trajectory_curvature
 
 __all__ = [
     "ALPHA_M", "CANON_VERSION", "ETA_M_36D", "HILBERT_BITS", "HILBERT_DIM",
     "KAPPA", "L3", "L4", "L5", "PHASE_DIM", "CanonicalConceptState",
-    "Hilbert2048State", "semantic_mass", "OrbitalRecord", "architectural_role",
-    "audit_orbits", "CORPUS", "card_by_id", "emergent_path", "load_canonical_cards",
+    "Hilbert2048State", "semantic_mass",
+    "ATOMIC_ORBITAL_ADAPTER_STATUS", "ATOMIC_ORBITAL_ADAPTER_VERSION",
+    "AtomicAddressMode", "AtomicOrbitalState", "OrbitalRecord", "architectural_role",
+    "atomic_poincare_radius", "atomic_quantum_address", "audit_orbits",
+    "cayley_radius_from_ratio", "centered_dual_coordinate", "central_phase_address",
+    "coulomb_phase_address", "energy_ratio_from_poincare",
+    "full_spin_orbital_address", "orbital_inversion", "period_ratio_from_poincare",
+    "principal_coordinate_from_poincare", "quantized_principal_shell",
+    "radial_ratio_from_poincare",
+    "CORPUS", "card_by_id", "emergent_path", "load_canonical_cards",
     "CONTEXT_BANDWIDTH", "Attractor", "ContextAnchor", "ContextPotential",
     "FieldSample", "OrbitStep", "OrbitTrace", "PhaseVector36", "TangentVector36",
     "find_attractors", "trace_orbit",
+    "BASE_ANGULAR_FREQUENCY", "BASE_FREQUENCY_HZ", "DEFAULT_OSCILLATORS",
+    "OBSERVER_GENERATION_VERSION", "DynamicsConfig", "DynamicsStep",
+    "DynamicsTrace", "GenerationPlan", "HolonomicMemory", "HTRIConfig",
+    "HTRIOscillatorField", "HTRIState", "IntentionState", "MemoryCluster",
+    "MemoryRecall", "Observation", "ObserverState", "ObserverToGenerationPipeline",
+    "PerceivedState", "PipelineResult", "Provenance", "evolve_generation_state",
+    "OPERATOR_CALCULUS_VERSION", "CompressedPhase", "HolonomyCache",
+    "HolonomyCacheEntry", "LinearPhaseOperator", "MergeResult", "ProjectionResult",
+    "ScheduledState", "SemanticDelta", "SemanticScheduler", "compress_phase",
+    "decompress_phase", "gauge_transform", "project_forbidden_directions",
+    "semantic_crc", "semantic_diff", "semantic_merge", "trajectory_curvature",
+    "project_oscillator_banks_36", "stable_trajectory_curvature",
+    "INTRINSIC_COEFFICIENT_DIM", "TIR_HALF_DEPENDENCY_GRAPH",
+    "TIR_HALF_DEPENDENCY_VERSION", "DependencyEdge", "DependencyGraph",
+    "DependencyNode", "EpistemicStatus", "build_tir_half_dependency_graph",
+    "NOEMA_PARENT", "PHASENAV_RUNTIME_PARENT", "SECRET_HALF_PARENT", "TIR_PARENT",
+    "TIR_HALF_CLOSURE", "TIR_HALF_CLOSURE_SCHEMA", "TIR_HALF_CLOSURE_VERSION",
+    "PathVector", "SourceAnchor", "TIRHalfClosure", "build_tir_half_closure",
+    "GIT_OBJECT_VECTORIZATION_SCHEMA", "GIT_OBJECT_VECTORIZATION_VERSION",
+    "GitObjectVector", "GitRepositorySnapshot", "git_digest_phase36",
+    "normalize_git_digest", "vector_sha256", "EXPECTED_HEAD_PRESENT_COUNT",
+    "EXPECTED_INVENTORY_SHA256", "EXPECTED_REPOSITORY_COUNT",
+    "EXPECTED_VECTOR_SET_SHA256", "PRIVATE_REPOSITORY_HEADS",
+    "PRIVATE_REPOSITORY_SNAPSHOT", "PRIVATE_REPOSITORY_SNAPSHOT_VERSION",
+    "PrivateRepositoryHead", "build_private_repository_snapshot",
 ]

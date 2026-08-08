@@ -1,0 +1,133 @@
+name: PhaseNav canon validation
+
+on:
+  push:
+    branches:
+      - master
+      - "canon/**"
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  canon:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install project and test dependencies
+        shell: python {0}
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, "-m", "pip", "install", "-U", "pip"], check=True)
+          subprocess.run([sys.executable, "-m", "pip", "install", "-e", ".[dev]"], check=True)
+      - name: Run full test suite
+        shell: python {0}
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, "-m", "pytest", "-q"], check=True)
+      - name: Validate TIR-half dependency receipt
+        shell: python {0}
+        run: |
+          from ciel_geometry.phasenav.canon import TIR_HALF_DEPENDENCY_GRAPH
+          receipt = TIR_HALF_DEPENDENCY_GRAPH.receipt()
+          assert receipt["routing_dimension"] == 36
+          assert receipt["intrinsic_coefficient_dimension"] == 4
+          assert "SOH_C004" in receipt["blocked_nodes"]
+          assert "SOH_C005" in receipt["blocked_nodes"]
+          print(receipt["receipt_sha256"])
+      - name: Validate TIR-half cross-repository closure vectors
+        shell: python {0}
+        run: |
+          from ciel_geometry.phasenav.canon import TIR_HALF_CLOSURE
+          receipt = TIR_HALF_CLOSURE.receipt()
+          assert receipt["routing_dimension"] == 36
+          assert receipt["intrinsic_coefficient_dimension"] == 4
+          assert receipt["scientific_promotion"] == "NOT_PERFORMED"
+          assert receipt["firewall"]["path_vector_implies_edge_truth"] is False
+          assert receipt["sources"]["TIR"]["commit_sha"] == "df8a6e1321ecf2e2c8819f4e9d5ec7d4f997d170"
+          assert receipt["sources"]["SECRET_OF_A_HALF"]["commit_sha"] == "a1b0aeba192766163893fab1468b8f9cd9b8853b"
+          assert all(len(row["vector_36d"]) == 36 for row in receipt["sources"].values())
+          assert all(len(row["vector_36d"]) == 36 for row in receipt["nodes"].values())
+          assert all(len(row["vector_36d"]) == 36 for row in receipt["paths"])
+          print(receipt["source_state_sha256"])
+          print(receipt["closure_sha256"])
+      - name: Validate digest-native private repository vectors
+        shell: python {0}
+        run: |
+          from ciel_geometry.phasenav.canon import (
+              EXPECTED_HEAD_PRESENT_COUNT,
+              EXPECTED_INVENTORY_SHA256,
+              EXPECTED_REPOSITORY_COUNT,
+              EXPECTED_VECTOR_SET_SHA256,
+              PRIVATE_REPOSITORY_SNAPSHOT,
+              GitRepositorySnapshot,
+              git_digest_phase36,
+          )
+          snapshot = PRIVATE_REPOSITORY_SNAPSHOT
+          assert snapshot["repository_count"] == EXPECTED_REPOSITORY_COUNT == 40
+          assert snapshot["head_present_count"] == EXPECTED_HEAD_PRESENT_COUNT == 39
+          assert snapshot["inventory_sha256"] == EXPECTED_INVENTORY_SHA256
+          assert snapshot["vector_set_sha256"] == EXPECTED_VECTOR_SET_SHA256
+          rows = snapshot["repositories"]
+          vectors = [row["vector_sha256"] for row in rows if row["head_commit"]]
+          assert len(vectors) == len(set(vectors)) == 39
+          policy = snapshot["vectorization"]
+          assert policy["parent"] == "native_git_object_digest_only"
+          assert policy["repository_name_vector_parent"] is False
+          assert policy["repository_id_vector_parent"] is False
+          assert policy["default_branch_vector_parent"] is False
+          assert policy["size_vector_parent"] is False
+          assert policy["path_label_vector_parent"] is False
+          assert policy["collatz_string_hash_used"] is False
+          sha = "205ea2937dce04124753feb46f91266d228564d9"
+          renamed = GitRepositorySnapshot.from_head("renamed/alias", 999, "other", sha)
+          original = GitRepositorySnapshot.from_head("AdrianLipa90/NOEMA-vectorised-full", 1293508344, "master", sha)
+          assert renamed.head.vector36 == original.head.vector36
+          assert git_digest_phase36(sha) != git_digest_phase36("205ea2937dce04124753feb46f91266d228564d8")
+          empty = [row for row in rows if row["head_commit"] is None]
+          assert len(empty) == 1 and empty[0]["vector_sha256"] is None
+          print(snapshot["inventory_sha256"])
+          print(snapshot["vector_set_sha256"])
+      - name: Validate Git identity and semantic observation separation
+        shell: python {0}
+        run: |
+          from ciel_geometry.phasenav.canon.git_semantic_observation import (
+              GitBlobSemanticObservation,
+              git_blob_digest,
+          )
+          raw = b"semantic source\n"
+          blob = git_blob_digest(raw, "sha1")
+          kwargs = dict(
+              repository_head_commit="205ea2937dce04124753feb46f91266d228564d9",
+              blob_digest=blob,
+              git_hash_algorithm="sha1",
+              text_encoding="utf-8",
+              language_id="en",
+              aux_request_sha256="a" * 64,
+              aux_packet_receipt_sha256="b" * 64,
+              native_semantic_binding_sha256="c" * 64,
+              semantic_graph_binding_sha256="d" * 64,
+              memory_read_set_sha256="e" * 64,
+              noema_receipt_sha256="f" * 64,
+              external_ack=False,
+          )
+          observation = GitBlobSemanticObservation.bind(raw, **kwargs)
+          receipt = observation.receipt()
+          assert receipt["git_identity"]["blob_digest"] == blob
+          assert len(observation.identity_vector.vector36) == 36
+          assert receipt["semantic_observation"]["phase_dimension"] == 36
+          assert receipt["semantic_observation"]["phase_convention"] == "native_spinor_4pi"
+          assert receipt["semantic_observation"]["memory_lane_count"] == 12
+          assert receipt["firewall"]["git_identity_vector_is_semantic_embedding"] is False
+          assert receipt["firewall"]["hash_distance_implies_semantic_similarity"] is False
+          assert receipt["firewall"]["semantic_graph_collapsed_to_one_vector"] is False
+          assert receipt["firewall"]["missing_semantic_receipt_fallback_allowed"] is False
+          assert receipt["intrinsic_file_semantic_vector"] == "NOT_DEFINED_BY_THIS_LAYER"
+          print(receipt["receipt_sha256"])
