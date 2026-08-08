@@ -58,3 +58,40 @@ jobs:
           assert all(len(row["vector_36d"]) == 36 for row in receipt["paths"])
           print(receipt["source_state_sha256"])
           print(receipt["closure_sha256"])
+      - name: Validate digest-native private repository vectors
+        shell: python {0}
+        run: |
+          from ciel_geometry.phasenav.canon import (
+              EXPECTED_HEAD_PRESENT_COUNT,
+              EXPECTED_INVENTORY_SHA256,
+              EXPECTED_REPOSITORY_COUNT,
+              EXPECTED_VECTOR_SET_SHA256,
+              PRIVATE_REPOSITORY_SNAPSHOT,
+              GitRepositorySnapshot,
+              git_digest_phase36,
+          )
+          snapshot = PRIVATE_REPOSITORY_SNAPSHOT
+          assert snapshot["repository_count"] == EXPECTED_REPOSITORY_COUNT == 40
+          assert snapshot["head_present_count"] == EXPECTED_HEAD_PRESENT_COUNT == 39
+          assert snapshot["inventory_sha256"] == EXPECTED_INVENTORY_SHA256
+          assert snapshot["vector_set_sha256"] == EXPECTED_VECTOR_SET_SHA256
+          rows = snapshot["repositories"]
+          vectors = [row["vector_sha256"] for row in rows if row["head_commit"]]
+          assert len(vectors) == len(set(vectors)) == 39
+          policy = snapshot["vectorization"]
+          assert policy["parent"] == "native_git_object_digest_only"
+          assert policy["repository_name_vector_parent"] is False
+          assert policy["repository_id_vector_parent"] is False
+          assert policy["default_branch_vector_parent"] is False
+          assert policy["size_vector_parent"] is False
+          assert policy["path_label_vector_parent"] is False
+          assert policy["collatz_string_hash_used"] is False
+          sha = "205ea2937dce04124753feb46f91266d228564d9"
+          renamed = GitRepositorySnapshot.from_head("renamed/alias", 999, "other", sha)
+          original = GitRepositorySnapshot.from_head("AdrianLipa90/NOEMA-vectorised-full", 1293508344, "master", sha)
+          assert renamed.head.vector36 == original.head.vector36
+          assert git_digest_phase36(sha) != git_digest_phase36("205ea2937dce04124753feb46f91266d228564d8")
+          empty = [row for row in rows if row["head_commit"] is None]
+          assert len(empty) == 1 and empty[0]["vector_sha256"] is None
+          print(snapshot["inventory_sha256"])
+          print(snapshot["vector_set_sha256"])
