@@ -1,0 +1,44 @@
+name: PhaseNav canon validation
+
+on:
+  push:
+    branches:
+      - master
+      - "canon/**"
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  canon:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install project and test dependencies
+        shell: python {0}
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, "-m", "pip", "install", "-U", "pip"], check=True)
+          subprocess.run([sys.executable, "-m", "pip", "install", "-e", ".[dev]"], check=True)
+      - name: Run full test suite
+        shell: python {0}
+        run: |
+          import subprocess, sys
+          subprocess.run([sys.executable, "-m", "pytest", "-q"], check=True)
+      - name: Validate TIR-half dependency receipt
+        shell: python {0}
+        run: |
+          from ciel_geometry.phasenav.canon import TIR_HALF_DEPENDENCY_GRAPH
+          receipt = TIR_HALF_DEPENDENCY_GRAPH.receipt()
+          assert receipt["routing_dimension"] == 36
+          assert receipt["intrinsic_coefficient_dimension"] == 4
+          assert "SOH_C004" in receipt["blocked_nodes"]
+          assert "SOH_C005" in receipt["blocked_nodes"]
+          print(receipt["receipt_sha256"])
