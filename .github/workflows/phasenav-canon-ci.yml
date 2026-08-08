@@ -95,3 +95,39 @@ jobs:
           assert len(empty) == 1 and empty[0]["vector_sha256"] is None
           print(snapshot["inventory_sha256"])
           print(snapshot["vector_set_sha256"])
+      - name: Validate Git identity and semantic observation separation
+        shell: python {0}
+        run: |
+          from ciel_geometry.phasenav.canon.git_semantic_observation import (
+              GitBlobSemanticObservation,
+              git_blob_digest,
+          )
+          raw = b"semantic source\n"
+          blob = git_blob_digest(raw, "sha1")
+          kwargs = dict(
+              repository_head_commit="205ea2937dce04124753feb46f91266d228564d9",
+              blob_digest=blob,
+              git_hash_algorithm="sha1",
+              text_encoding="utf-8",
+              language_id="en",
+              aux_request_sha256="a" * 64,
+              aux_packet_receipt_sha256="b" * 64,
+              native_semantic_binding_sha256="c" * 64,
+              semantic_graph_binding_sha256="d" * 64,
+              memory_read_set_sha256="e" * 64,
+              noema_receipt_sha256="f" * 64,
+              external_ack=False,
+          )
+          observation = GitBlobSemanticObservation.bind(raw, **kwargs)
+          receipt = observation.receipt()
+          assert receipt["git_identity"]["blob_digest"] == blob
+          assert len(observation.identity_vector.vector36) == 36
+          assert receipt["semantic_observation"]["phase_dimension"] == 36
+          assert receipt["semantic_observation"]["phase_convention"] == "native_spinor_4pi"
+          assert receipt["semantic_observation"]["memory_lane_count"] == 12
+          assert receipt["firewall"]["git_identity_vector_is_semantic_embedding"] is False
+          assert receipt["firewall"]["hash_distance_implies_semantic_similarity"] is False
+          assert receipt["firewall"]["semantic_graph_collapsed_to_one_vector"] is False
+          assert receipt["firewall"]["missing_semantic_receipt_fallback_allowed"] is False
+          assert receipt["intrinsic_file_semantic_vector"] == "NOT_DEFINED_BY_THIS_LAYER"
+          print(receipt["receipt_sha256"])
