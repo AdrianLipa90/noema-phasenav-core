@@ -14,7 +14,28 @@ from .model import (
     Hilbert2048State,
     semantic_mass,
 )
-from .orbital import OrbitalRecord, architectural_role, audit_orbits
+from .orbital import (
+    ATOMIC_ORBITAL_ADAPTER_STATUS,
+    ATOMIC_ORBITAL_ADAPTER_VERSION,
+    AtomicAddressMode,
+    AtomicOrbitalState,
+    OrbitalRecord,
+    architectural_role,
+    atomic_poincare_radius,
+    atomic_quantum_address,
+    audit_orbits,
+    cayley_radius_from_ratio,
+    centered_dual_coordinate,
+    central_phase_address,
+    coulomb_phase_address,
+    energy_ratio_from_poincare,
+    full_spin_orbital_address,
+    orbital_inversion,
+    period_ratio_from_poincare,
+    principal_coordinate_from_poincare,
+    quantized_principal_shell,
+    radial_ratio_from_poincare,
+)
 from .corpus import CORPUS
 from .cards import card_by_id, emergent_path, load_canonical_cards
 from .context_dynamics import (
@@ -116,8 +137,16 @@ trajectory_curvature = stable_trajectory_curvature
 __all__ = [
     "ALPHA_M", "CANON_VERSION", "ETA_M_36D", "HILBERT_BITS", "HILBERT_DIM",
     "KAPPA", "L3", "L4", "L5", "PHASE_DIM", "CanonicalConceptState",
-    "Hilbert2048State", "semantic_mass", "OrbitalRecord", "architectural_role",
-    "audit_orbits", "CORPUS", "card_by_id", "emergent_path", "load_canonical_cards",
+    "Hilbert2048State", "semantic_mass",
+    "ATOMIC_ORBITAL_ADAPTER_STATUS", "ATOMIC_ORBITAL_ADAPTER_VERSION",
+    "AtomicAddressMode", "AtomicOrbitalState", "OrbitalRecord", "architectural_role",
+    "atomic_poincare_radius", "atomic_quantum_address", "audit_orbits",
+    "cayley_radius_from_ratio", "centered_dual_coordinate", "central_phase_address",
+    "coulomb_phase_address", "energy_ratio_from_poincare",
+    "full_spin_orbital_address", "orbital_inversion", "period_ratio_from_poincare",
+    "principal_coordinate_from_poincare", "quantized_principal_shell",
+    "radial_ratio_from_poincare",
+    "CORPUS", "card_by_id", "emergent_path", "load_canonical_cards",
     "CONTEXT_BANDWIDTH", "Attractor", "ContextAnchor", "ContextPotential",
     "FieldSample", "OrbitStep", "OrbitTrace", "PhaseVector36", "TangentVector36",
     "find_attractors", "trace_orbit",
