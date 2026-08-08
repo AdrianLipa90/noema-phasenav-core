@@ -1,10 +1,11 @@
 {
   "schema": "phasenav.validation.git-semantic-observation/v0.11",
   "date": "2026-08-08",
-  "status": "PASS_FOCUSED_PRIVATE_SEMANTIC_EXECUTION_NOT_RUN",
+  "status": "PASS_FOCUSED_FULL_CI_INFRA_BLOCKED_PRIVATE_SEMANTIC_EXECUTION_NOT_RUN",
   "repository": "AdrianLipa90/noema-phasenav-core",
   "branch": "canon/git-semantic-observation-v0.11",
   "pre_receipt_head": "642e5be76402442456265fa1b003636e0905ac1d",
+  "ci_observed_head": "2e45a4ebd38e8aa2d442aded8aa243b8bf4b5741",
   "canon_version": "1.6.0",
   "package_version": "0.9.0",
   "binding_version": "0.11.0",
@@ -60,7 +61,20 @@
   "intrinsic_file_semantic_vector": "NOT_DEFINED_BY_THIS_LAYER",
   "scientific_promotion": "NOT_PERFORMED",
   "github_actions": {
-    "status": "PENDING_EXACT_HEAD_RUN",
+    "tests_run": 31259838032,
+    "canon_run": 31259838025,
+    "tests_jobs": {
+      "python_3_10": {"job_id": 93108821053, "conclusion": "failure", "steps": null},
+      "python_3_11": {"job_id": 93108821059, "conclusion": "cancelled", "steps": null},
+      "python_3_12": {"job_id": 93108821030, "conclusion": "cancelled", "steps": null}
+    },
+    "canon_job": {
+      "job_id": 93108820968,
+      "conclusion": "failure",
+      "steps": null
+    },
+    "classification": "FAILURE_BEFORE_RUNNER_STEPS",
+    "code_test_failure_observed": false,
     "full_ci_pass_claimed": false
   }
 }
