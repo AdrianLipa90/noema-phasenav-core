@@ -1,4 +1,4 @@
-"""PhaseNav hard canon v1."""
+"""PhaseNav hard canon v1.1."""
 from .model import (
     ALPHA_M,
     CANON_VERSION,

@@ -1,0 +1,80 @@
+{
+  "schema": "phasenav.validation.git-semantic-observation/v0.11",
+  "date": "2026-08-08",
+  "status": "PASS_FOCUSED_FULL_CI_INFRA_BLOCKED_PRIVATE_SEMANTIC_EXECUTION_NOT_RUN",
+  "repository": "AdrianLipa90/noema-phasenav-core",
+  "branch": "canon/git-semantic-observation-v0.11",
+  "pre_receipt_head": "642e5be76402442456265fa1b003636e0905ac1d",
+  "ci_observed_head": "2e45a4ebd38e8aa2d442aded8aa243b8bf4b5741",
+  "canon_version": "1.6.0",
+  "package_version": "0.9.0",
+  "binding_version": "0.11.0",
+  "identity_parent": {
+    "git_object_vectorization_merge": "2cf1e433e21f4f3feab2f248218a38f5263e66ea",
+    "git_tree_blob_scanner_merge": "5a4a06eec8611dc8f890516ea457926d069e6612",
+    "private_inventory_sha256": "d47ace603e52fdb3fbe77556b370ac272d4ac5f3d0232b0bda4fbc998a05ab70",
+    "private_repository_vector_set_sha256": "a7e458063b3fb94d817f132c3c4dceee5a6ed7ade32237bec4acaff392640e0b"
+  },
+  "semantic_runtime": {
+    "repository": "AdrianLipa90/Ciel-Semantic-Model-",
+    "release": "0.8.1",
+    "code_commit": "0a4a1b57217fc876ed0535829686cfed8ccd0d8f",
+    "cielingo_runtime_commit": "ab097f99d46eb446836833ac90b2bc3cf9d219e1",
+    "aux_request_schema": "CIEL_AUX_PHASE_MEMORY_REQUEST_V2",
+    "aux_packet_schema": "CIEL_AUX_PHASE_MEMORY_PACKET_V3",
+    "native_semantic_schema": "CIEL_NATIVE_SEMANTIC_STATE_V1",
+    "phase_dimension": 36,
+    "phase_convention": "native_spinor_4pi",
+    "memory_lane_count": 12
+  },
+  "focused_validation": {
+    "status": "PASS_8_OF_8",
+    "native_git_blob_header_hashing": true,
+    "exact_bytes_bound_to_blob": true,
+    "modified_bytes_rejected": true,
+    "invalid_text_encoding_has_no_fallback": true,
+    "mixed_git_object_formats_rejected": true,
+    "same_blob_different_context_preserves_identity": true,
+    "same_blob_different_context_changes_observation_receipt": true,
+    "native_ciel_contract_pinned": true,
+    "semantic_arbitrariness_firewalls_closed": true
+  },
+  "semantic_firewall": {
+    "git_identity_vector_is_semantic_embedding": false,
+    "hash_distance_implies_semantic_similarity": false,
+    "repository_name_is_semantic_parent": false,
+    "file_path_is_semantic_parent": false,
+    "file_name_is_semantic_parent": false,
+    "extension_is_semantic_parent": false,
+    "semantic_graph_collapsed_to_one_vector": false,
+    "missing_semantic_receipt_fallback_allowed": false,
+    "binary_blob_text_fallback_allowed": false,
+    "semantic_observation_implies_scientific_truth": false
+  },
+  "execution_state": {
+    "private_repository_head_identity_vectors": "COMPLETE_39_OF_39_REAL_HEADS",
+    "complete_private_tree_blob_scan": "NOT_RUN",
+    "private_blob_semantic_observations": "NOT_RUN",
+    "reason": "exact private blob inventory has not been executed in local Git object databases, so blob bytes have not been passed through the pinned native CIEL semantic runtime with frozen MemoryFabric/NOEMA provenance",
+    "heuristic_semantic_substitution_used": false
+  },
+  "intrinsic_file_semantic_vector": "NOT_DEFINED_BY_THIS_LAYER",
+  "scientific_promotion": "NOT_PERFORMED",
+  "github_actions": {
+    "tests_run": 31259838032,
+    "canon_run": 31259838025,
+    "tests_jobs": {
+      "python_3_10": {"job_id": 93108821053, "conclusion": "failure", "steps": null},
+      "python_3_11": {"job_id": 93108821059, "conclusion": "cancelled", "steps": null},
+      "python_3_12": {"job_id": 93108821030, "conclusion": "cancelled", "steps": null}
+    },
+    "canon_job": {
+      "job_id": 93108820968,
+      "conclusion": "failure",
+      "steps": null
+    },
+    "classification": "FAILURE_BEFORE_RUNNER_STEPS",
+    "code_test_failure_observed": false,
+    "full_ci_pass_claimed": false
+  }
+}
