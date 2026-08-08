@@ -131,7 +131,9 @@ class GitCheckoutObjectGraph:
                 "vectorization_implies_semantic_truth": False,
             },
         }
-        encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        # ensure_ascii=True preserves arbitrary Git path bytes represented through
+        # surrogateescape without allowing path encoding to affect object vectors.
+        encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("ascii")
         payload["receipt_sha256"] = hashlib.sha256(encoded).hexdigest()
         return payload
 
