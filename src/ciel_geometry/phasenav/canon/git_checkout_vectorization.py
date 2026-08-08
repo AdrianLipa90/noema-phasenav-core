@@ -1,11 +1,11 @@
 """Native Git object-database scanner for non-arbitrary repository vectorization.
 
-Discovery is delegated to Git itself.  The scanner calls `git rev-parse` and
+Discovery is delegated to Git itself. The scanner calls `git rev-parse` and
 `git ls-tree -r -t -z --full-tree HEAD`; it does not maintain a list of
 "important" files, infer importance from paths, or use paths as numerical
 vector parents.
 
-A path is only an occurrence/localizer inside a Git tree.  Object routing is
+A path is only an occurrence/localizer inside a Git tree. Object routing is
 content-addressed by the native Git object digest through
 `GitObjectVector.from_digest`.
 """
@@ -177,7 +177,7 @@ def _parent_directory(path: str) -> str:
     return "" if parent == "." else parent
 
 
-def _containment_edges(
+def _tree_containment_edges(
     root_tree: str,
     occurrences: Iterable[GitOccurrence],
 ) -> tuple[GitContainmentEdge, ...]:
@@ -209,7 +209,15 @@ def scan_git_checkout(repo: str | Path, revision: str = "HEAD") -> GitCheckoutOb
     root_tree = _git(root, "rev-parse", f"{revision}^{{tree}}").decode("ascii").strip().lower()
     raw = _git(root, "ls-tree", "-r", "-t", "-z", "--full-tree", revision)
     occurrences = _parse_ls_tree(raw)
-    edges = _containment_edges(root_tree, occurrences)
+    root_edge = GitContainmentEdge(
+        parent_type="commit",
+        parent_digest=head,
+        child_type="tree",
+        child_digest=root_tree,
+        relation="git_commit_root_tree",
+        child_path="",
+    )
+    edges = (root_edge,) + _tree_containment_edges(root_tree, occurrences)
     return GitCheckoutObjectGraph(
         head_commit=head,
         root_tree=root_tree,
