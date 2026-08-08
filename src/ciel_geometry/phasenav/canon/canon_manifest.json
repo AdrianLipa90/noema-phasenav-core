@@ -1,7 +1,7 @@
 {
   "canon": "PhaseNav",
-  "version": "1.1.0",
-  "base_commit": "0ebb76055feb9f0bc0c31360bca285a3fbda519c",
+  "version": "1.2.0",
+  "base_commit": "7210e8c62ac7ae6516469ecf502bbb38df98f2fd",
   "authority": {
     "operator": "TO_JEST_MOJE",
     "issuer": "Adrian Lipa",
@@ -70,6 +70,25 @@
     "scheduler": "minimize (potential+entropy-urgency)/provenance_weight",
     "language_projection": false,
     "status": "CANON_CANDIDATE"
+  },
+  "tir_half_dependencies": {
+    "version": "0.7.0",
+    "schema": "phasenav.tir-half-dependencies/v0.7",
+    "routing_space": "T^36",
+    "intrinsic_coefficient_dimension": 4,
+    "intrinsic_equals_routing": false,
+    "role_router": "STRUCTURAL_ROLE_ROUTING_PASS",
+    "orbit_direction": "IMPLEMENTED_PROJECT_ORBITAL_RULE",
+    "relational_gradient": "IMPLEMENTED_SOURCE_OPERATOR_CANDIDATE_TIR_BINDING",
+    "tir_slot_binding": "OPEN",
+    "collatz_stopping_orientation": "RETROSPECTIVE_CANDIDATE_NEEDS_PROSPECTIVE_TEST",
+    "soh_c004": "OPEN",
+    "soh_c005": "OPEN",
+    "tir_neutron_edm": "PHYSICAL_FAIL",
+    "proof_policy": "only EXACT/STANDARD nodes are proof-strength consumable",
+    "noema_projection": "status/provenance receipt only; no memory IO or scientific promotion",
+    "forbidden_derivation_inputs": ["measured_mass", "measured_yukawa", "coefficient_enriched_vector"],
+    "status": "CANON_DEPENDENCY_FIREWALL"
   },
   "orbital_audit": {"mutation": false, "free_epsilon": false},
   "status": "CANON"
