@@ -28,3 +28,8 @@ jobs:
         env:
           NOEMA_AUDIO_SILENT: "1"
         run: pytest tests/ -v --tb=short
+
+      - name: Run repository integrity audit
+        env:
+          NOEMA_AUDIO_SILENT: "1"
+        run: python scripts/repo_integrity_audit.py --json
