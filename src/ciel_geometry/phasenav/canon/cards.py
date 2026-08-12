@@ -8,6 +8,7 @@ import math
 import struct
 
 from .ciel_executable_map import bindings_for_concept
+from .ciel_legacy_extended_map import extended_legacy_bindings_for_concept
 from .model import CanonicalConceptState
 from .native_executable_map import native_bindings_for_concept
 from .reciprocal_regularization import concept_algorithm_registry
@@ -29,23 +30,21 @@ def _load_seeds() -> list[dict]:
             continue
         glossary_id, canonical_name, operator, card_type, status = line.split("|", 4)
         canonical = status == "C"
-        seeds.append(
-            {
-                "glossary_id": glossary_id,
-                "canonical_name": canonical_name,
-                "operator": operator,
-                "type": card_type,
-                "epistemic": {
-                    "operator": "canonical" if canonical else "chyba",
-                    "canon_allowed": canonical,
-                    "reason": (
-                        "declared glossary and recovered card agree"
-                        if canonical
-                        else "recovered card and glossary require authorial resolution"
-                    ),
-                },
-            }
-        )
+        seeds.append({
+            "glossary_id": glossary_id,
+            "canonical_name": canonical_name,
+            "operator": operator,
+            "type": card_type,
+            "epistemic": {
+                "operator": "canonical" if canonical else "chyba",
+                "canon_allowed": canonical,
+                "reason": (
+                    "declared glossary and recovered card agree"
+                    if canonical
+                    else "recovered card and glossary require authorial resolution"
+                ),
+            },
+        })
     return seeds
 
 
@@ -59,11 +58,7 @@ def _state_digest(state: CanonicalConceptState) -> str:
 def _orbital_distance(a: CanonicalConceptState, b: CanonicalConceptState) -> float:
     d36 = a.angular_distance(b)
     dm = abs(math.log(a.semantic_mass / b.semantic_mass))
-    dq = (
-        abs(math.log(a.q_ratio / b.q_ratio))
-        if a.q_ratio > 0.0 and b.q_ratio > 0.0
-        else math.inf
-    )
+    dq = abs(math.log(a.q_ratio / b.q_ratio)) if a.q_ratio > 0.0 and b.q_ratio > 0.0 else math.inf
     return math.sqrt(d36 * d36 + dm * dm + dq * dq)
 
 
@@ -72,38 +67,37 @@ def _local_algorithm_bindings(canonical_name: str) -> list[dict[str, object]]:
     if algorithm_id is None:
         return []
     registry = concept_algorithm_registry()
-    return [
-        {
-            "concept_algorithm_id": algorithm_id,
-            **dict(registry[algorithm_id]),
-            "binding_status": "CANDIDATE_DIRECT_CONCEPT_BINDING",
-            "execution_activation": "EXPLICIT_RUNTIME_DISPATCH",
-            "scientific_promotion": "NOT_PERFORMED",
-        }
-    ]
+    return [{
+        "concept_algorithm_id": algorithm_id,
+        **dict(registry[algorithm_id]),
+        "binding_status": "CANDIDATE_DIRECT_CONCEPT_BINDING",
+        "execution_activation": "EXPLICIT_RUNTIME_DISPATCH",
+        "scientific_promotion": "NOT_PERFORMED",
+    }]
 
 
 def _native_algorithm_bindings(glossary_id: str) -> list[dict[str, object]]:
-    return [
-        {
-            "concept_algorithm_id": binding.binding_id,
-            **binding.to_dict(),
-            "binding_status": "PHASENAV_NATIVE_CURRENT_MAPPED",
-        }
-        for binding in native_bindings_for_concept(glossary_id)
-    ]
+    return [{
+        "concept_algorithm_id": binding.binding_id,
+        **binding.to_dict(),
+        "binding_status": "PHASENAV_NATIVE_CURRENT_MAPPED",
+    } for binding in native_bindings_for_concept(glossary_id)]
 
 
 def _ciel_source_algorithm_bindings(glossary_id: str) -> list[dict[str, object]]:
-    """Attach provenance-exact executable external CIEL source references."""
-    return [
-        {
-            "concept_algorithm_id": binding.binding_id,
-            **binding.to_dict(),
-            "binding_status": "CIEL_EXECUTABLE_SOURCE_MAPPED",
-        }
-        for binding in bindings_for_concept(glossary_id)
-    ]
+    return [{
+        "concept_algorithm_id": binding.binding_id,
+        **binding.to_dict(),
+        "binding_status": "CIEL_EXECUTABLE_SOURCE_MAPPED",
+    } for binding in bindings_for_concept(glossary_id)]
+
+
+def _extended_legacy_algorithm_bindings(glossary_id: str) -> list[dict[str, object]]:
+    return [{
+        "concept_algorithm_id": binding.binding_id,
+        **binding.to_dict(),
+        "binding_status": "CIEL_LEGACY_EXECUTABLE_SOURCE_MAPPED",
+    } for binding in extended_legacy_bindings_for_concept(glossary_id)]
 
 
 def _algorithm_bindings(canonical_name: str, glossary_id: str) -> list[dict[str, object]]:
@@ -111,50 +105,38 @@ def _algorithm_bindings(canonical_name: str, glossary_id: str) -> list[dict[str,
         *_local_algorithm_bindings(canonical_name),
         *_native_algorithm_bindings(glossary_id),
         *_ciel_source_algorithm_bindings(glossary_id),
+        *_extended_legacy_algorithm_bindings(glossary_id),
     ]
 
 
 @lru_cache(maxsize=1)
 def _registry_tuple() -> tuple[dict, ...]:
     seeds = _load_seeds()
-    states = {
-        seed["glossary_id"]: CanonicalConceptState.from_id(seed["glossary_id"])
-        for seed in seeds
-    }
+    states = {seed["glossary_id"]: CanonicalConceptState.from_id(seed["glossary_id"]) for seed in seeds}
     cards: list[dict] = []
     for seed in seeds:
         gid = seed["glossary_id"]
         state = states[gid]
         neighbours = sorted(
-            (
-                (_orbital_distance(state, other), other_id, other)
-                for other_id, other in states.items()
-                if other_id != gid
-            ),
+            ((_orbital_distance(state, other), other_id, other) for other_id, other in states.items() if other_id != gid),
             key=lambda item: (item[0], item[1]),
         )[:5]
         paths = []
         for rank, (distance, other_id, other) in enumerate(neighbours, start=1):
             berry = state.berry_connection(other)
-            paths.append(
-                {
-                    "from": gid,
-                    "to": other_id,
-                    "rank": rank,
-                    "marker": "⟦H2048→T36⟧",
-                    "path_type": "canonical_orbital_relation_v1",
-                    "angular_distance_36d": round(state.angular_distance(other), 12),
-                    "semantic_mass_log_distance": round(
-                        abs(math.log(state.semantic_mass / other.semantic_mass)), 12
-                    ),
-                    "binary_log_radius_distance": round(
-                        abs(state.log_radius - other.log_radius), 12
-                    ),
-                    "berry_connection": round(berry, 12),
-                    "edge_weight": round(distance * (1.0 + abs(berry)), 12),
-                    "epistemic_operator": "chyba",
-                }
-            )
+            paths.append({
+                "from": gid,
+                "to": other_id,
+                "rank": rank,
+                "marker": "⟦H2048→T36⟧",
+                "path_type": "canonical_orbital_relation_v1",
+                "angular_distance_36d": round(state.angular_distance(other), 12),
+                "semantic_mass_log_distance": round(abs(math.log(state.semantic_mass / other.semantic_mass)), 12),
+                "binary_log_radius_distance": round(abs(state.log_radius - other.log_radius), 12),
+                "berry_connection": round(berry, 12),
+                "edge_weight": round(distance * (1.0 + abs(berry)), 12),
+                "epistemic_operator": "chyba",
+            })
         card = {
             "$schema": "phasenav.card.h2048_t36.v1",
             "card_id": f"PNV-H2048-{gid}",
@@ -193,18 +175,13 @@ def _registry_tuple() -> tuple[dict, ...]:
             "algorithm_bindings": _algorithm_bindings(seed["canonical_name"], gid),
             "emergent_paths_canon": paths,
         }
-        canonical_payload = json.dumps(
-            card, ensure_ascii=False, sort_keys=True, separators=(",", ":")
-        )
-        card["content_digest_sha256"] = hashlib.sha256(
-            canonical_payload.encode("utf-8")
-        ).hexdigest()
+        canonical_payload = json.dumps(card, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        card["content_digest_sha256"] = hashlib.sha256(canonical_payload.encode("utf-8")).hexdigest()
         cards.append(card)
     return tuple(cards)
 
 
 def load_canonical_cards() -> list[dict]:
-    """Return fresh dictionaries so callers cannot mutate the cached canon."""
     return json.loads(json.dumps(_registry_tuple(), ensure_ascii=False))
 
 
