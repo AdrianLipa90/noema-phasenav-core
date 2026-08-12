@@ -50,8 +50,35 @@ from .reciprocal_regularization import (
     resolve_reciprocal,
     riemann_zeta_zero_regularization,
 )
+from .ciel_executable_map import (
+    CIEL_EXECUTABLE_MAP_STATUS,
+    CIEL_EXECUTABLE_MAP_VERSION,
+    CielExecutableBinding,
+    binding_by_id,
+    bindings_for_concept,
+    bindings_for_family,
+    ciel_executable_bindings,
+    ciel_executable_map_receipt,
+    concept_execution_plan,
+)
+from .native_executable_map import (
+    NATIVE_EXECUTABLE_MAP_STATUS,
+    NATIVE_EXECUTABLE_MAP_VERSION,
+    NativeExecutableBinding,
+    native_binding_by_id,
+    native_bindings_for_concept,
+    native_bindings_for_family,
+    native_executable_bindings,
+    native_executable_map_receipt,
+)
 from .corpus import CORPUS
 from .cards import card_by_id, emergent_path, load_canonical_cards
+from .concept_execution import (
+    CONCEPT_EXECUTION_PLAN_VERSION,
+    PlannedAlgorithm,
+    concept_execution_summary,
+    execution_plan_for_concept,
+)
 from .context_dynamics import (
     CONTEXT_BANDWIDTH,
     Attractor,
@@ -186,6 +213,15 @@ __all__ = [
     "division_with_concept_guard", "heisenberg_soft_reciprocal",
     "heisenberg_uncertainty_floor", "resolve_reciprocal",
     "riemann_zeta_zero_regularization",
+    "CIEL_EXECUTABLE_MAP_STATUS", "CIEL_EXECUTABLE_MAP_VERSION",
+    "CielExecutableBinding", "binding_by_id", "bindings_for_concept",
+    "bindings_for_family", "ciel_executable_bindings", "ciel_executable_map_receipt",
+    "concept_execution_plan",
+    "NATIVE_EXECUTABLE_MAP_STATUS", "NATIVE_EXECUTABLE_MAP_VERSION",
+    "NativeExecutableBinding", "native_binding_by_id", "native_bindings_for_concept",
+    "native_bindings_for_family", "native_executable_bindings",
+    "native_executable_map_receipt", "CONCEPT_EXECUTION_PLAN_VERSION",
+    "PlannedAlgorithm", "concept_execution_summary", "execution_plan_for_concept",
     "CORPUS", "card_by_id", "emergent_path", "load_canonical_cards",
     "CONTEXT_BANDWIDTH", "Attractor", "ContextAnchor", "ContextPotential",
     "FieldSample", "OrbitStep", "OrbitTrace", "PhaseVector36", "TangentVector36",
