@@ -145,6 +145,38 @@
     "scientific_promotion": "NOT_PERFORMED",
     "status": "CANON_CANDIDATE"
   },
+  "ciel_executable_concept_map": {
+    "version": "0.13.0",
+    "schema": "phasenav.ciel-executable-concept-map/v0.13",
+    "modules": [
+      "ciel_geometry.phasenav.canon.ciel_executable_map",
+      "ciel_geometry.phasenav.canon.native_executable_map",
+      "ciel_geometry.phasenav.canon.concept_execution"
+    ],
+    "concept_nodes_added": ["119 Paradox", "120 Causality"],
+    "source_classes": [
+      "LOCAL_PHASE_NAV_CURRENT",
+      "PHASENAV_NATIVE_CURRENT",
+      "CANONICAL_V15",
+      "LEGACY_EXECUTABLE_SOURCE",
+      "LEGACY_TEST_EXECUTABLE"
+    ],
+    "source_identity": "repo + commit + blob + path + symbol",
+    "mapped_families": [
+      "memory", "semantic", "verification", "paradox", "temporal",
+      "intention", "ethics", "resonance", "dynamics", "consciousness",
+      "perception", "context", "scheduler", "constraint", "pipeline"
+    ],
+    "card_field": "algorithm_bindings",
+    "execution_planner": "execution_plan_for_concept",
+    "default_plan": "local current + PhaseNav native current + CANONICAL_V15; legacy excluded; WRITE excluded",
+    "activation": "EXPLICIT_RUNTIME_DISPATCH",
+    "auto_execute_from_concept_match": false,
+    "write_binding_requires_explicit_opt_in": true,
+    "legacy_binding_requires_explicit_opt_in": true,
+    "scientific_promotion": "NOT_PERFORMED",
+    "status": "CANON_CANDIDATE"
+  },
   "git_object_vectorization": {
     "version": "0.9.0",
     "schema": "phasenav.git-object-vector/v0.9",
