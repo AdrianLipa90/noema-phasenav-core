@@ -8,7 +8,15 @@ import math
 import struct
 
 from .model import CanonicalConceptState
+from .reciprocal_regularization import concept_algorithm_registry
 from .seed_data import SEED_ROWS
+
+
+_CONCEPT_ALGORITHM_CARD_BINDINGS = {
+    "Reciprocal_Inversion": "RECIPROCAL_INVERSION",
+    "Riemann_Zeta_Zero": "RIEMANN_ZETA_ZERO",
+    "Heisenberg_Uncertainty": "HEISENBERG_UNCERTAINTY",
+}
 
 
 def _load_seeds() -> list[dict]:
@@ -55,6 +63,21 @@ def _orbital_distance(a: CanonicalConceptState, b: CanonicalConceptState) -> flo
         else math.inf
     )
     return math.sqrt(d36 * d36 + dm * dm + dq * dq)
+
+
+def _algorithm_bindings(canonical_name: str) -> list[dict[str, object]]:
+    algorithm_id = _CONCEPT_ALGORITHM_CARD_BINDINGS.get(canonical_name)
+    if algorithm_id is None:
+        return []
+    registry = concept_algorithm_registry()
+    return [
+        {
+            "concept_algorithm_id": algorithm_id,
+            **dict(registry[algorithm_id]),
+            "binding_status": "CANDIDATE_DIRECT_CONCEPT_BINDING",
+            "scientific_promotion": "NOT_PERFORMED",
+        }
+    ]
 
 
 @lru_cache(maxsize=1)
@@ -135,6 +158,7 @@ def _registry_tuple() -> tuple[dict, ...]:
                 "order_parameter_R": round(state.order_parameter, 12),
             },
             "semantic_mass_canon": round(state.semantic_mass, 15),
+            "algorithm_bindings": _algorithm_bindings(seed["canonical_name"]),
             "emergent_paths_canon": paths,
         }
         canonical_payload = json.dumps(

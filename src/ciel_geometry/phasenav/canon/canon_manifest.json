@@ -124,6 +124,27 @@
     "scientific_promotion": "NOT_PERFORMED",
     "status": "CANON_CANDIDATE"
   },
+  "reciprocal_concept_algorithms": {
+    "version": "0.12.0",
+    "schema": "phasenav.reciprocal-regularization/v0.12",
+    "module": "ciel_geometry.phasenav.canon.reciprocal_regularization",
+    "concept_chain": [
+      "RECIPROCAL_INVERSION",
+      "RIEMANN_ZETA_ZERO",
+      "HEISENBERG_UNCERTAINTY"
+    ],
+    "source_coordinate": "rho=|z|/(scale+|z|)",
+    "reciprocal_coordinate": "rho_rec=1-rho",
+    "zero_center": "z=0 -> source rho=0; reciprocal image rho_rec=1",
+    "zeta_zero": "zeta(0)=-1/2 by analytic continuation",
+    "zero_regularization_policy": "a/0 is not redefined; PhaseNav continuation returns a*zeta(0) with explicit receipt",
+    "heisenberg_constraint": "delta_z*delta_k>=hbar/2 in caller-normalized conjugate coordinates",
+    "boundary_soft_reciprocal": "conj(z)/(|z|^2+delta_z^2)",
+    "nan_policy": "NaN requires a finite reference state plus valid uncertainty pair; no direction is invented",
+    "operator_binding": "concept_algorithm_registry",
+    "scientific_promotion": "NOT_PERFORMED",
+    "status": "CANON_CANDIDATE"
+  },
   "git_object_vectorization": {
     "version": "0.9.0",
     "schema": "phasenav.git-object-vector/v0.9",
