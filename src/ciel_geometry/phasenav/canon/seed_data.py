@@ -115,4 +115,7 @@ SEED_ROWS = """
 113|Topos|ORBIT|operator|H
 114|Aion|DIFFERENTIAL|operator|H
 115|Kairos|DIFFERENTIAL|operator|H
+116|Reciprocal_Inversion|ORBIT|operator|H
+117|Riemann_Zeta_Zero|IDENTITY|operator|H
+118|Heisenberg_Uncertainty|DIFFERENTIAL|operator|H
 """
