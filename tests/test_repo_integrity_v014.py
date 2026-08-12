@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import json
 import math
 from pathlib import Path
@@ -41,6 +42,24 @@ def test_runtime_materialization_never_writes_empty_tables(tmp_path: Path):
     for filename, entry in report["files"].items():
         if "HOLONOMIC_EDGES" not in filename:
             assert entry["records"] > 0
+
+
+def test_pnv_runtime_import_initialization_is_side_effect_free(tmp_path: Path):
+    from ciel_geometry.phasenav import pnv_runtime
+
+    init_source = inspect.getsource(pnv_runtime._init)
+    assert "_write_state_jsonl" not in init_source
+    assert "except Exception" not in init_source
+
+    output = pnv_runtime._write_state_jsonl(tmp_path)
+    assert output
+    report = validate_runtime_directory(tmp_path)
+    assert report["ok"], report
+    assert all(
+        entry["records"] > 0
+        for filename, entry in report["files"].items()
+        if "HOLONOMIC_EDGES" not in filename
+    )
 
 
 def test_empty_runtime_directory_falls_back_to_canonical_registry(tmp_path: Path):
