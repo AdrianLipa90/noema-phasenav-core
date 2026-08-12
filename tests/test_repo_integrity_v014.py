@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import math
 from pathlib import Path
 
@@ -66,9 +67,41 @@ def test_runtime_compatibility_populates_pnv_glossary():
     glossary = pnv_runtime._load_glossary()
     assert receipt["status"] == "ACTIVE"
     assert receipt["silent_empty_fallback"] is False
+    assert receipt["public_abi_rebound"] is True
     assert len(glossary) >= 120
     assert pnv_runtime.ALL_STATE_IDS
     assert all(len(entry["v36"]) == 36 for entry in glossary.values())
+
+
+def test_package_level_operator_abi_is_rebound_to_real_36d(tmp_path: Path):
+    import ciel_geometry.phasenav as phasenav
+
+    receipt = runtime_integrity_receipt()
+    assert receipt["public_abi_rebound"] is True
+    assert phasenav.ALL_STATE_IDS
+    assert phasenav.ALL_OPERATOR_IDS
+
+    operator_map = phasenav.generate_operator_map()
+    assert isinstance(operator_map, dict)
+    assert operator_map
+    assert all(len(vector) == 36 for vector in operator_map.values())
+
+    payload = phasenav.generate_operator_jsonl()
+    rows = [json.loads(line) for line in payload.splitlines() if line.strip()]
+    assert rows
+    assert all(row["vector_dim"] == 36 for row in rows)
+    assert all(len(row["vector_36d"]) == 36 for row in rows)
+
+    assert len(phasenav.operator_vector_24d("IDENTITY")) == 36
+    op_id, vector = phasenav.concept_to_operator("memory")
+    assert op_id in phasenav.ALL_OPERATOR_IDS
+    assert len(vector) == 36
+
+    output = Path(phasenav.write_operator_algebra(tmp_path))
+    assert output.exists()
+    written = [json.loads(line) for line in output.read_text(encoding="utf-8").splitlines() if line.strip()]
+    assert written
+    assert all(len(row["vector_36d"]) == 36 for row in written)
 
 
 def test_crystal_data_is_present_and_dimensionally_consistent():
