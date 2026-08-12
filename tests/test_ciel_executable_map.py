@@ -15,6 +15,11 @@ from ciel_geometry.phasenav.canon.ciel_executable_map import (
     ciel_executable_map_receipt,
     concept_execution_plan,
 )
+from ciel_geometry.phasenav.canon.ciel_legacy_extended_map import (
+    extended_legacy_bindings,
+    extended_legacy_bindings_for_concept,
+    extended_legacy_bindings_for_family,
+)
 from ciel_geometry.phasenav.canon.concept_execution import (
     concept_execution_summary,
     execution_plan_for_concept,
@@ -43,58 +48,111 @@ def test_new_semantic_nodes_exist_as_candidates() -> None:
 
 def test_memory_card_carries_native_and_v15_execution_sources() -> None:
     ids = _binding_ids(card_by_id("090"))
-    assert "PNV.MEMORY.HOLONOMIC_RECALL.NATIVE" in ids
-    assert "PNV.MEMORY.HOLONOMIC_INGEST.NATIVE" in ids
-    assert "PNV.MEMORY.DECAY.NATIVE" in ids
-    assert "PNV.MEMORY.HOLONOMY_CACHE_GET.NATIVE" in ids
-    assert "PNV.MEMORY.HOLONOMY_CACHE_PUT.NATIVE" in ids
-    assert "CIEL.MEMORY.RECONSTRUCT.V15" in ids
-    assert "CIEL.MEMORY.READ_PACKET.V15" in ids
-    assert "CIEL.MEMORY.COMMIT.V15" in ids
-    assert "CIEL.MEMORY.ADMISSION.V15" in ids
-    assert "CIEL.MEMORY.RECEIPT_CHAIN.V15" in ids
+    for expected in {
+        "PNV.MEMORY.HOLONOMIC_RECALL.NATIVE",
+        "PNV.MEMORY.HOLONOMIC_INGEST.NATIVE",
+        "PNV.MEMORY.DECAY.NATIVE",
+        "PNV.MEMORY.HOLONOMY_CACHE_GET.NATIVE",
+        "PNV.MEMORY.HOLONOMY_CACHE_PUT.NATIVE",
+        "CIEL.MEMORY.RECONSTRUCT.V15",
+        "CIEL.MEMORY.READ_PACKET.V15",
+        "CIEL.MEMORY.COMMIT.V15",
+        "CIEL.MEMORY.ADMISSION.V15",
+        "CIEL.MEMORY.RECEIPT_CHAIN.V15",
+    }:
+        assert expected in ids
 
 
 def test_time_card_carries_native_and_legacy_temporal_sources() -> None:
     ids = _binding_ids(card_by_id("018"))
-    assert "PNV.TIME.GENERATION_DYNAMICS.NATIVE" in ids
-    assert "PNV.TIME.TRAJECTORY_CURVATURE.NATIVE" in ids
-    assert "PNV.MEMORY.DECAY.NATIVE" in ids
-    assert "CIEL.TIME.FIELD_INIT.LEGACY" in ids
-    assert "CIEL.TIME.FIELD_EVOLVE.LEGACY" in ids
-    assert "CIEL.TIME.EVOLUTION_STEP.LEGACY" in ids
-    assert "CIEL.TIME.ZENO.LEGACY" in ids
-    assert "CIEL.TIME.CAUSAL_LOOP.LEGACY" in ids
-    assert "CIEL.TIME.ENTROPY_DECAY.LEGACY" in ids
+    for expected in {
+        "PNV.TIME.GENERATION_DYNAMICS.NATIVE",
+        "PNV.TIME.TRAJECTORY_CURVATURE.NATIVE",
+        "PNV.MEMORY.DECAY.NATIVE",
+        "CIEL.TIME.FIELD_INIT.LEGACY",
+        "CIEL.TIME.FIELD_EVOLVE.LEGACY",
+        "CIEL.TIME.EVOLUTION_STEP.LEGACY",
+        "CIEL.TIME.ZENO.LEGACY",
+        "CIEL.TIME.CAUSAL_LOOP.LEGACY",
+        "CIEL.TIME.ENTROPY_DECAY.LEGACY",
+    }:
+        assert expected in ids
 
 
 def test_context_card_has_native_context_algorithms() -> None:
     ids = _binding_ids(card_by_id("073"))
-    assert "PNV.CONTEXT.FROM_CONCEPTS.NATIVE" in ids
-    assert "PNV.CONTEXT.VECTOR.NATIVE" in ids
-    assert "PNV.CONTEXT.SAMPLE.NATIVE" in ids
-    assert "PNV.CONTEXT.FIND_ATTRACTORS.NATIVE" in ids
-    assert "PNV.CONTEXT.TRACE_ORBIT.NATIVE" in ids
+    for expected in {
+        "PNV.CONTEXT.FROM_CONCEPTS.NATIVE",
+        "PNV.CONTEXT.VECTOR.NATIVE",
+        "PNV.CONTEXT.SAMPLE.NATIVE",
+        "PNV.CONTEXT.FIND_ATTRACTORS.NATIVE",
+        "PNV.CONTEXT.TRACE_ORBIT.NATIVE",
+    }:
+        assert expected in ids
 
 
 def test_kairos_card_has_native_scheduler_and_temporal_algorithms() -> None:
     ids = _binding_ids(card_by_id("115"))
-    assert "PNV.SCHEDULER.COST.NATIVE" in ids
-    assert "PNV.SCHEDULER.PUSH.NATIVE" in ids
-    assert "PNV.SCHEDULER.POP.NATIVE" in ids
-    assert "PNV.TIME.GENERATION_DYNAMICS.NATIVE" in ids
+    for expected in {
+        "PNV.SCHEDULER.COST.NATIVE",
+        "PNV.SCHEDULER.PUSH.NATIVE",
+        "PNV.SCHEDULER.POP.NATIVE",
+        "PNV.TIME.GENERATION_DYNAMICS.NATIVE",
+    }:
+        assert expected in ids
 
 
 def test_paradox_and_causality_cards_collect_their_families() -> None:
     paradox_ids = _binding_ids(card_by_id("119"))
     causality_ids = _binding_ids(card_by_id("120"))
-    assert "CIEL.PARADOX.NETWORK.LEGACY" in paradox_ids
-    assert "CIEL.PARADOX.LIAR_GODEL_RUSSELL.LEGACY" in paradox_ids
-    assert "CIEL.PARADOX.THESEUS.LEGACY" in paradox_ids
-    assert "CIEL.TIME.CAUSAL_LOOP.LEGACY" in causality_ids
-    assert "CIEL.TIME.BOOTSTRAP_LOOP.LEGACY" in causality_ids
-    assert "CIEL.TIME.GRANDFATHER_GUARD.LEGACY" in causality_ids
-    assert "CIEL.TIME.PREDESTINATION.LEGACY" in causality_ids
+    for expected in {
+        "CIEL.PARADOX.NETWORK.LEGACY",
+        "CIEL.PARADOX.LIAR_GODEL_RUSSELL.LEGACY",
+        "CIEL.PARADOX.THESEUS.LEGACY",
+        "CIEL.PARADOX.BANACH_TARSKI.LEGACY",
+        "CIEL.PARADOX.HILBERT_HOTEL.LEGACY",
+        "CIEL.PARADOX.FERMI.LEGACY",
+        "CIEL.PARADOX.EPR.LEGACY",
+        "CIEL.PARADOX.WIGNER_FRIEND.LEGACY",
+        "CIEL.PARADOX.OLBERS.LEGACY",
+        "CIEL.PARADOX.MORAVEC.LEGACY",
+        "CIEL.PARADOX.FIELD_INIT.LEGACY",
+        "CIEL.PARADOX.FIELD_EVOLVE.LEGACY",
+    }:
+        assert expected in paradox_ids
+    for expected in {
+        "CIEL.TIME.CAUSAL_LOOP.LEGACY",
+        "CIEL.TIME.BOOTSTRAP_LOOP.LEGACY",
+        "CIEL.TIME.GRANDFATHER_GUARD.LEGACY",
+        "CIEL.TIME.PREDESTINATION.LEGACY",
+    }:
+        assert expected in causality_ids
+
+
+def test_current_and_legacy_heisenberg_are_distinct_bindings() -> None:
+    ids = _binding_ids(card_by_id("118"))
+    assert "HEISENBERG_UNCERTAINTY" in ids
+    assert "CIEL.UNCERTAINTY.HEISENBERG.LEGACY" in ids
+    safe = {row.algorithm_id for row in execution_plan_for_concept("118")}
+    assert "HEISENBERG_UNCERTAINTY" in safe
+    assert "CIEL.UNCERTAINTY.HEISENBERG.LEGACY" not in safe
+
+
+def test_current_and_legacy_zeta_are_distinct_bindings() -> None:
+    ids = _binding_ids(card_by_id("117"))
+    assert "RIEMANN_ZETA_ZERO" in ids
+    assert "CIEL.ZETA.PROTECTION.LEGACY" in ids
+    safe = {row.algorithm_id for row in execution_plan_for_concept("117")}
+    assert "RIEMANN_ZETA_ZERO" in safe
+    assert "CIEL.ZETA.PROTECTION.LEGACY" not in safe
+
+
+def test_extended_observer_coherence_and_cosmos_bindings() -> None:
+    assert "CIEL.COHERENCE.WATANABE.LEGACY" in _binding_ids(card_by_id("003"))
+    assert "CIEL.PARADOX.EPR.LEGACY" in _binding_ids(card_by_id("003"))
+    assert "CIEL.OBSERVER.QUANTUM_CREATION.LEGACY" in _binding_ids(card_by_id("031"))
+    assert "CIEL.COSMOS.SELF_UNIVERSE.LEGACY" in _binding_ids(card_by_id("094"))
+    assert "CIEL.PARADOX.OLBERS.LEGACY" in _binding_ids(card_by_id("094"))
 
 
 def test_existing_reciprocal_concept_algorithms_survive_v013() -> None:
@@ -105,7 +163,11 @@ def test_existing_reciprocal_concept_algorithms_survive_v013() -> None:
 
 def test_every_binding_points_to_an_existing_concept_card() -> None:
     card_ids = {card["glossary_id"] for card in load_canonical_cards()}
-    for binding in (*ciel_executable_bindings(), *native_executable_bindings()):
+    for binding in (
+        *ciel_executable_bindings(),
+        *native_executable_bindings(),
+        *extended_legacy_bindings(),
+    ):
         assert set(binding.concept_ids) <= card_ids
 
 
@@ -166,10 +228,7 @@ def test_unified_paradox_plan_requires_legacy_opt_in() -> None:
 
 def test_unified_writes_require_explicit_opt_in() -> None:
     safe = {row.algorithm_id for row in execution_plan_for_concept("090")}
-    writes = {
-        row.algorithm_id
-        for row in execution_plan_for_concept("090", include_writes=True)
-    }
+    writes = {row.algorithm_id for row in execution_plan_for_concept("090", include_writes=True)}
     assert "CIEL.MEMORY.COMMIT.V15" not in safe
     assert "CIEL.MEMORY.ADMISSION.V15" not in safe
     assert "CIEL.MEMORY.COMMIT.V15" in writes
@@ -189,14 +248,16 @@ def test_family_queries_are_typed() -> None:
     memory = bindings_for_family("memory")
     temporal = bindings_for_family("temporal")
     paradox = bindings_for_family("paradox")
-    assert memory and temporal and paradox
+    extended_paradox = extended_legacy_bindings_for_family("paradox")
+    assert memory and temporal and paradox and extended_paradox
     assert all(row.family == "memory" for row in memory)
     assert all(row.family == "temporal" for row in temporal)
     assert all(row.family == "paradox" for row in paradox)
+    assert all(row.family == "paradox" for row in extended_paradox)
 
 
-def test_concept_query_is_priority_sorted() -> None:
-    rows = bindings_for_concept("090")
+def test_extended_concept_query_is_priority_sorted() -> None:
+    rows = extended_legacy_bindings_for_concept("119")
     keys = [(row.priority, row.binding_id) for row in rows]
     assert keys == sorted(keys)
 
@@ -204,7 +265,11 @@ def test_concept_query_is_priority_sorted() -> None:
 def test_no_binding_auto_executes() -> None:
     assert all(
         row.execution_activation == "EXPLICIT_RUNTIME_DISPATCH"
-        for row in (*ciel_executable_bindings(), *native_executable_bindings())
+        for row in (
+            *ciel_executable_bindings(),
+            *native_executable_bindings(),
+            *extended_legacy_bindings(),
+        )
     )
 
 
