@@ -118,4 +118,6 @@ SEED_ROWS = """
 116|Reciprocal_Inversion|ORBIT|operator|H
 117|Riemann_Zeta_Zero|IDENTITY|operator|H
 118|Heisenberg_Uncertainty|DIFFERENTIAL|operator|H
+119|Paradox|ORBIT|operator|H
+120|Causality|ORBIT|operator|H
 """
