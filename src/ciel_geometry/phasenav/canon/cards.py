@@ -7,6 +7,7 @@ import json
 import math
 import struct
 
+from .ciel_executable_map import bindings_for_concept
 from .model import CanonicalConceptState
 from .reciprocal_regularization import concept_algorithm_registry
 from .seed_data import SEED_ROWS
@@ -65,7 +66,7 @@ def _orbital_distance(a: CanonicalConceptState, b: CanonicalConceptState) -> flo
     return math.sqrt(d36 * d36 + dm * dm + dq * dq)
 
 
-def _algorithm_bindings(canonical_name: str) -> list[dict[str, object]]:
+def _local_algorithm_bindings(canonical_name: str) -> list[dict[str, object]]:
     algorithm_id = _CONCEPT_ALGORITHM_CARD_BINDINGS.get(canonical_name)
     if algorithm_id is None:
         return []
@@ -75,8 +76,30 @@ def _algorithm_bindings(canonical_name: str) -> list[dict[str, object]]:
             "concept_algorithm_id": algorithm_id,
             **dict(registry[algorithm_id]),
             "binding_status": "CANDIDATE_DIRECT_CONCEPT_BINDING",
+            "execution_activation": "EXPLICIT_RUNTIME_DISPATCH",
             "scientific_promotion": "NOT_PERFORMED",
         }
+    ]
+
+
+def _ciel_source_algorithm_bindings(glossary_id: str) -> list[dict[str, object]]:
+    """Attach provenance-exact executable CIEL source references to one card."""
+    rows: list[dict[str, object]] = []
+    for binding in bindings_for_concept(glossary_id):
+        rows.append(
+            {
+                "concept_algorithm_id": binding.binding_id,
+                **binding.to_dict(),
+                "binding_status": "CIEL_EXECUTABLE_SOURCE_MAPPED",
+            }
+        )
+    return rows
+
+
+def _algorithm_bindings(canonical_name: str, glossary_id: str) -> list[dict[str, object]]:
+    return [
+        *_local_algorithm_bindings(canonical_name),
+        *_ciel_source_algorithm_bindings(glossary_id),
     ]
 
 
@@ -158,7 +181,7 @@ def _registry_tuple() -> tuple[dict, ...]:
                 "order_parameter_R": round(state.order_parameter, 12),
             },
             "semantic_mass_canon": round(state.semantic_mass, 15),
-            "algorithm_bindings": _algorithm_bindings(seed["canonical_name"]),
+            "algorithm_bindings": _algorithm_bindings(seed["canonical_name"], gid),
             "emergent_paths_canon": paths,
         }
         canonical_payload = json.dumps(
