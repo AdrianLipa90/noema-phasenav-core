@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
 from typing import Any
 
 from .artifact_registry import (
@@ -30,10 +31,37 @@ def _binding_active(root: Path) -> bool:
         return False
 
 
+def _materialize_active_host(receipt: dict[str, Any]) -> None:
+    root = Path("/dev/shm/ciel_noema")
+    if not root.exists() or not _binding_active(root):
+        receipt["host_materialization"] = "INACTIVE_OR_ABSENT"
+        return
+    try:
+        written = write_runtime_artifacts(root / "phasenav")
+    except (OSError, ArtifactIntegrityError) as exc:
+        receipt["host_materialization"] = "FAILED"
+        receipt["host_materialization_error"] = f"{type(exc).__name__}: {exc}"
+    else:
+        receipt["host_materialization"] = "WRITTEN"
+        receipt["host_files"] = sorted(str(path) for path in written.values())
+
+
 def install_runtime_compat(*, materialize_active_host: bool = True) -> dict[str, Any]:
-    """Install canonical fallbacks for legacy runtime globals exactly once."""
+    """Install canonical fallbacks and repair package-level legacy aliases.
+
+    Installation is idempotent. A later call may still request host materialization
+    even when the in-process compatibility bindings were installed earlier.
+    """
     global _INSTALL_RECEIPT
     if _INSTALL_RECEIPT is not None:
+        if (
+            materialize_active_host
+            and _INSTALL_RECEIPT.get("host_materialization") == "NOT_REQUESTED"
+        ):
+            _materialize_active_host(_INSTALL_RECEIPT)
+        package = sys.modules.get("ciel_geometry.phasenav")
+        if package is not None:
+            setattr(package, "RUNTIME_INTEGRITY_RECEIPT", dict(_INSTALL_RECEIPT))
         return dict(_INSTALL_RECEIPT)
 
     from . import pnv_runtime as runtime
@@ -57,20 +85,29 @@ def install_runtime_compat(*, materialize_active_host: bool = True) -> dict[str,
 
     runtime._load_glossary = glossary_with_bloch
     runtime.ALL_STATE_IDS = ids
-    runtime.ALL_OPERATOR_IDS = ids
 
     def write_state_surface(base_path: str = "/dev/shm/ciel_noema/phasenav"):
         return write_runtime_artifacts(base_path)
+
+    def write_operator_surface(base_path: str | Path | None = None) -> str:
+        base = Path(base_path) if base_path is not None else Path("/dev/shm/ciel_noema/phasenav")
+        base.mkdir(parents=True, exist_ok=True)
+        path = base / "CIELINGO_PHASENAV_OPERATOR_VECTORS.noema.jsonl"
+        algebra.generate_operator_jsonl(str(path))
+        return str(path)
 
     runtime._write_state_jsonl = write_state_surface
 
     # Correct legacy aliases that previously pointed operator APIs at state JSONL text.
     runtime.generate_operator_map = algebra.generate_operator_map
     runtime.generate_operator_jsonl = algebra.generate_operator_jsonl
+    runtime.write_operator_algebra = write_operator_surface
     runtime.operator_vector_24d = algebra.operator_vector_36d
+    runtime.operator_vector_36d = algebra.operator_vector_36d
     runtime.concept_to_operator = algebra.concept_to_operator
     runtime.get_all_operations = algebra.get_all_operations
     runtime.ALL_OPERATOR_IDS = list(algebra.ALL_OPERATOR_IDS)
+    algebra.write_operator_algebra = write_operator_surface
 
     original_operator_loader = algebra.load_runtime_operators
 
@@ -156,6 +193,25 @@ def install_runtime_compat(*, materialize_active_host: bool = True) -> dict[str,
     algebra.load_runtime_operators = load_runtime_operators_strict
     algebra.load_concept_phases = load_concept_phases_strict
 
+    # The package imported several old pnv_runtime aliases before solver->loader
+    # installed this layer. Rebind those public attributes in-place so explicit
+    # package-level imports cannot retain the stale empty/string-returning callables.
+    package = sys.modules.get("ciel_geometry.phasenav")
+    if package is not None:
+        public_rebindings = {
+            "ALL_STATE_IDS": runtime.ALL_STATE_IDS,
+            "ALL_OPERATOR_IDS": algebra.ALL_OPERATOR_IDS,
+            "generate_operator_map": algebra.generate_operator_map,
+            "generate_operator_jsonl": algebra.generate_operator_jsonl,
+            "write_operator_algebra": write_operator_surface,
+            "operator_vector_24d": algebra.operator_vector_36d,
+            "operator_vector_36d": algebra.operator_vector_36d,
+            "concept_to_operator": algebra.concept_to_operator,
+            "get_all_operations": algebra.get_all_operations,
+        }
+        for name, value in public_rebindings.items():
+            setattr(package, name, value)
+
     receipt: dict[str, Any] = {
         "schema": "phasenav.runtime-compat-install/v0.14",
         "status": "ACTIVE",
@@ -164,25 +220,17 @@ def install_runtime_compat(*, materialize_active_host: bool = True) -> dict[str,
         "operator_vectors": len(algebra.ALL_OPERATOR_IDS),
         "orbit_vectors": len(ids),
         "vector_dim": 36,
+        "public_abi_rebound": True,
         "silent_empty_fallback": False,
         "host_materialization": "NOT_REQUESTED",
     }
 
     if materialize_active_host:
-        root = Path("/dev/shm/ciel_noema")
-        if root.exists() and _binding_active(root):
-            try:
-                written = write_runtime_artifacts(root / "phasenav")
-            except (OSError, ArtifactIntegrityError) as exc:
-                receipt["host_materialization"] = "FAILED"
-                receipt["host_materialization_error"] = f"{type(exc).__name__}: {exc}"
-            else:
-                receipt["host_materialization"] = "WRITTEN"
-                receipt["host_files"] = sorted(str(path) for path in written.values())
-        else:
-            receipt["host_materialization"] = "INACTIVE_OR_ABSENT"
+        _materialize_active_host(receipt)
 
     _INSTALL_RECEIPT = receipt
+    if package is not None:
+        setattr(package, "RUNTIME_INTEGRITY_RECEIPT", dict(receipt))
     return dict(receipt)
 
 
