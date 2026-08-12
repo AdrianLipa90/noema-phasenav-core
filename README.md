@@ -12,24 +12,26 @@ Core runtime:
 
 ```text
 src/ciel_geometry/phasenav/
-  pnv_runtime.py           legacy/runtime math surface
+  pnv_runtime.py           side-effect-free 36D numerical runtime
   artifact_registry.py     canonical -> runtime artifact materializer
   runtime_integrity.py     compatibility repair / fail-closed binding
   loader.py                validated runtime loader with canonical fallback
   solver.py                target-aware 36D solver
   phase_memory.py          36D memory crystal
-  operator_algebra.py      36D operator algebra
+  operator_algebra.py      strict 36D operator algebra/runtime loaders
   canon/                   canonical H2048 -> T36 cards and executable bindings
   data/
     phase_crystal_36d.npy
     phase_crystal_meta.jsonl
 ```
 
+Importing `pnv_runtime` does **not** write runtime artifacts or mutate `/dev/shm`. Runtime materialization is an explicit operation only.
+
 ## Canonical fallback
 
 Historical PhaseNav expected `glossary.pnv` / `glossarius/ciel_omega_glossary.json`. Those files are not present in the current repository. v0.14 repairs that compatibility boundary by rebuilding the runtime view from the canonical card registry.
 
-Missing or zero-length runtime JSONL no longer means “empty state”. The loader either validates and uses the supplied runtime artifact or reconstructs the full runtime tables from canonical cards. Malformed JSONL, non-finite values and vectors whose dimension is not 36 fail explicitly.
+Missing runtime JSONL uses an explicit canonical fallback. Existing malformed or zero-record runtime data is not accepted as success. Malformed JSONL, non-finite values and vectors whose dimension is not 36 fail explicitly.
 
 ```python
 from ciel_geometry.phasenav.artifact_registry import write_runtime_artifacts
@@ -88,7 +90,7 @@ results = crystal.retrieve("Berry connection holonomy", top_k=5)
 python scripts/repo_integrity_audit.py --json
 ```
 
-The audit checks executable directory completeness, Python compilation, crystal `N × 36` shape, metadata count equality, canonical/runtime population, finite 36D operator/orbit vectors, empty-runtime reconstruction and stale dataset documentation. CI invokes it after pytest.
+The audit checks executable-directory completeness, Python compilation, crystal `N × 36` shape, metadata count equality, canonical/runtime population, finite 36D operator/orbit vectors, explicit materialization, canonical fallback and stale dataset documentation. It also fails if the critical runtime reintroduces broad silent exception swallowing, `v36[:11]` truncation, solver zero-padding, malformed non-36D acceptance, or placeholder substitution for unknown operators. CI invokes the audit after pytest.
 
 ## Installation
 
@@ -99,6 +101,10 @@ python scripts/repo_integrity_audit.py --json
 ```
 
 Python ≥ 3.10.
+
+## Validation status
+
+The repair branch contains executable pytest and whole-repository audit gates. GitHub Actions is currently infrastructure-blocked before runner execution (`steps=null` / no runner steps), so no full-suite PASS is claimed until the exact checkout actually executes.
 
 ## Epistemic boundary
 
