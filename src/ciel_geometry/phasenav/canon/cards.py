@@ -9,6 +9,7 @@ import struct
 
 from .ciel_executable_map import bindings_for_concept
 from .model import CanonicalConceptState
+from .native_executable_map import native_bindings_for_concept
 from .reciprocal_regularization import concept_algorithm_registry
 from .seed_data import SEED_ROWS
 
@@ -82,23 +83,33 @@ def _local_algorithm_bindings(canonical_name: str) -> list[dict[str, object]]:
     ]
 
 
+def _native_algorithm_bindings(glossary_id: str) -> list[dict[str, object]]:
+    return [
+        {
+            "concept_algorithm_id": binding.binding_id,
+            **binding.to_dict(),
+            "binding_status": "PHASENAV_NATIVE_CURRENT_MAPPED",
+        }
+        for binding in native_bindings_for_concept(glossary_id)
+    ]
+
+
 def _ciel_source_algorithm_bindings(glossary_id: str) -> list[dict[str, object]]:
-    """Attach provenance-exact executable CIEL source references to one card."""
-    rows: list[dict[str, object]] = []
-    for binding in bindings_for_concept(glossary_id):
-        rows.append(
-            {
-                "concept_algorithm_id": binding.binding_id,
-                **binding.to_dict(),
-                "binding_status": "CIEL_EXECUTABLE_SOURCE_MAPPED",
-            }
-        )
-    return rows
+    """Attach provenance-exact executable external CIEL source references."""
+    return [
+        {
+            "concept_algorithm_id": binding.binding_id,
+            **binding.to_dict(),
+            "binding_status": "CIEL_EXECUTABLE_SOURCE_MAPPED",
+        }
+        for binding in bindings_for_concept(glossary_id)
+    ]
 
 
 def _algorithm_bindings(canonical_name: str, glossary_id: str) -> list[dict[str, object]]:
     return [
         *_local_algorithm_bindings(canonical_name),
+        *_native_algorithm_bindings(glossary_id),
         *_ciel_source_algorithm_bindings(glossary_id),
     ]
 
@@ -132,9 +143,7 @@ def _registry_tuple() -> tuple[dict, ...]:
                     "rank": rank,
                     "marker": "⟦H2048→T36⟧",
                     "path_type": "canonical_orbital_relation_v1",
-                    "angular_distance_36d": round(
-                        state.angular_distance(other), 12
-                    ),
+                    "angular_distance_36d": round(state.angular_distance(other), 12),
                     "semantic_mass_log_distance": round(
                         abs(math.log(state.semantic_mass / other.semantic_mass)), 12
                     ),
@@ -185,10 +194,7 @@ def _registry_tuple() -> tuple[dict, ...]:
             "emergent_paths_canon": paths,
         }
         canonical_payload = json.dumps(
-            card,
-            ensure_ascii=False,
-            sort_keys=True,
-            separators=(",", ":"),
+            card, ensure_ascii=False, sort_keys=True, separators=(",", ":")
         )
         card["content_digest_sha256"] = hashlib.sha256(
             canonical_payload.encode("utf-8")
@@ -223,11 +229,7 @@ def emergent_path(start: str, target: str, *, max_steps: int = 12) -> dict | Non
         cost, path = frontier.pop(0)
         node = path[-1]
         if node == target:
-            return {
-                "path": list(path),
-                "cost": cost,
-                "marker": "⟦H2048→T36-path⟧",
-            }
+            return {"path": list(path), "cost": cost, "marker": "⟦H2048→T36-path⟧"}
         if len(path) > max_steps:
             continue
         for edge in cards[node]["emergent_paths_canon"]:
