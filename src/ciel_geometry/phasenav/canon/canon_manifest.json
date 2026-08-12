@@ -128,11 +128,7 @@
     "version": "0.12.0",
     "schema": "phasenav.reciprocal-regularization/v0.12",
     "module": "ciel_geometry.phasenav.canon.reciprocal_regularization",
-    "concept_chain": [
-      "RECIPROCAL_INVERSION",
-      "RIEMANN_ZETA_ZERO",
-      "HEISENBERG_UNCERTAINTY"
-    ],
+    "concept_chain": ["RECIPROCAL_INVERSION", "RIEMANN_ZETA_ZERO", "HEISENBERG_UNCERTAINTY"],
     "source_coordinate": "rho=|z|/(scale+|z|)",
     "reciprocal_coordinate": "rho_rec=1-rho",
     "zero_center": "z=0 -> source rho=0; reciprocal image rho_rec=1",
@@ -150,6 +146,7 @@
     "schema": "phasenav.ciel-executable-concept-map/v0.13",
     "modules": [
       "ciel_geometry.phasenav.canon.ciel_executable_map",
+      "ciel_geometry.phasenav.canon.ciel_legacy_extended_map",
       "ciel_geometry.phasenav.canon.native_executable_map",
       "ciel_geometry.phasenav.canon.concept_execution"
     ],
@@ -165,7 +162,8 @@
     "mapped_families": [
       "memory", "semantic", "verification", "paradox", "temporal",
       "intention", "ethics", "resonance", "dynamics", "consciousness",
-      "perception", "context", "scheduler", "constraint", "pipeline"
+      "perception", "context", "scheduler", "constraint", "pipeline",
+      "quantum", "uncertainty", "mathematics", "coherence", "observer", "cosmos"
     ],
     "card_field": "algorithm_bindings",
     "execution_planner": "execution_plan_for_concept",
@@ -174,6 +172,8 @@
     "auto_execute_from_concept_match": false,
     "write_binding_requires_explicit_opt_in": true,
     "legacy_binding_requires_explicit_opt_in": true,
+    "legacy_heisenberg_distinct_from_v0_12_soft_clip": true,
+    "legacy_zeta_distinct_from_v0_12_zero_regularization": true,
     "scientific_promotion": "NOT_PERFORMED",
     "status": "CANON_CANDIDATE"
   },
