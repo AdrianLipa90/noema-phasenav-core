@@ -15,6 +15,17 @@ from ciel_geometry.phasenav.canon.ciel_executable_map import (
     ciel_executable_map_receipt,
     concept_execution_plan,
 )
+from ciel_geometry.phasenav.canon.concept_execution import (
+    concept_execution_summary,
+    execution_plan_for_concept,
+)
+from ciel_geometry.phasenav.canon.native_executable_map import (
+    PHASENAV_NATIVE_COMMIT,
+    PHASENAV_NATIVE_REPO,
+    native_binding_by_id,
+    native_executable_bindings,
+    native_executable_map_receipt,
+)
 
 
 def _binding_ids(card: dict) -> set[str]:
@@ -30,8 +41,13 @@ def test_new_semantic_nodes_exist_as_candidates() -> None:
     assert causality["epistemic"]["canon_allowed"] is False
 
 
-def test_memory_card_carries_canonical_v15_execution_sources() -> None:
+def test_memory_card_carries_native_and_v15_execution_sources() -> None:
     ids = _binding_ids(card_by_id("090"))
+    assert "PNV.MEMORY.HOLONOMIC_RECALL.NATIVE" in ids
+    assert "PNV.MEMORY.HOLONOMIC_INGEST.NATIVE" in ids
+    assert "PNV.MEMORY.DECAY.NATIVE" in ids
+    assert "PNV.MEMORY.HOLONOMY_CACHE_GET.NATIVE" in ids
+    assert "PNV.MEMORY.HOLONOMY_CACHE_PUT.NATIVE" in ids
     assert "CIEL.MEMORY.RECONSTRUCT.V15" in ids
     assert "CIEL.MEMORY.READ_PACKET.V15" in ids
     assert "CIEL.MEMORY.COMMIT.V15" in ids
@@ -39,14 +55,34 @@ def test_memory_card_carries_canonical_v15_execution_sources() -> None:
     assert "CIEL.MEMORY.RECEIPT_CHAIN.V15" in ids
 
 
-def test_time_card_carries_temporal_execution_sources() -> None:
+def test_time_card_carries_native_and_legacy_temporal_sources() -> None:
     ids = _binding_ids(card_by_id("018"))
+    assert "PNV.TIME.GENERATION_DYNAMICS.NATIVE" in ids
+    assert "PNV.TIME.TRAJECTORY_CURVATURE.NATIVE" in ids
+    assert "PNV.MEMORY.DECAY.NATIVE" in ids
     assert "CIEL.TIME.FIELD_INIT.LEGACY" in ids
     assert "CIEL.TIME.FIELD_EVOLVE.LEGACY" in ids
     assert "CIEL.TIME.EVOLUTION_STEP.LEGACY" in ids
     assert "CIEL.TIME.ZENO.LEGACY" in ids
     assert "CIEL.TIME.CAUSAL_LOOP.LEGACY" in ids
     assert "CIEL.TIME.ENTROPY_DECAY.LEGACY" in ids
+
+
+def test_context_card_has_native_context_algorithms() -> None:
+    ids = _binding_ids(card_by_id("073"))
+    assert "PNV.CONTEXT.FROM_CONCEPTS.NATIVE" in ids
+    assert "PNV.CONTEXT.VECTOR.NATIVE" in ids
+    assert "PNV.CONTEXT.SAMPLE.NATIVE" in ids
+    assert "PNV.CONTEXT.FIND_ATTRACTORS.NATIVE" in ids
+    assert "PNV.CONTEXT.TRACE_ORBIT.NATIVE" in ids
+
+
+def test_kairos_card_has_native_scheduler_and_temporal_algorithms() -> None:
+    ids = _binding_ids(card_by_id("115"))
+    assert "PNV.SCHEDULER.COST.NATIVE" in ids
+    assert "PNV.SCHEDULER.PUSH.NATIVE" in ids
+    assert "PNV.SCHEDULER.POP.NATIVE" in ids
+    assert "PNV.TIME.GENERATION_DYNAMICS.NATIVE" in ids
 
 
 def test_paradox_and_causality_cards_collect_their_families() -> None:
@@ -69,11 +105,11 @@ def test_existing_reciprocal_concept_algorithms_survive_v013() -> None:
 
 def test_every_binding_points_to_an_existing_concept_card() -> None:
     card_ids = {card["glossary_id"] for card in load_canonical_cards()}
-    for binding in ciel_executable_bindings():
+    for binding in (*ciel_executable_bindings(), *native_executable_bindings()):
         assert set(binding.concept_ids) <= card_ids
 
 
-def test_binding_provenance_is_exact_and_typed() -> None:
+def test_external_binding_provenance_is_exact_and_typed() -> None:
     memory = binding_by_id("CIEL.MEMORY.COMMIT.V15")
     assert memory.source_repo == CANON_V15_REPO
     assert memory.source_commit == CANON_V15_COMMIT
@@ -88,28 +124,65 @@ def test_binding_provenance_is_exact_and_typed() -> None:
     assert paradox.provenance_class == "LEGACY_EXECUTABLE_SOURCE"
 
 
-def test_default_execution_plan_is_fail_closed() -> None:
+def test_native_binding_provenance_is_exact_and_current() -> None:
+    recall = native_binding_by_id("PNV.MEMORY.HOLONOMIC_RECALL.NATIVE")
+    assert recall.source_repo == PHASENAV_NATIVE_REPO
+    assert recall.source_commit == PHASENAV_NATIVE_COMMIT
+    assert recall.source_blob_sha == "24a2965c42ecedfd27555f055643c3e0c7671fda"
+    assert recall.provenance_class == "PHASENAV_NATIVE_CURRENT"
+    assert recall.execution_activation == "EXPLICIT_RUNTIME_DISPATCH"
+
+
+def test_external_plan_remains_fail_closed() -> None:
     memory_plan = concept_execution_plan("090")
     assert memory_plan
     assert all(row.provenance_class == "CANONICAL_V15" for row in memory_plan)
     assert all(row.side_effect != "WRITE" for row in memory_plan)
     assert all(row.execution_activation == "EXPLICIT_RUNTIME_DISPATCH" for row in memory_plan)
-
-    # Paradox sources are legacy and therefore require explicit opt-in.
     assert concept_execution_plan("119") == ()
     assert concept_execution_plan("119", include_legacy=True)
 
 
-def test_writes_require_explicit_plan_opt_in() -> None:
-    safe = {row.binding_id for row in concept_execution_plan("090")}
+def test_unified_default_plan_prefers_current_and_v15_without_legacy_or_writes() -> None:
+    plan = execution_plan_for_concept("090")
+    assert plan
+    provenance = {row.provenance_class for row in plan}
+    assert "PHASENAV_NATIVE_CURRENT" in provenance
+    assert "CANONICAL_V15" in provenance
+    assert not any(row.legacy for row in plan)
+    assert not any(row.write_capable for row in plan)
+    ids = {row.algorithm_id for row in plan}
+    assert "PNV.MEMORY.HOLONOMIC_RECALL.NATIVE" in ids
+    assert "CIEL.MEMORY.RECONSTRUCT.V15" in ids
+    assert "CIEL.MEMORY.COMMIT.V15" not in ids
+
+
+def test_unified_paradox_plan_requires_legacy_opt_in() -> None:
+    assert execution_plan_for_concept("119") == ()
+    plan = execution_plan_for_concept("119", include_legacy=True)
+    assert plan
+    assert all(row.legacy for row in plan)
+
+
+def test_unified_writes_require_explicit_opt_in() -> None:
+    safe = {row.algorithm_id for row in execution_plan_for_concept("090")}
     writes = {
-        row.binding_id
-        for row in concept_execution_plan("090", include_writes=True)
+        row.algorithm_id
+        for row in execution_plan_for_concept("090", include_writes=True)
     }
     assert "CIEL.MEMORY.COMMIT.V15" not in safe
     assert "CIEL.MEMORY.ADMISSION.V15" not in safe
     assert "CIEL.MEMORY.COMMIT.V15" in writes
     assert "CIEL.MEMORY.ADMISSION.V15" in writes
+
+
+def test_concept_execution_summary_reports_policy() -> None:
+    summary = concept_execution_summary("090")
+    assert summary["concept_name"] == "Memory"
+    assert summary["mapped_algorithm_count"] >= summary["default_plan_count"] > 0
+    assert summary["write_binding_count"] >= 2
+    assert summary["legacy_binding_count"] >= 1
+    assert summary["default_policy"]["auto_execute"] is False
 
 
 def test_family_queries_are_typed() -> None:
@@ -131,15 +204,21 @@ def test_concept_query_is_priority_sorted() -> None:
 def test_no_binding_auto_executes() -> None:
     assert all(
         row.execution_activation == "EXPLICIT_RUNTIME_DISPATCH"
-        for row in ciel_executable_bindings()
+        for row in (*ciel_executable_bindings(), *native_executable_bindings())
     )
 
 
-def test_receipt_is_deterministic_and_non_promoting() -> None:
-    left = ciel_executable_map_receipt()
-    right = ciel_executable_map_receipt()
-    assert left["version"] == CIEL_EXECUTABLE_MAP_VERSION
-    assert left["status"] == CIEL_EXECUTABLE_MAP_STATUS
-    assert left["receipt_sha256"] == right["receipt_sha256"]
-    assert left["policy"]["auto_execute_from_concept_match"] is False
-    assert left["policy"]["scientific_promotion"] == "NOT_PERFORMED"
+def test_receipts_are_deterministic_and_non_promoting() -> None:
+    external_left = ciel_executable_map_receipt()
+    external_right = ciel_executable_map_receipt()
+    assert external_left["version"] == CIEL_EXECUTABLE_MAP_VERSION
+    assert external_left["status"] == CIEL_EXECUTABLE_MAP_STATUS
+    assert external_left["receipt_sha256"] == external_right["receipt_sha256"]
+    assert external_left["policy"]["auto_execute_from_concept_match"] is False
+    assert external_left["policy"]["scientific_promotion"] == "NOT_PERFORMED"
+
+    native_left = native_executable_map_receipt()
+    native_right = native_executable_map_receipt()
+    assert native_left["receipt_sha256"] == native_right["receipt_sha256"]
+    assert native_left["policy"]["auto_execute_from_concept_match"] is False
+    assert native_left["policy"]["scientific_promotion"] == "NOT_PERFORMED"
