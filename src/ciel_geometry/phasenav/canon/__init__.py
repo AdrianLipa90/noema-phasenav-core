@@ -36,6 +36,20 @@ from .orbital import (
     quantized_principal_shell,
     radial_ratio_from_poincare,
 )
+from .reciprocal_regularization import (
+    RECIPROCAL_REGULARIZATION_STATUS,
+    RECIPROCAL_REGULARIZATION_VERSION,
+    RIEMANN_ZETA_AT_ZERO,
+    ReciprocalRegion,
+    ReciprocalResolution,
+    compactified_reciprocal_coordinates,
+    concept_algorithm_registry,
+    division_with_concept_guard,
+    heisenberg_soft_reciprocal,
+    heisenberg_uncertainty_floor,
+    resolve_reciprocal,
+    riemann_zeta_zero_regularization,
+)
 from .corpus import CORPUS
 from .cards import card_by_id, emergent_path, load_canonical_cards
 from .context_dynamics import (
@@ -166,6 +180,12 @@ __all__ = [
     "full_spin_orbital_address", "orbital_inversion", "period_ratio_from_poincare",
     "principal_coordinate_from_poincare", "quantized_principal_shell",
     "radial_ratio_from_poincare",
+    "RECIPROCAL_REGULARIZATION_STATUS", "RECIPROCAL_REGULARIZATION_VERSION",
+    "RIEMANN_ZETA_AT_ZERO", "ReciprocalRegion", "ReciprocalResolution",
+    "compactified_reciprocal_coordinates", "concept_algorithm_registry",
+    "division_with_concept_guard", "heisenberg_soft_reciprocal",
+    "heisenberg_uncertainty_floor", "resolve_reciprocal",
+    "riemann_zeta_zero_regularization",
     "CORPUS", "card_by_id", "emergent_path", "load_canonical_cards",
     "CONTEXT_BANDWIDTH", "Attractor", "ContextAnchor", "ContextPotential",
     "FieldSample", "OrbitStep", "OrbitTrace", "PhaseVector36", "TangentVector36",
