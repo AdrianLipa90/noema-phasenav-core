@@ -1,11 +1,13 @@
 """Whole-repository PhaseNav integrity audit.
 
 Exit non-zero on structural placeholders, empty canonical/runtime surfaces,
-non-36D vectors, crystal shape/count mismatches, or broken canonical fallback.
+non-36D vectors, crystal shape/count mismatches, silent exception swallowing,
+legacy 11D truncation, zero-padding fallbacks, or broken canonical fallback.
 """
 from __future__ import annotations
 
 import argparse
+import inspect
 import json
 import math
 from pathlib import Path
@@ -20,6 +22,22 @@ EXPECTED_EXECUTABLE_DIRS = {
     "kuramoto": {"README.md", "__init__.py", "synchronizer.py", "diagnostics.py"},
     "solver": {"README.md", "__init__.py", "runtime.py", "cli.py"},
     "encryption": {"README.md", "__init__.py", "runtime.py", "validation.py"},
+}
+
+CRITICAL_RUNTIME_FILES = (
+    "src/ciel_geometry/phasenav/pnv_runtime.py",
+    "src/ciel_geometry/phasenav/operator_algebra.py",
+    "src/ciel_geometry/phasenav/loader.py",
+    "src/ciel_geometry/phasenav/solver.py",
+    "src/ciel_geometry/phasenav/artifact_registry.py",
+    "src/ciel_geometry/phasenav/runtime_integrity.py",
+)
+
+FORBIDDEN_RUNTIME_PATTERNS = {
+    "except Exception:\n        pass": "broad silent exception swallowing",
+    "v36[:11]": "legacy 11D phase truncation",
+    "[0.0] * len(ORBIT_DIMS)": "silent zero-padded orbit fallback",
+    "[0.0] * 36": "silent zero-padded 36D fallback",
 }
 
 
@@ -53,6 +71,19 @@ def audit(root: Path) -> dict:
     _check(not compile_failures, f"python compile failures: {compile_failures[:8]}", failures)
     details["python_compile_failures"] = compile_failures
 
+    forbidden_hits: list[dict[str, str]] = []
+    for rel in CRITICAL_RUNTIME_FILES:
+        path = root / rel
+        _check(path.exists(), f"missing critical runtime file: {rel}", failures)
+        if not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8")
+        for pattern, reason in FORBIDDEN_RUNTIME_PATTERNS.items():
+            if pattern in text:
+                forbidden_hits.append({"file": rel, "pattern": pattern, "reason": reason})
+                failures.append(f"{rel}: forbidden runtime pattern: {reason}")
+    details["forbidden_runtime_hits"] = forbidden_hits
+
     vec_path = root / "src/ciel_geometry/phasenav/data/phase_crystal_36d.npy"
     meta_path = root / "src/ciel_geometry/phasenav/data/phase_crystal_meta.jsonl"
     _check(vec_path.exists(), "phase_crystal_36d.npy missing", failures)
@@ -78,6 +109,10 @@ def audit(root: Path) -> dict:
     from ciel_geometry.phasenav.solver import PhaseNavSolver
     from ciel_geometry.phasenav import pnv_runtime
     from ciel_geometry.phasenav import operator_algebra
+
+    init_source = inspect.getsource(pnv_runtime._init)
+    _check("_write_state_jsonl" not in init_source, "pnv_runtime import initialization writes runtime artifacts", failures)
+    _check("except Exception" not in init_source, "pnv_runtime import initialization swallows exceptions", failures)
 
     cards = load_canonical_cards()
     bundle = build_canonical_runtime_bundle()
@@ -109,9 +144,9 @@ def audit(root: Path) -> dict:
         orbit = solver.get_orbit("001")
         _check(len(orbit) == 36, f"solver orbit returned {len(orbit)}D", failures)
 
-        write_runtime_artifacts(temp)
+        pnv_runtime._write_state_jsonl(temp)
         runtime_report = validate_runtime_directory(temp)
-        _check(bool(runtime_report["ok"]), f"materialized runtime validation failed: {runtime_report}", failures)
+        _check(bool(runtime_report["ok"]), f"explicit pnv runtime materialization failed: {runtime_report}", failures)
         details["materialized_runtime"] = runtime_report
 
         concept_map = operator_algebra.load_concept_phases(
@@ -119,6 +154,22 @@ def audit(root: Path) -> dict:
             force_reload=True,
         )
         _check(len(concept_map) >= len(cards), "operator_algebra concept fallback empty", failures)
+
+        malformed = temp / "malformed-operators.jsonl"
+        malformed.write_text('{"operator_name":"IDENTITY","vector_36d":[1,2]}\n', encoding="utf-8")
+        try:
+            operator_algebra.load_runtime_operators(malformed, force_reload=True)
+        except operator_algebra.OperatorRuntimeIntegrityError:
+            pass
+        else:
+            failures.append("operator_algebra accepted malformed non-36D runtime data")
+
+        try:
+            operator_algebra.get_runtime_operator_phi("__UNKNOWN_OPERATOR__")
+        except KeyError:
+            pass
+        else:
+            failures.append("operator_algebra fabricated placeholder for unknown operator")
 
     readme = (root / "README.md").read_text(encoding="utf-8")
     stale_active_claims = (
@@ -132,16 +183,6 @@ def audit(root: Path) -> dict:
         "README still advertises stale 35,836 snapshot as active crystal",
         failures,
     )
-
-    for rel in (
-        "src/ciel_geometry/phasenav/pnv_runtime.py",
-        "src/ciel_geometry/phasenav/operator_algebra.py",
-    ):
-        text = (root / rel).read_text(encoding="utf-8")
-        if "except Exception:\n        pass" in text:
-            warnings.append(
-                f"{rel}: legacy broad silent exception remains in source; public runtime is superseded by runtime_integrity v0.14"
-            )
 
     details["canonical_cards"] = len(cards)
     details["runtime_counts"] = {key: bundle.count(key) for key in bundle.records}
