@@ -4,6 +4,7 @@ import math
 
 import pytest
 
+from ciel_geometry.phasenav.canon.cards import card_by_id
 from ciel_geometry.phasenav.canon.reciprocal_regularization import (
     ReciprocalRegion,
     compactified_reciprocal_coordinates,
@@ -108,3 +109,19 @@ def test_concept_algorithm_registry_has_all_three_bindings() -> None:
         "HEISENBERG_UNCERTAINTY",
     }
     assert registry["RIEMANN_ZETA_ZERO"]["ordinary_division_identity"] is False
+
+
+def test_algorithm_concepts_are_directly_bound_on_cards() -> None:
+    expected = {
+        "116": "RECIPROCAL_INVERSION",
+        "117": "RIEMANN_ZETA_ZERO",
+        "118": "HEISENBERG_UNCERTAINTY",
+    }
+    for card_id, algorithm_id in expected.items():
+        card = card_by_id(card_id)
+        assert card["epistemic"]["canon_allowed"] is False
+        assert len(card["algorithm_bindings"]) == 1
+        binding = card["algorithm_bindings"][0]
+        assert binding["concept_algorithm_id"] == algorithm_id
+        assert binding["binding_status"] == "CANDIDATE_DIRECT_CONCEPT_BINDING"
+        assert binding["scientific_promotion"] == "NOT_PERFORMED"
