@@ -1,0 +1,32 @@
+{
+  "schema": "PNV_PLATFORM_REPO_SOT_V1",
+  "status": "NORMATIVE_REPOSITORY_AUTHORITY",
+  "source_of_truth": "GITHUB_REPOSITORY",
+  "repository": "AdrianLipa90/noema-phasenav-core",
+  "canonical_branch": "master",
+  "library_role": "MIRROR_RECOVERY_INDEX_PROVENANCE",
+  "sync_direction": {
+    "authoritative": "REPO_TO_LIBRARY",
+    "recovery_exception": "LIBRARY_TO_REPO_ONLY_WHEN_REPOSITORY_ARTIFACT_IS_MISSING_OR_DAMAGED_AND_CONTENT_IDENTITY_IS_VERIFIED",
+    "conflict_rule": "REPOSITORY_WINS_UNLESS_USER_EXPLICITLY_PROMOTES_A_LIBRARY_CANDIDATE"
+  },
+  "subscription_independence_required": true,
+  "invariants": [
+    "REPOSITORY_MUST_REMAIN_SELF_CONTAINED_FOR_CORE_PHASENAV_OPERATION",
+    "LIBRARY_ACCESS_MUST_NOT_BE_REQUIRED_TO_CHECK_OUT_BUILD_TEST_OR_RUN_REPOSITORY_CORE",
+    "LIBRARY_MAY_CACHE_MIRROR_INDEX_AND_RECOVER_BUT_MUST_NOT_BECOME_A_HIDDEN_RUNTIME_DEPENDENCY",
+    "REPO_CHANGES_MUST_BE_MIRRORED_TO_LIBRARY_WITH_PROVENANCE_WHEN_LIBRARY_IS_AVAILABLE",
+    "NO_FORCE_UPDATE_OF_CANONICAL_BRANCH",
+    "CANDIDATE_LIBRARY_ARTIFACTS_REQUIRE_EXPLICIT_REVIEW_BEFORE_REPO_PROMOTION"
+  ],
+  "migration_note": {
+    "previous_operational_assumption": "LIBRARY_FIRST",
+    "corrected_by_user": true,
+    "meaning": "Library-first remains a recovery/search preference for the assistant, not authority over the PhaseNav repository SoT"
+  },
+  "epistemic_boundaries": {
+    "operational_dimension": 36,
+    "foundational_36d_generator_provenance": "OPEN_H4",
+    "repo_authority_does_not_promote_open_physics_claims": true
+  }
+}

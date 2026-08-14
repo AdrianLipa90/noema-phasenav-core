@@ -1,0 +1,53 @@
+{
+  "schema": "PNV_PLATFORM_LIBRARY_GITHUB_SYNC_V2",
+  "status": "HISTORICAL_IMPORT_TO_REPO_SOT_STAGED_ON_SYNC_BRANCH",
+  "source_of_truth": "GITHUB_REPOSITORY",
+  "authority_policy": "provenance/PNV_PLATFORM_REPO_SOT_V1.json",
+  "historical_library_source": {
+    "schema": "PNV_PLATFORM_CURRENT_V2",
+    "runtime_path": "/NOEMA/00_CONTROL/PHASENAV/PLATFORM_V1/pnv_platform.py",
+    "manifest_path": "/NOEMA/03_EVIDENCE/MANIFESTS/PHASENAV_PLATFORM/PNV_PLATFORM_MANIFEST_V1_1.json",
+    "canon_dependency": "/NOEMA/04_LIFECYCLE/CURRENT/PHASENAV_CANON_CURRENT_V1.json",
+    "canon_root_hash": "bb7b98a3334c1b0ff56b4a2974ef8fb71a40c4bfd9305712a4438c57fe640a20",
+    "imported_runtime_sha256": "817c7fbeac6e5603453c0ede37f2db67bdf990b3ea2ed3fa64484f0b3953061b",
+    "imported_runtime_size_bytes": 17845,
+    "meaning": "Recovery/import provenance only; not continuing authority over repository state"
+  },
+  "github": {
+    "repository": "AdrianLipa90/noema-phasenav-core",
+    "canonical_branch": "master",
+    "base_sha": "a42933200bf230de95b34ca6299edf6781c7677a",
+    "sync_branch": "sync/library-pnv-platform-v2",
+    "runtime_path": "src/ciel_geometry/phasenav/pnv_platform.py",
+    "package_entry_point": "pnv = ciel_geometry.phasenav.pnv_platform:main"
+  },
+  "sync_contract": [
+    "REPOSITORY_IS_SOT",
+    "REPO_TO_LIBRARY_IS_NORMAL_SYNC_DIRECTION",
+    "LIBRARY_TO_REPO_IS_RECOVERY_ONLY_WITH_VERIFIED_CONTENT_IDENTITY",
+    "LIBRARY_ACCESS_IS_NOT_REQUIRED_FOR_CORE_REPO_OPERATION",
+    "FROZEN_CANON_NOT_MUTATED_BY_THIS_IMPORT",
+    "GITHUB_MASTER_NOT_MUTATED_BY_THIS_STAGING_BRANCH",
+    "CANDIDATE_ONLY_LIBRARY_SOURCES_NOT_AUTO_PROMOTED"
+  ],
+  "excluded_candidate_only_sources": [
+    {
+      "name": "operator_algebra.py",
+      "library_sha256": "84fc4214641db72d815ae210f59ed718338aed7de493df995c447fe0325d874e",
+      "reason": "MIGRATION_SOURCE_HASH_GUARD_V1 marks patch_authority CANDIDATE_ONLY"
+    }
+  ],
+  "epistemic_boundaries": {
+    "operational_dimension": 36,
+    "operational_dimension_status": "COMPATIBILITY_INPUT",
+    "foundational_36d_generator_provenance": "OPEN_H4",
+    "runtime_import_does_not_close_h4": true,
+    "live_aux_tether_revalidated_in_this_sync": false
+  },
+  "validation": {
+    "historical_library_implementation_receipt": "17/17 PASS",
+    "github_repo_integration_tests_added": true,
+    "github_actions_result": "NOT_RUN_ACCOUNT_BILLING_BLOCK",
+    "github_actions_code_verdict": "UNKNOWN"
+  }
+}
