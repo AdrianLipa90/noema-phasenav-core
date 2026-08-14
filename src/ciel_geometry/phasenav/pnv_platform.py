@@ -188,7 +188,7 @@ class PNVPlatform:
         elif gate_id=="PNV.GATE.NO_COORDINATE_TO_M":
             allow=not context.get("coordinate_to_memory_mapping",False)
             reason="PASS" if allow else "COORDINATE_TO_M_MAPPING_FORBIDDEN"
-        elif gate_id=="PNV.GATE.NOEMA_ONLY"
+        elif gate_id=="PNV.GATE.NOEMA_ONLY":
             allow=context.get("promotion_source","NOEMA_LIBRARY")=="NOEMA_LIBRARY"
             reason="PASS" if allow else "NON_NOEMA_PROMOTION_DENIED"
         elif gate_id=="PNV.GATE.AUX_FRESHNESS":
@@ -202,7 +202,7 @@ class PNVPlatform:
         if operator_id=="pnv.torus.normalize":
             v=args["vector"]; 
             if len(v)!=36: raise ValueError("requires 36 coordinates")
-            return [((v/TAU)%1.0) for x in v]
+            return [((x/TAU)%1.0) for x in v]
         if operator_id=="pnv.torus.delta":
             return torus_delta(args["q"],args["r"])
         if operator_id=="pnv.torus.geodesic":
@@ -283,82 +283,93 @@ class PNVPlatform:
         if not commit:
             return {"mode":"DRY_RUN","allow":allow,"checks":checks,"input_sha256":digest(input_obj)}
         if not allow:
-            return {"mode":"COMMIT_OVERLAY","result":"DENIED","checks":checks,"input_sha256":dÚYÙ\İ
-[œ]ÛØšŠ_BˆYˆ›İÙ[‹›İ™\›^WÜ]Üˆ›İÙ[‹œ™XÙZ\Ü]‚ˆ˜Z\ÙH[[YQ\œ›ÜŠ›İ™\›^H[™™XÙZ\]È™\]Z\™Y›ÜˆÛÛ[Z]ŠBˆÙ[‹›İ™\›^WÜ]œ\™[›ZÙ\Š\™[ÏUYK^\İÛÚÏUYJBˆÙ[‹œ™XÙZ\Ü]œ\™[›ZÙ\Š\™[ÏUYK^\İÛÚÏUYJBˆÙ\O\İ[JH›Üˆ[ˆÙ[‹—Ûİ™\›^WÙ]™[Ê
-JJÌBˆ]™[^ÂˆœØÚ[XHˆ”•—ÓÕ‘T“VWÑU‘S•ÕŒH‹œÙ\HœÙ\K[Y\İ[\İ]È]×Û›İÊ
-Kˆ›]]][Û—ÚÚ[™šÚ[™œ^[ØYœ^[ØY˜]]Üš]H˜]]Üš]K˜XİÜˆ˜XİÜ‹ˆœ™]—Ù]™[ÜÚLMˆœÙ[‹—Û\İÙ]™[Ú\Ú
+            return {"mode":"COMMIT_OVERLAY","result":"DENIED","checks":checks,"input_sha256":digest(input_obj)}
+        if not self.overlay_path or not self.receipt_path:
+            raise RuntimeError("overlay and receipt paths required for commit")
+        self.overlay_path.parent.mkdir(parents=True,exist_ok=True)
+        self.receipt_path.parent.mkdir(parents=True,exist_ok=True)
+        seq=sum(1 for x in self._overlay_events())+1
+        event={
+            "schema":"PNV_OVERLAY_EVENT_V1","seq":seq,"timestamp_utc":utc_now(),
+            "mutation_kind":kind,"payload":payload,"authority":authority,"actor":actor,
+            "prev_event_sha256":self._last_event_hash(),"result":"COMMITTED"
+        }
+        event["event_sha256"]=digest(event)
+        with self.overlay_path.open("a",encoding="utf-8") as f:
+            f.write(json.dumps(event,sort_keys=True,ensure_ascii=False)+"\n")
+        receipt={
+            "schema":"PNV_RECEIPT_V1","receipt_id":f"PNV-R-{seq:08d}",
+            "timestamp_utc":event["timestamp_utc"],"action":kind,"actor":actor,
+            "input_sha256":digest(input_obj),"result":"PASS",
+            "event_sha256":event["event_sha256"],
+            "prev_receipt_sha256":self._last_receipt_hash()
+        }
+        receipt["receipt_sha256"]=digest(receipt)
+        with self.receipt_path.open("a",encoding="utf-8") as f:
+            f.write(json.dumps(receipt,sort_keys=True,ensure_ascii=False)+"\n")
+        self._rebuild()
+        return {"mode":"COMMIT_OVERLAY","result":"COMMITTED","event":event,"receipt":receipt,"checks":checks}
 
-Kœ™\İ[ˆÓÓSRUQ‚ˆBˆ]™[È™]™[ÜÚLMˆ—OYYÙ\İ
-]™[
-BˆÚ]Ù[‹›İ™\›^WÜ]›Ü[Š˜H‹[˜ÛÙ[™ÏH]‹NŠH\È‚ˆ‹Üš]JœÛÛ‹™[\Ê]™[ÛÜÚÙ^\ÏUYK[œİ\™WØ\ØÚZOQ˜[ÙJJÈ—ˆŠBˆ™XÙZ\^ÂˆœØÚ[XHˆ”•—Ô‘PÑRTÕŒH‹œ™XÙZ\ÚY™ˆ”•‹T‹^ÜÙ\NŒH‹ˆ[Y\İ[\İ]È™]™[È[Y\İ[\İ]È—K˜Xİ[ÛˆšÚ[™˜XİÜˆ˜XİÜ‹ˆš[œ]ÜÚLMˆ™YÙ\İ
-[œ]ÛØšŠKœ™\İ[ˆ”TÔÈ‹ˆ™]™[ÜÚLMˆ™]™[È™]™[ÜÚLMˆ—Kˆœ™]—Ü™XÙZ\ÜÚLMˆœÙ[‹—Û\İÜ™XÙZ\Ú\Ú
+    def verify_journal(self):
+        issues=[]; prev="0"*64
+        for n,ev in enumerate(self._overlay_events(),1):
+            got=ev.get("event_sha256"); tmp=dict(ev); tmp.pop("event_sha256",None)
+            if ev.get("prev_event_sha256")!=prev: issues.append(f"EVENT_PREV_HASH:{n}")
+            if digest(tmp)!=got: issues.append(f"EVENT_HASH:{n}")
+            prev=got or prev
+        prev="0"*64
+        if self.receipt_path and self.receipt_path.exists():
+            for n,line in enumerate(self.receipt_path.read_text(encoding="utf-8").splitlines(),1):
+                if not line.strip(): continue
+                r=json.loads(line); got=r.get("receipt_sha256"); tmp=dict(r); tmp.pop("receipt_sha256",None)
+                if r.get("prev_receipt_sha256")!=prev: issues.append(f"RECEIPT_PREV_HASH:{n}")
+                if digest(tmp)!=got: issues.append(f"RECEIPT_HASH:{n}")
+                prev=got or prev
+        return {"status":"PASS" if not issues else "FAIL","issues":issues}
 
-BˆBˆ™XÙZ\Èœ™XÙZ\ÜÚLMˆ—OYYÙ\İ
-™XÙZ\
-BˆÚ]Ù[‹œ™XÙZ\Ü]›Ü[Š˜H‹[˜ÛÙ[™ÏH]‹NŠH\È‚ˆ‹Üš]JœÛÛ‹™[\Ê™XÙZ\ÛÜÚÙ^\ÏUYK[œİ\™WØ\ØÚZOQ˜[ÙJJÈ—ˆŠBˆÙ[‹—Ü™XZ[
+def parse_json_arg(value):
+    p=Path(value)
+    if p.exists():
+        return json.loads(p.read_text(encoding="utf-8"))
+    return json.loads(value)
 
-Bˆ™]\›ˆÈ›[ÙHˆÓÓSRUÓÕ‘T“VH‹œ™\İ[ˆÓÓSRUQ‹™]™[™]™[œ™XÙZ\œ™XÙZ\˜ÚXÚÜÈ˜ÚXÚÜßB‚ˆYˆ™\šYWÚ›İ\›˜[
-Ù[ŠN‚ˆ\ÜİY\ÏV×NÈ™]HŒŠˆ›Üˆ‹]ˆ[ˆ[[Y\˜]JÙ[‹—Ûİ™\›^WÙ]™[Ê
-KJN‚ˆÛİY]‹™Ù]
-™]™[ÜÚLMˆŠNÈ\YXİ
-]ŠNÈ\œÜ
-™]™[ÜÚLMˆ‹›Û™JBˆYˆ]‹™Ù]
-œ™]—Ù]™[ÜÚLMˆŠHO\™]ˆ\ÜİY\Ë˜\[™
-ˆ‘U‘S•Ô‘U—ÒTÒÛŸHŠBˆYˆYÙ\İ
-\
-HOYÛİˆ\ÜİY\Ë˜\[™
-ˆ‘U‘S•ÒTÒÛŸHŠBˆ™]YÛİÜˆ™]‚ˆ™]HŒŠˆYˆÙ[‹œ™XÙZ\Ü][™Ù[‹œ™XÙZ\Ü]™^\İÊ
-N‚ˆ›Üˆ‹[™H[ˆ[[Y\˜]JÙ[‹œ™XÙZ\Ü]œ™XYİ^
-[˜ÛÙ[™ÏH]‹NŠKœÜ][™\Ê
-KJN‚ˆYˆ›İ[™Kœİš\
+def main():
+    ap=argparse.ArgumentParser(prog="pnv",description="PhaseNav native terminal platform")
+    ap.add_argument("--canon",required=True)
+    ap.add_argument("--overlay")
+    ap.add_argument("--receipts")
+    sub=ap.add_subparsers(dest="cmd",required=True)
 
-NˆÛÛ[YBˆZœÛÛ‹›ØYÊ[™JNÈÛİ\‹™Ù]
-œ™XÙZ\ÜÚLMˆŠNÈ\YXİ
-ŠNÈ\œÜ
-œ™XÙZ\ÜÚLMˆ‹›Û™JBˆYˆ‹™Ù]
-œ™]—Ü™XÙZ\ÜÚLMˆŠHO\™]ˆ\ÜİY\Ë˜\[™
-ˆ”‘PÑRTÔ‘U—ÒTÒÛŸHŠBˆYˆYÙ\İ
-\
-HOYÛİˆ\ÜİY\Ë˜\[™
-ˆ”‘PÑRTÒTÒÛŸHŠBˆ™]YÛİÜˆ™]‚ˆ™]\›ˆÈœİ]\Èˆ”TÔÈˆYˆ›İ\ÜİY\È[ÙH‘RS‹š\ÜİY\Èš\ÜİY\ßB‚™Yˆ\œÙWÚœÛÛ—Ø\™Ê˜[YJN‚ˆT]
-˜[YJBˆYˆ™^\İÊ
-N‚ˆ™]\›ˆœÛÛ‹›ØYÊœ™XYİ^
-[˜ÛÙ[™ÏH]‹NŠJBˆ™]\›ˆœÛÛ‹›ØYÊ˜[YJB‚™YˆXZ[Š
-N‚ˆ\X\™Ü\œÙK\™İ[Y[\œÙ\Š›ÙÏHœˆ‹\ØÜš\[ÛH”\ÙS˜]ˆ˜]]™H\›Z[˜[]›Ü›HŠBˆ\˜YØ\™İ[Y[
-‹KXØ[›Ûˆ‹™\]Z\™YUYJBˆ\˜YØ\™İ[Y[
-‹K[İ™\›^HŠBˆ\˜YØ\™İ[Y[
-‹K\™XÙZ\ÈŠBˆİXX\˜YÜİXœ\œÙ\œÊ\İH˜ÛY‹™\]Z\™YUYJB‚ˆİX‹˜YÜ\œÙ\Šœİ]\ÈŠBˆ\İX‹˜YÜ\œÙ\Šœ™\ÛÛ™HŠNÈ‹˜YØ\™İ[Y[
-\›HŠBˆ\İX‹˜YÜ\œÙ\Š™XİÜˆŠNÈ‹˜YØ\™İ[Y[
-šYŠBˆ\İX‹˜YÜ\œÙ\Š›™X\™\İŠNÈ‹˜YØ\™İ[Y[
-šYŠNÈ‹˜YØ\™İ[Y[
-‹ZÈ‹\OZ[Y˜][MJBˆ™[\İX‹˜YÜ\œÙ\Šœ™[][ÛˆŠNÈ™[˜YØ\™İ[Y[
-‹KYœ›ÛKZYŠNÈ™[˜YØ\™İ[Y[
-‹K]ËZYŠBˆ\İX‹˜YÜ\œÙ\Šœ›İ]HŠNÈ˜YØ\™İ[Y[
-œÜ˜ÈŠNÈ˜YØ\™İ[Y[
-™İŠBˆ\İX‹˜YÜ\œÙ\Šœ]ŠNÈ˜YØ\™İ[Y[
-œÜ˜ÈŠNÈ˜YØ\™İ[Y[
-™İŠBˆØÏ\İX‹˜YÜ\œÙ\Š™Ø]KXÚXÚÈŠNÈØË˜YØ\™İ[Y[
-™Ø]WÚYŠNÈØË˜YØ\™İ[Y[
-˜ÛÛ^ÚœÛÛˆŠBˆ^\İX‹˜YÜ\œÙ\Š™^Xİ]HŠNÈ^˜YØ\™İ[Y[
-›Ü\˜]Ü—ÚYŠNÈ^˜YØ\™İ[Y[
-˜\™Ü×ÚœÛÛˆŠBˆ]O\İX‹˜YÜ\œÙ\Š›]]]HŠNÈ]K˜YØ\™İ[Y[
-›]]][Û—ÚÚ[™ŠNÈ]K˜YØ\™İ[Y[
-œ^[ØYÚœÛÛˆŠBˆ]K˜YØ\™İ[Y[
-‹KX]]Üš]H‹Y˜][H•TÑTŒÈŠNÈ]K˜YØ\™İ[Y[
-‹KXXİÜˆ‹Y˜][H”•—ĞÓHŠBˆ]K˜YØ\™İ[Y[
-‹KXÛÛ[Z]‹Xİ[ÛHœİÜ™WİYHŠBˆØÏ\İX‹˜YÜ\œÙ\Š™ØİÜˆŠNÈØË˜YØ\™İ[Y[
-‹KYY\‹Xİ[ÛHœİÜ™WİYHŠBˆİX‹˜YÜ\œÙ\Š™\šYKZ›İ\›˜[ŠB‚ˆOX\œ\œÙWØ\™ÜÊ
-BˆT•”]›Ü›JK˜Ø[›Û‹K›İ™\›^KKœ™XÙZ\ÊBˆYˆK˜ÛYOHœİ]\Èˆİ]Y‹œİ]\Ê
-Bˆ[YˆK˜ÛYOHœ™\ÛÛ™Hˆİ]Y‹œ™\ÛÛ™JK\›JBˆ[YˆK˜ÛYOH™XİÜˆˆİ]Y‹™XİÜŠKšY
-Bˆ[YˆK˜ÛYOH›™X\™\İˆİ]Y‹›™X\™\İ
-KšYKšÊBˆ[YˆK˜ÛYOHœ™[][Ûˆˆİ]Y‹œ™[][ÛŠK™œ›ÛWÚYK×ÚY
-Bˆ[YˆK˜ÛYOHœ›İ]Hˆİ]Y‹œ›İ]JKœÜ˜ËK™İ
-Bˆ[YˆK˜ÛYOHœ]ˆİ]Y‹œ]
-KœÜ˜ËK™İ
-Bˆ[YˆK˜ÛYOH™Ø]KXÚXÚÈˆİ]Y‹™Ø]WØÚXÚÊK™Ø]WÚY\œÙWÚœÛÛ—Ø\™ÊK˜ÛÛ^ÚœÛÛŠJBˆ[YˆK˜ÛYOH™^Xİ]Hˆİ]Y‹™^Xİ]JK›Ü\˜]Ü—ÚY\œÙWÚœÛÛ—Ø\™ÊK˜\™Ü×ÚœÛÛŠJBˆ[YˆK˜ÛYOH›]]]Hˆİ]Y‹›]]]JK›]]][Û—ÚÚ[™\œÙWÚœÛÛ—Ø\™ÊKœ^[ØYÚœÛÛŠKK˜]]Üš]KK˜XİÜ‹K˜ÛÛ[Z]
-Bˆ[YˆK˜ÛYOH™ØİÜˆˆİ]Y‹™ØİÜŠK™Y\
-Bˆ[ÙNˆİ]Y‹™\šYWÚ›İ\›˜[
+    sub.add_parser("status")
+    r=sub.add_parser("resolve"); r.add_argument("term")
+    v=sub.add_parser("vector"); v.add_argument("id")
+    n=sub.add_parser("nearest"); n.add_argument("id"); n.add_argument("-k",type=int,default=5)
+    rel=sub.add_parser("relation"); rel.add_argument("--from-id"); rel.add_argument("--to-id")
+    rt=sub.add_parser("route"); rt.add_argument("src"); rt.add_argument("dst")
+    p=sub.add_parser("path"); p.add_argument("src"); p.add_argument("dst")
+    gc=sub.add_parser("gate-check"); gc.add_argument("gate_id"); gc.add_argument("context_json")
+    ex=sub.add_parser("execute"); ex.add_argument("operator_id"); ex.add_argument("args_json")
+    mu=sub.add_parser("mutate"); mu.add_argument("mutation_kind"); mu.add_argument("payload_json")
+    mu.add_argument("--authority",default="USER007"); mu.add_argument("--actor",default="PNV_CLI")
+    mu.add_argument("--commit",action="store_true")
+    doc=sub.add_parser("doctor"); doc.add_argument("--deep",action="store_true")
+    sub.add_parser("verify-journal")
 
-Bˆš[
-œÛÛ‹™[\Êİ][™[L‹[œİ\™WØ\ØÚZOQ˜[ÙJJB‚šYˆ×Û˜[YW×ÏOH—×ÛXZ[—×È‚ˆXZ[Š
-B
+    a=ap.parse_args()
+    db=PNVPlatform(a.canon,a.overlay,a.receipts)
+    if a.cmd=="status": out=db.status()
+    elif a.cmd=="resolve": out=db.resolve(a.term)
+    elif a.cmd=="vector": out=db.vector(a.id)
+    elif a.cmd=="nearest": out=db.nearest(a.id,a.k)
+    elif a.cmd=="relation": out=db.relation(a.from_id,a.to_id)
+    elif a.cmd=="route": out=db.route(a.src,a.dst)
+    elif a.cmd=="path": out=db.path(a.src,a.dst)
+    elif a.cmd=="gate-check": out=db.gate_check(a.gate_id,parse_json_arg(a.context_json))
+    elif a.cmd=="execute": out=db.execute(a.operator_id,parse_json_arg(a.args_json))
+    elif a.cmd=="mutate": out=db.mutate(a.mutation_kind,parse_json_arg(a.payload_json),a.authority,a.actor,a.commit)
+    elif a.cmd=="doctor": out=db.doctor(a.deep)
+    else: out=db.verify_journal()
+    print(json.dumps(out,indent=2,ensure_ascii=False))
+
+if __name__=="__main__":
+    main()
