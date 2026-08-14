@@ -20,6 +20,9 @@ dependencies = [
 dev = ["pytest>=7.0"]
 gpu = ["cupy>=12.0"]
 
+[project.scripts]
+pnv = "ciel_geometry.phasenav.pnv_platform:main"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
