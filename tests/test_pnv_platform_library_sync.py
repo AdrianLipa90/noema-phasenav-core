@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-import hashlib
 import json
 from pathlib import Path
 
-from ciel_geometry.phasenav import pnv_platform
 from ciel_geometry.phasenav.pnv_platform import PNVPlatform
 
 
-LIBRARY_RUNTIME_SHA256 = "817c7fbeac6e5603453c0ede37f2db67bdf990b3ea2ed3fa64484f0b3953061b"
+REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_SOT_POLICY = REPO_ROOT / "provenance" / "PNV_PLATFORM_REPO_SOT_V1.json"
 
 
 def _canon() -> dict:
@@ -73,9 +72,13 @@ def _platform(tmp_path: Path) -> PNVPlatform:
     )
 
 
-def test_runtime_bytes_match_library_current_v2():
-    runtime_path = Path(pnv_platform.__file__)
-    assert hashlib.sha256(runtime_path.read_bytes()).hexdigest() == LIBRARY_RUNTIME_SHA256
+def test_repository_is_declared_source_of_truth():
+    policy = json.loads(REPO_SOT_POLICY.read_text(encoding="utf-8"))
+    assert policy["source_of_truth"] == "GITHUB_REPOSITORY"
+    assert policy["repository"] == "AdrianLipa90/noema-phasenav-core"
+    assert policy["library_role"] == "MIRROR_RECOVERY_INDEX_PROVENANCE"
+    assert policy["sync_direction"]["authoritative"] == "REPO_TO_LIBRARY"
+    assert policy["subscription_independence_required"] is True
 
 
 def test_terminal_surface_resolve_route_path_and_gate(tmp_path):
