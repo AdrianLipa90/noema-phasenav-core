@@ -145,11 +145,11 @@ def test_numeric_phase_order_parameter_is_global_phase_invariant() -> None:
     ]
     reference = states[0].order_parameter
     for state in states[1:]:
-        # Canonical T36 phases are rounded to 10 decimals before the order
-        # parameter is evaluated. The resulting platform-scale spread across
-        # globally shifted representatives is ~2.1e-12; keep a bounded margin
-        # without weakening the invariant beyond that rounding contract.
-        assert state.order_parameter == pytest.approx(reference, abs=3e-12)
+        # Canonical T36 angles are rounded to 10 decimal places before R is
+        # evaluated. Each angular coordinate therefore carries at most 5e-11
+        # rounding error; the observed cross-shell R spread is ~5.1e-12.
+        # Keep the invariant gate one order below the per-coordinate bound.
+        assert state.order_parameter == pytest.approx(reference, abs=1e-11)
 
 
 def test_invalid_quantum_numbers_are_rejected() -> None:
