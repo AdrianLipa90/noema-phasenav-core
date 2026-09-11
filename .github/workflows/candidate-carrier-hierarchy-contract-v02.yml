@@ -1,0 +1,27 @@
+name: Candidate carrier hierarchy contract v0.2
+
+on:
+  push:
+    branches:
+      - candidate/600cell-working-layer-v0.1-20260911-v02
+    paths:
+      - 'candidate_contracts/phasenav_carrier_hierarchy_v02.json'
+      - 'tests/test_phasenav_carrier_hierarchy_contract_v02.py'
+      - '.github/workflows/candidate-carrier-hierarchy-contract-v02.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract-v02:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install package and test dependencies
+        run: python -m pip install -e . pytest
+      - name: Run NOEMA carrier hierarchy contract gate
+        run: python -m pytest -q tests/test_phasenav_carrier_hierarchy_contract_v02.py
