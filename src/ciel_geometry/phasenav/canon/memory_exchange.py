@@ -20,6 +20,7 @@ from .u1_transport import finite_edge_potentials, u1_transport
 MEMORY_EXCHANGE_VERSION = "0.1.0"
 MEMORY_EXCHANGE_SCHEMA = "PHASENAV_MEMORY_INFORMATION_EXCHANGE_V0_1"
 MEMORY_EXCHANGE_ACK_SCHEMA = "PHASENAV_MEMORY_INFORMATION_EXCHANGE_ACK_V0_1"
+MEMORY_EXCHANGE_BUNDLE_SCHEMA = "PHASENAV_MEMORY_INFORMATION_EXCHANGE_BUNDLE_V0_1"
 MEMORY_EXCHANGE_EPISTEMIC = "CHYBA"
 MEMORY_EXCHANGE_AUTHORITY = "SHARED_COGNITION_ONLY"
 
@@ -458,6 +459,44 @@ class MemoryExchangeLedger:
         visit(target)
         return tuple(sorted(seen.values(), key=lambda item: (item.sequence, item.envelope_id)))
 
+    def export_bundle(self, envelope_id: str) -> dict[str, Any]:
+        """Export one target plus its complete causal ancestry and recorded ACKs.
+
+        The bundle is the portable lineage proof used when a target memory layer
+        cannot be expected to persist the internal records of upstream layers.
+        """
+        lineage = self.lineage(envelope_id)
+        target = lineage[-1]
+        lineage_ids = {item.envelope_id for item in lineage}
+        acks = sorted(
+            (
+                ack
+                for (ack_envelope_id, _consumer_id), ack in self._acks.items()
+                if ack_envelope_id in lineage_ids
+            ),
+            key=lambda ack: (ack.envelope_id, ack.consumer_id, ack.ack_id),
+        )
+        core = {
+            "schema": MEMORY_EXCHANGE_BUNDLE_SCHEMA,
+            "version": MEMORY_EXCHANGE_VERSION,
+            "target_envelope_id": target.envelope_id,
+            "envelopes": [item.to_packet() for item in lineage],
+            "acks": [ack.to_packet() for ack in acks],
+            "epistemic": MEMORY_EXCHANGE_EPISTEMIC,
+            "authority": MEMORY_EXCHANGE_AUTHORITY,
+            "canon_allowed": False,
+        }
+        return {
+            **core,
+            "bundle_sha256": _sha256(core),
+            "claims": {
+                "causal_lineage_bundle": True,
+                "physical_nonlocal_signalling": False,
+                "physical_channel_identified": False,
+                "canon_promoted": False,
+            },
+        }
+
     def snapshot(self) -> dict[str, Any]:
         parent_refs = {
             parent
@@ -489,6 +528,7 @@ class MemoryExchangeLedger:
 __all__ = [
     "MEMORY_EXCHANGE_ACK_SCHEMA",
     "MEMORY_EXCHANGE_AUTHORITY",
+    "MEMORY_EXCHANGE_BUNDLE_SCHEMA",
     "MEMORY_EXCHANGE_EPISTEMIC",
     "MEMORY_EXCHANGE_SCHEMA",
     "MEMORY_EXCHANGE_VERSION",
