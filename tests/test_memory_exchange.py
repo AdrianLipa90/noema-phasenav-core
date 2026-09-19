@@ -124,6 +124,7 @@ def test_ack_is_content_bound_idempotent_and_conflict_closed() -> None:
         consumer_id="GREMLIN-HIVE",
         outcome="ACCEPTED",
     )
+    assert accepted.to_packet()["authentication"] == "UNSIGNED_CONTENT_COMMITMENT"
     assert ledger.record_ack(accepted) is True
     assert ledger.record_ack(accepted) is False
 
@@ -211,6 +212,7 @@ def test_lineage_bundle_carries_ancestor_envelopes_and_acks() -> None:
     }
     assert len(bundle["bundle_sha256"]) == 64
     assert bundle["claims"]["causal_lineage_bundle"] is True
+    assert bundle["claims"]["ack_origin_authenticated"] is False
     assert bundle["claims"]["physical_nonlocal_signalling"] is False
 
 
