@@ -11,28 +11,27 @@ import math
 from typing import Sequence
 
 from .context_dynamics import PhaseVector36
+from .u1_transport import finite_edge_potentials, u1_phase, u1_transport
 
 SEMANTIC_HOLONOMY_VERSION = "0.1.0"
 SEMANTIC_HOLONOMY_EPISTEMIC = "CHYBA"
 
 
 def _finite_edges(edge_potentials: Sequence[float]) -> tuple[float, ...]:
-    values = tuple(float(x) for x in edge_potentials)
-    if not all(math.isfinite(x) for x in values):
-        raise ValueError("semantic connection edge potentials must be finite")
-    return values
+    try:
+        return finite_edge_potentials(edge_potentials)
+    except ValueError as exc:
+        raise ValueError("semantic connection edge potentials must be finite") from exc
 
 
 def u1_semantic_transport(edge_potentials: Sequence[float]) -> complex:
     """Return W_sem[gamma] = exp(i * sum_e A_sem,e)."""
-    theta = math.fsum(_finite_edges(edge_potentials))
-    return complex(math.cos(theta), math.sin(theta))
+    return u1_transport(_finite_edges(edge_potentials))
 
 
 def u1_semantic_holonomy_phase(edge_potentials: Sequence[float]) -> float:
     """Return wrapped arg(W_sem) in [-pi, pi]."""
-    w = u1_semantic_transport(edge_potentials)
-    return math.atan2(w.imag, w.real)
+    return u1_phase(_finite_edges(edge_potentials))
 
 
 def phase_overlap(left: PhaseVector36, right: PhaseVector36) -> complex:
