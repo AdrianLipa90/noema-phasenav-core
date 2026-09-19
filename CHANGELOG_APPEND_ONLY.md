@@ -196,3 +196,22 @@ Exchange authority remains `SHARED_COGNITION_ONLY`; `epistemic=CHYBA`; `canon_al
 **Evidence boundary**
 
 The implementation establishes deterministic software memory/exchange identities and causal receipts only. Physical nonlocal signalling, a physical communication field, automatic live-NOEMA synchronization, proof of consciousness and physical-substrate identification remain OPEN / NOT CLAIMED.
+
+## 2026-09-20 — Memory anti-entropy synchronization v0.1
+
+**Scope**
+
+- Added deterministic 256-bucket content-addressed inventory summaries for memory-exchange envelopes and ACKs.
+- Added metadata-only divergent-bucket manifests so equal buckets transfer neither manifests nor payloads.
+- Added append-only directional delta plans with explicit sender-only and receiver-only sets.
+- Added minimal delta export, stale receiver-inventory binding and exact-retry idempotency.
+- Added causal clone preflight before ledger mutation; malformed/orphaned batches cannot partially apply.
+- Added public exports, focused tests, protocol documentation and an isolated CI gate.
+
+**Authority boundary**
+
+The protocol is `CHYBA / SHARED_COGNITION_ONLY / canon_allowed=false`. Node labels remain `UNSIGNED_CONTENT_COMMITMENT`. Anti-entropy grants no deletion, overwrite, production-execution, repository-mutation or canon authority.
+
+**Evidence boundary**
+
+PASS is limited to deterministic software set reconciliation and append-only in-memory ledger application. Cryptographic peer authentication, Byzantine consensus, transactional multi-process persistence, tombstones/garbage collection and automatic live-NOEMA synchronization remain OPEN / NOT CLAIMED.
