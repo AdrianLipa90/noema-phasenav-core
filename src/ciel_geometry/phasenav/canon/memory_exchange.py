@@ -21,6 +21,7 @@ MEMORY_EXCHANGE_VERSION = "0.1.0"
 MEMORY_EXCHANGE_SCHEMA = "PHASENAV_MEMORY_INFORMATION_EXCHANGE_V0_1"
 MEMORY_EXCHANGE_ACK_SCHEMA = "PHASENAV_MEMORY_INFORMATION_EXCHANGE_ACK_V0_1"
 MEMORY_EXCHANGE_BUNDLE_SCHEMA = "PHASENAV_MEMORY_INFORMATION_EXCHANGE_BUNDLE_V0_1"
+MEMORY_EXCHANGE_IDENTITY_AUTHENTICATION = "UNSIGNED_CONTENT_COMMITMENT"
 MEMORY_EXCHANGE_EPISTEMIC = "CHYBA"
 MEMORY_EXCHANGE_AUTHORITY = "SHARED_COGNITION_ONLY"
 
@@ -251,6 +252,7 @@ class InformationEnvelope:
                 "content_addressed_payload": True,
                 "causal_lineage": True,
                 "computational_u1_route_phase": True,
+                "producer_identity_authenticated": False,
                 "physical_nonlocal_signalling": False,
                 "physical_channel_identified": False,
                 "canon_promoted": False,
@@ -336,6 +338,7 @@ class ExchangeAck:
     consumer_id: str
     outcome: ExchangeOutcome
     reason_code: str
+    authentication: str = MEMORY_EXCHANGE_IDENTITY_AUTHENTICATION
     epistemic: str = MEMORY_EXCHANGE_EPISTEMIC
     authority: str = MEMORY_EXCHANGE_AUTHORITY
     canon_allowed: bool = False
@@ -366,6 +369,7 @@ class ExchangeAck:
             "consumer_id": consumer,
             "outcome": status.value,
             "reason_code": reason,
+            "authentication": MEMORY_EXCHANGE_IDENTITY_AUTHENTICATION,
             "epistemic": MEMORY_EXCHANGE_EPISTEMIC,
             "authority": MEMORY_EXCHANGE_AUTHORITY,
             "canon_allowed": False,
@@ -389,6 +393,7 @@ class ExchangeAck:
             "consumer_id": self.consumer_id,
             "outcome": self.outcome.value,
             "reason_code": self.reason_code,
+            "authentication": self.authentication,
             "epistemic": self.epistemic,
             "authority": self.authority,
             "canon_allowed": self.canon_allowed,
@@ -491,6 +496,7 @@ class MemoryExchangeLedger:
             "bundle_sha256": _sha256(core),
             "claims": {
                 "causal_lineage_bundle": True,
+                "ack_origin_authenticated": False,
                 "physical_nonlocal_signalling": False,
                 "physical_channel_identified": False,
                 "canon_promoted": False,
@@ -530,6 +536,7 @@ __all__ = [
     "MEMORY_EXCHANGE_AUTHORITY",
     "MEMORY_EXCHANGE_BUNDLE_SCHEMA",
     "MEMORY_EXCHANGE_EPISTEMIC",
+    "MEMORY_EXCHANGE_IDENTITY_AUTHENTICATION",
     "MEMORY_EXCHANGE_SCHEMA",
     "MEMORY_EXCHANGE_VERSION",
     "ExchangeAck",
