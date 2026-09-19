@@ -153,6 +153,18 @@ from .u1_transport import (
     u1_phase,
     u1_transport,
 )
+from .memory_exchange import (
+    MEMORY_EXCHANGE_ACK_SCHEMA,
+    MEMORY_EXCHANGE_AUTHORITY,
+    MEMORY_EXCHANGE_EPISTEMIC,
+    MEMORY_EXCHANGE_SCHEMA,
+    MEMORY_EXCHANGE_VERSION,
+    ExchangeAck,
+    ExchangeOutcome,
+    InformationEnvelope,
+    MemoryExchangeLedger,
+    MemoryLayer,
+)
 from .spectroscopic_holonomy import (
     SPECTROSCOPIC_HOLONOMY_EPISTEMIC,
     SPECTROSCOPIC_HOLONOMY_SCHEMA,
@@ -274,6 +286,10 @@ __all__ = [
     "u1_semantic_holonomy_phase", "u1_semantic_transport",
     "U1_TRANSPORT_VERSION", "finite_edge_potentials", "relative_path_holonomy",
     "reversed_edge_potentials", "u1_phase", "u1_transport",
+    "MEMORY_EXCHANGE_ACK_SCHEMA", "MEMORY_EXCHANGE_AUTHORITY",
+    "MEMORY_EXCHANGE_EPISTEMIC", "MEMORY_EXCHANGE_SCHEMA", "MEMORY_EXCHANGE_VERSION",
+    "ExchangeAck", "ExchangeOutcome", "InformationEnvelope", "MemoryExchangeLedger",
+    "MemoryLayer",
     "SPECTROSCOPIC_HOLONOMY_EPISTEMIC", "SPECTROSCOPIC_HOLONOMY_SCHEMA",
     "SPECTROSCOPIC_HOLONOMY_VERSION",
     "RingTransitionCandidate", "SpectroscopicHolonomyState",
