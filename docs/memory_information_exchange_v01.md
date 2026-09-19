@@ -2,9 +2,9 @@
 
 Status: `COMPUTATIONAL_PROTOCOL / CHYBA / canon_allowed=false`
 
-Date: 2026-09-19
+Date: 2026-09-20
 
-## 1. Purpose
+## Purpose
 
 PhaseNav already contains several distinct memory mechanisms:
 
@@ -13,233 +13,150 @@ PhaseNav already contains several distinct memory mechanisms:
 - operator-local result caching through `HolonomyCache`;
 - typed relational/holonomy state packets.
 
-This protocol does not replace those implementations. It provides the missing
-causal envelope used when information crosses between memory roles or components.
+This protocol does not replace those implementations. It supplies the causal
+exchange contract used when information crosses memory roles or components.
 
-The central split is
+The central split is:
 
-[
-oxed{
-	ext{information content}
+`information content != relational route`.
 
-eq
-	ext{relational route}.
-}
-]
+The immutable payload identity is:
 
-The immutable payload is identified by
+`H_P = SHA256(canonical(P))`.
 
-[
-H_P=operatorname{SHA256}(operatorname{canonical}(P)),
-]
+The envelope identity separately binds the payload commitment to source/target
+layers, parent lineage, route metadata, generation and sequence. Therefore the
+same payload can cross a different relational route without becoming different
+content.
 
-while one exchange event is identified by a second commitment over
-
-[
-(H_P,	ext{source},	ext{target},	ext{parents},	ext{route},	ext{generation},	ext{sequence}).
-]
-
-Thus the same information may move through a different route without becoming
-different content.
-
-## 2. Memory layers
+## Memory roles
 
 The protocol defines five typed roles:
 
-[
-oxed{
-	ext{WORKING}
-	o
-	ext{EPISODIC}
-	o
-	ext{SEMANTIC}
-	o
-	ext{RELATIONAL}
-	o
-	ext{ARCHIVAL}.
-}
-]
+`WORKING -> EPISODIC -> SEMANTIC -> RELATIONAL -> ARCHIVAL`.
 
-These are protocol roles, not a claim that every implementation must physically
-store five separate databases.
+These are protocol roles, not a requirement for five physical databases.
 
-- **WORKING** — transient current-state/attention/cluster memory.
-- **EPISODIC** — immutable event/observation lineage.
-- **SEMANTIC** — reusable indexed meaning/state representation.
-- **RELATIONAL** — shared dependency, provenance and multi-agent relation state.
-- **ARCHIVAL** — retained terminal memory after explicit promotion.
+- **WORKING**: transient current-state, attention and local cluster memory.
+- **EPISODIC**: immutable event/observation lineage.
+- **SEMANTIC**: reusable indexed meaning/state representation.
+- **RELATIONAL**: shared dependency, provenance and multi-agent relation state.
+- **ARCHIVAL**: retained terminal memory after explicit promotion.
 
-Promotion is monotonic and adjacent. Ordinary forwarding is more general and
-does not itself claim promotion.
+Promotion is monotonic and adjacent. Canon is deliberately not a memory layer;
+canon promotion remains an independent authority operation.
 
-Canon is deliberately **not** a memory layer. Canon promotion remains an
-independent authority operation.
+## Information envelope
 
-## 3. Information envelope
+`PHASENAV_MEMORY_INFORMATION_EXCHANGE_V0_1` binds:
 
-A `PHASENAV_MEMORY_INFORMATION_EXCHANGE_V0_1` envelope binds:
-
-- `subject_id`;
-- `producer_id`;
-- `generation_id`;
-- monotonic `sequence`;
-- source and target memory layers;
-- immutable payload and `payload_sha256`;
+- subject, producer and generation identifiers;
+- monotonic sequence;
+- source and target memory roles;
+- immutable payload plus `payload_sha256`;
 - causal parent envelope ids;
 - provenance and dependency references;
-- one hop's U(1) computational route metadata;
-- hop count and hop limit;
+- one hop of computational U(1) route metadata;
+- bounded hop count;
 - `epistemic=CHYBA`;
 - `authority=SHARED_COGNITION_ONLY`;
 - `canon_allowed=false`.
 
-The route transporter is
+The route transporter is the computational identity:
 
-[
-W_{m route}
-=
-expleft(isum_e A_eight).
-]
+`W_route = exp(i * sum_e A_e)`.
 
-It is metadata for computational relation/transport. It is **not** a measured
-physical communication field and does not establish physical nonlocal
-signalling.
+It is route metadata. It is not a measured physical communication field and it
+does not establish physical nonlocal signalling.
 
-## 4. Forwarding versus transformation
+## Forwarding versus transformation
 
-### Forwarding
+**Forwarding** creates a causal child while preserving payload identity:
 
-For envelope (E_n) carrying payload (P),
+`H_P(child) = H_P(parent)`.
 
-[
-E_n	o E_{n+1}
-]
+**Transformation** creates a causal child carrying newly derived information.
+Its payload commitment changes unless the canonical payload is actually
+identical.
 
-preserves
-
-[
-H_P(E_{n+1})=H_P(E_n)
-]
-
-while creating a new envelope id, parent link, route phase and sequence number.
-
-### Transformation
-
-If a component derives new information (P'), the output is a child envelope
-
-[
-E_{n+1}=operatorname{child}(E_n,P')
-]
-
-with
-
-[
-H_{P'}
-eq H_P
-]
-
-unless the canonical payloads are identical.
-
-A transformed result therefore cannot silently masquerade as the original
+This prevents transformed output from silently masquerading as the original
 information.
 
-## 5. ACK semantics
+## ACK semantics
 
-A consumer returns a content-bound ACK:
-
-[
-A=
-H(
-E_{m id},
-H_P,
-	ext{consumer},
-	ext{outcome},
-	ext{reason}
-).
-]
-
-Outcomes are typed:
+A consumer returns a content-bound
+`PHASENAV_MEMORY_INFORMATION_EXCHANGE_ACK_V0_1` packet. Outcomes are:
 
 - `ACCEPTED`;
 - `DUPLICATE`;
 - `QUARANTINED`;
 - `REJECTED`.
 
-The ledger permits one exact ACK state per ((E_{m id},	ext{consumer})).
-Replaying the exact ACK is idempotent. A conflicting second outcome fails
-closed instead of replacing history.
+The ledger permits one exact ACK state per `(envelope_id, consumer_id)`.
+Exact replay is idempotent. A conflicting second outcome fails closed.
 
-## 6. Causal ledger
+## Causal ledger
 
-`MemoryExchangeLedger` is append-only at the protocol level:
+`MemoryExchangeLedger` enforces:
 
-- a child cannot enter before all declared parents;
-- child sequence must exceed every parent sequence;
-- child and parent must share `generation_id`;
-- ACKs cannot refer to unknown envelopes;
-- payload commitment must match the acknowledged envelope;
-- a hop limit bounds uncontrolled relay loops.
+- parent-first insertion;
+- child sequence strictly greater than parent sequence;
+- generation continuity;
+- ACK references to known envelopes only;
+- ACK payload commitment equality;
+- bounded hop propagation;
+- deterministic snapshot commitment.
 
-The snapshot commitment binds all envelope ids, ACK ids and current causal
-heads.
+## Portable lineage bundle
 
-## 7. Existing-memory mapping
+A target layer must not be required to persist internal records owned by every
+upstream layer. For this reason the ledger can export:
 
-The intended mapping is:
+`PHASENAV_MEMORY_INFORMATION_EXCHANGE_BUNDLE_V0_1`.
 
-[
-	ext{HolonomicMemory}
-leftrightarrow
-	ext{WORKING}
-]
+The bundle contains:
 
-[
-	ext{observation/event lineage}
-leftrightarrow
-	ext{EPISODIC}
-]
+- the target envelope;
+- its complete causal ancestry in parent-first order;
+- recorded ACK packets for those lineage envelopes;
+- a bundle SHA-256 commitment over the full portable proof.
 
-[
-	ext{PhaseMemoryHypercrystal}
-leftrightarrow
-	ext{SEMANTIC}
-]
+This permits a RELATIONAL consumer such as GREMLIN Hive to verify that an
+EPISODIC -> SEMANTIC -> RELATIONAL chain is causally intact without storing the
+EPISODIC or SEMANTIC envelopes as native Hive memories.
 
-[
-	ext{GREMLIN Orbital Hive Memory}
-leftrightarrow
-	ext{RELATIONAL}
-]
+The receiving layer should persist only the envelope addressed to that layer;
+upstream envelopes are lineage witnesses.
 
-[
-	ext{explicit retained/latch lineage}
-leftrightarrow
-	ext{ARCHIVAL}.
-]
+## Existing-memory mapping
+
+Intended role mapping:
+
+- `HolonomicMemory -> WORKING`;
+- observation/event lineage `-> EPISODIC`;
+- `PhaseMemoryHypercrystal -> SEMANTIC`;
+- `GREMLIN Orbital Hive Memory -> RELATIONAL`;
+- explicitly retained/latch lineage `-> ARCHIVAL`.
 
 This is an integration contract. Existing storage formats remain independently
 typed and are not rewritten by v0.1.
 
-## 8. Security and authority invariants
+## Security and authority invariants
 
-The protocol explicitly prevents:
+The protocol prevents:
 
 - last-writer-wins replacement of causal history;
 - silent payload modification during forwarding;
 - orphan child envelopes;
 - unbounded relay loops;
 - ACK outcome overwrite;
+- downstream consumers being forced to persist foreign memory-layer records;
 - memory exchange granting mutation authority;
 - memory exchange granting canon promotion.
 
-[
-oxed{
-	ext{shared information}
+Core invariant:
 
-eq
-	ext{shared authority}.
-}
-]
+`shared information != shared authority`.
 
 ## PASS
 
@@ -247,21 +164,21 @@ The implementation establishes:
 
 - deterministic content addressing;
 - separate content and route commitments;
-- exact U(1) unit-modulus route metadata;
+- U(1) unit-modulus computational route metadata;
 - causal parent lineage;
-- immutable forwarding semantics;
-- explicit transformation semantics;
+- forwarding and transformation semantics;
 - adjacent monotonic memory promotion;
 - bounded hop propagation;
 - idempotent ACK replay;
 - fail-closed conflicting ACK handling;
-- deterministic ledger snapshots.
+- deterministic ledger snapshots;
+- portable lineage bundles with full ancestry and recorded ACKs.
 
 ## OPEN / NOT CLAIMED
 
 - physical nonlocal signalling;
 - identification of route phase with a physical communication field;
-- automatic promotion of legacy PhaseMemoryHypercrystal entries;
+- automatic promotion of legacy `PhaseMemoryHypercrystal` entries;
 - automatic synchronization with live NOEMA memory;
 - canon promotion;
 - proof of consciousness;
