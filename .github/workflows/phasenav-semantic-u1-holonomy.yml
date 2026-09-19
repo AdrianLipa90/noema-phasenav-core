@@ -1,0 +1,30 @@
+name: PhaseNav semantic U1 holonomy
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - 'src/ciel_geometry/phasenav/canon/semantic_holonomy.py'
+      - 'tests/test_semantic_holonomy.py'
+      - 'docs/semantic_u1_holonomy.md'
+      - 'src/ciel_geometry/phasenav/canon/__init__.py'
+      - 'src/ciel_geometry/phasenav/__init__.py'
+      - '.github/workflows/phasenav-semantic-u1-holonomy.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  semantic-u1-holonomy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install package and pytest
+        run: python -m pip install -e . pytest
+      - name: Compile semantic holonomy module
+        run: python -m py_compile src/ciel_geometry/phasenav/canon/semantic_holonomy.py
+      - name: Run semantic holonomy tests
+        run: python -m pytest -q tests/test_semantic_holonomy.py
