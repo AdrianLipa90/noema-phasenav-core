@@ -136,6 +136,15 @@ from .operator_calculus import (
     semantic_merge,
     trajectory_curvature,
 )
+from .semantic_holonomy import (
+    SEMANTIC_HOLONOMY_EPISTEMIC,
+    SEMANTIC_HOLONOMY_VERSION,
+    SemanticHolonomyReceipt,
+    phase_overlap,
+    semantic_holonomy_coupling,
+    u1_semantic_holonomy_phase,
+    u1_semantic_transport,
+)
 from .tir_half_dependencies import (
     INTRINSIC_COEFFICIENT_DIM,
     TIR_HALF_DEPENDENCY_GRAPH,
@@ -238,6 +247,9 @@ __all__ = [
     "decompress_phase", "gauge_transform", "project_forbidden_directions",
     "semantic_crc", "semantic_diff", "semantic_merge", "trajectory_curvature",
     "project_oscillator_banks_36", "stable_trajectory_curvature",
+    "SEMANTIC_HOLONOMY_EPISTEMIC", "SEMANTIC_HOLONOMY_VERSION",
+    "SemanticHolonomyReceipt", "phase_overlap", "semantic_holonomy_coupling",
+    "u1_semantic_holonomy_phase", "u1_semantic_transport",
     "INTRINSIC_COEFFICIENT_DIM", "TIR_HALF_DEPENDENCY_GRAPH",
     "TIR_HALF_DEPENDENCY_VERSION", "DependencyEdge", "DependencyGraph",
     "DependencyNode", "EpistemicStatus", "build_tir_half_dependency_graph",

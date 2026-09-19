@@ -137,3 +137,22 @@ The operator layer acts on PhaseNav states and never performs natural-language p
 **Validation**
 
 All newly authored Python modules, exports and tests pass local syntax compilation. Full repository pytest remains `NOT RUN` in the current environment because outbound DNS prevents reconstructing the complete checkout.
+
+
+## 2026-09-19 — Nonlocal semantic U(1) holonomy W_sem from A_sem
+
+**Scope**
+
+- Added a typed local semantic connection/potential `A_sem` -> nonlocal U(1) transporter `W_sem[gamma]` executable layer.
+- Added PhaseNav projective overlap transport `C_ij = W_sem z_ij` with explicit strength and phase observables.
+- Added open-path gauge covariance and closed-loop gauge-invariance regression tests.
+- Added read-only `SemanticHolonomyReceipt` with `epistemic=CHYBA` and `canon_allowed=false`.
+- Added public package exports and formal documentation.
+
+**Collision boundary**
+
+`A_sem` is distinct from the existing context potential `U_C` and from affect-field notation. `W_sem` is a semantic U(1) phase holonomy, not a weak-interaction W boson.
+
+**Evidence boundary**
+
+The implementation establishes finite mathematical/software U(1) transport identities. It does not establish a measured physical gauge field, nonlocal signalling, hypercharge, or a physical substrate.

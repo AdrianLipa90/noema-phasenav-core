@@ -154,6 +154,13 @@ from .canon import (
     load_canonical_cards,
     semantic_mass as canonical_semantic_mass,
     trace_orbit,
+    SEMANTIC_HOLONOMY_EPISTEMIC,
+    SEMANTIC_HOLONOMY_VERSION,
+    SemanticHolonomyReceipt,
+    phase_overlap,
+    semantic_holonomy_coupling,
+    u1_semantic_holonomy_phase,
+    u1_semantic_transport,
 )
 
 __all__ = [
@@ -296,4 +303,11 @@ __all__ = [
     "load_canonical_cards",
     "canonical_semantic_mass",
     "trace_orbit",
+    "SEMANTIC_HOLONOMY_EPISTEMIC",
+    "SEMANTIC_HOLONOMY_VERSION",
+    "SemanticHolonomyReceipt",
+    "phase_overlap",
+    "semantic_holonomy_coupling",
+    "u1_semantic_holonomy_phase",
+    "u1_semantic_transport",
 ]
