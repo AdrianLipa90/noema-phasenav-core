@@ -53,6 +53,13 @@ def test_single_ring_has_exactly_one_holonomy_coordinate() -> None:
     assert state.canon_allowed is False
     assert state.physical_gauge_field_claimed is False
 
+    packet = state.to_packet()
+    assert packet["schema"] == "PHASENAV_SPECTROSCOPIC_HOLONOMY_STATE_V0_1"
+    assert packet["graph"]["beta_1"] == 1
+    assert packet["claims"]["computational_graph_holonomy"] is True
+    assert packet["claims"]["physical_gauge_field"] is False
+    assert abs(packet["cycle_holonomies"][0]["modulus"] - 1.0) < 1.0e-12
+
 
 def test_relative_same_endpoint_paths_reduce_to_closed_loop_holonomy() -> None:
     first = (0.20, 0.40)
