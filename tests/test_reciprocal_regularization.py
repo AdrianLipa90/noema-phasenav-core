@@ -120,8 +120,16 @@ def test_algorithm_concepts_are_directly_bound_on_cards() -> None:
     for card_id, algorithm_id in expected.items():
         card = card_by_id(card_id)
         assert card["epistemic"]["canon_allowed"] is False
-        assert len(card["algorithm_bindings"]) == 1
-        binding = card["algorithm_bindings"][0]
-        assert binding["concept_algorithm_id"] == algorithm_id
-        assert binding["binding_status"] == "CANDIDATE_DIRECT_CONCEPT_BINDING"
+        # Cards may also preserve native/CIEL/legacy executable bindings.
+        # The contract here is that exactly one local direct concept binding
+        # for the expected algorithm exists, not that it is the card's only
+        # algorithm binding of any provenance class.
+        matching = [
+            binding
+            for binding in card["algorithm_bindings"]
+            if binding.get("concept_algorithm_id") == algorithm_id
+            and binding.get("binding_status") == "CANDIDATE_DIRECT_CONCEPT_BINDING"
+        ]
+        assert len(matching) == 1
+        binding = matching[0]
         assert binding["scientific_promotion"] == "NOT_PERFORMED"

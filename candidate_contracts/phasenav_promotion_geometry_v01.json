@@ -1,0 +1,35 @@
+{
+  "contract_id": "PHASENAV_PROMOTION_GEOMETRY_V0_1",
+  "status": "CANDIDATE",
+  "admitted": true,
+  "executable": true,
+  "canonical_default": false,
+  "runtime_default": false,
+  "canon_write_authority": false,
+  "epistemic": "CHYBA",
+  "required_invariants": [
+    "metric_defect_zero",
+    "complex_intertwiner_defect_zero",
+    "declared_connection_defect_zero_when_connection_claimed",
+    "unitary_gate_contract",
+    "fail_closed_on_rank_deficient_normalization"
+  ],
+  "upstream": {
+    "pncs": "PHASENAV_PROMOTION_GEOMETRY_V0_1",
+    "tir": "TIR_PHASENAV_PROMOTION_GEOMETRY_V0_1"
+  },
+  "physical_bindings": {
+    "chemistry": "OPEN",
+    "electrophotonics": "OPEN",
+    "standard_model": "OPEN",
+    "gravity": "OPEN",
+    "spacetime": "OPEN"
+  },
+  "quarantine_on": [
+    "metric_defect_nonzero",
+    "complex_structure_mismatch",
+    "nonunitary_executable_gate",
+    "rank_deficient_promotion",
+    "undeclared_physical_binding"
+  ]
+}

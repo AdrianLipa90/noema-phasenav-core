@@ -58,9 +58,11 @@ def test_packaged_card_canon_is_complete_and_non_destructive():
     from ciel_geometry.phasenav.canon import load_canonical_cards
 
     cards = load_canonical_cards()
-    assert len(cards) == 115
+    # The seed ledger now contains cards 001..120. Only the two original
+    # author-approved cards are canonical; the remaining 118 stay CHYBA.
+    assert len(cards) == 120
     assert sum(c["epistemic"]["operator"] == "canonical" for c in cards) == 2
-    assert sum(c["epistemic"]["operator"] == "chyba" for c in cards) == 113
+    assert sum(c["epistemic"]["operator"] == "chyba" for c in cards) == 118
     assert all(c["hilbert_state"]["space"] == "C^2048" for c in cards)
     assert all(len(c["emergent_paths_canon"]) == 5 for c in cards)
     assert all(
