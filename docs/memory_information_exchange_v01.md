@@ -107,6 +107,24 @@ Exact replay is idempotent. A conflicting second outcome fails closed.
 - bounded hop propagation;
 - deterministic snapshot commitment.
 
+## Identity-authentication boundary
+
+`producer_id` and `consumer_id` are committed protocol labels, not
+cryptographic identities.
+
+ACK packets therefore declare:
+
+`authentication = UNSIGNED_CONTENT_COMMITMENT`.
+
+This means payload/envelope/ACK integrity is content-addressed and testable, but
+the protocol alone does not prove that a named producer or consumer was the
+real-world origin of that packet. A signed or transport-authenticated identity
+layer would be a separate binding.
+
+Lineage bundles likewise declare:
+
+`ack_origin_authenticated = false`.
+
 ## Portable lineage bundle
 
 A target layer must not be required to persist internal records owned by every
@@ -176,6 +194,7 @@ The implementation establishes:
 
 ## OPEN / NOT CLAIMED
 
+- cryptographic producer/consumer identity authentication beyond content commitments;
 - physical nonlocal signalling;
 - identification of route phase with a physical communication field;
 - automatic promotion of legacy `PhaseMemoryHypercrystal` entries;
