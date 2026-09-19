@@ -168,3 +168,76 @@ def test_snapshot_is_deterministic_and_reports_current_heads() -> None:
     assert snap_a["envelope_count"] == 2
     assert snap_a["ack_count"] == 1
     assert len(snap_a["ledger_sha256"]) == 64
+
+
+
+def test_lineage_bundle_carries_ancestor_envelopes_and_acks() -> None:
+    episodic = _root()
+    semantic = episodic.promote(producer_id="RAVEN")
+    relational = semantic.promote(producer_id="SPIDER")
+
+    ledger = MemoryExchangeLedger()
+    for envelope in (episodic, semantic, relational):
+        ledger.append(envelope)
+
+    ledger.record_ack(
+        ExchangeAck.build(
+            episodic,
+            consumer_id="EPISODIC-STORE",
+            outcome="ACCEPTED",
+            reason_code="EPISODIC_INGESTED",
+        )
+    )
+    ledger.record_ack(
+        ExchangeAck.build(
+            semantic,
+            consumer_id="SEMANTIC-STORE",
+            outcome="ACCEPTED",
+            reason_code="SEMANTIC_INGESTED",
+        )
+    )
+
+    bundle = ledger.export_bundle(relational.envelope_id)
+    assert bundle["schema"] == "PHASENAV_MEMORY_INFORMATION_EXCHANGE_BUNDLE_V0_1"
+    assert bundle["target_envelope_id"] == relational.envelope_id
+    assert [row["envelope_id"] for row in bundle["envelopes"]] == [
+        episodic.envelope_id,
+        semantic.envelope_id,
+        relational.envelope_id,
+    ]
+    assert {row["envelope_id"] for row in bundle["acks"]} == {
+        episodic.envelope_id,
+        semantic.envelope_id,
+    }
+    assert len(bundle["bundle_sha256"]) == 64
+    assert bundle["claims"]["causal_lineage_bundle"] is True
+    assert bundle["claims"]["physical_nonlocal_signalling"] is False
+
+
+def test_lineage_bundle_is_deterministic() -> None:
+    root = _root()
+    child = root.promote(producer_id="RAVEN")
+
+    a = MemoryExchangeLedger()
+    a.append(root)
+    a.append(child)
+    a.record_ack(
+        ExchangeAck.build(
+            root,
+            consumer_id="EPISODIC-STORE",
+            outcome="ACCEPTED",
+        )
+    )
+
+    b = MemoryExchangeLedger()
+    b.append(root)
+    b.append(child)
+    b.record_ack(
+        ExchangeAck.build(
+            root,
+            consumer_id="EPISODIC-STORE",
+            outcome="ACCEPTED",
+        )
+    )
+
+    assert a.export_bundle(child.envelope_id) == b.export_bundle(child.envelope_id)
