@@ -383,6 +383,65 @@ class ExchangeAck:
             reason_code=reason,
         )
 
+    @classmethod
+    def from_packet(
+        cls,
+        envelope: InformationEnvelope,
+        packet: Mapping[str, Any],
+    ) -> "ExchangeAck":
+        """Validate and hydrate an external ACK packet against one exact envelope."""
+        if not isinstance(packet, Mapping):
+            raise ValueError("ACK packet must be a mapping")
+        row = dict(packet)
+        if row.get("schema") != MEMORY_EXCHANGE_ACK_SCHEMA:
+            raise ValueError("unsupported memory-exchange ACK schema")
+        if row.get("version") != MEMORY_EXCHANGE_VERSION:
+            raise ValueError("unsupported memory-exchange ACK version")
+        if row.get("epistemic") != MEMORY_EXCHANGE_EPISTEMIC:
+            raise ValueError("ACK must remain epistemic=CHYBA")
+        if row.get("authority") != MEMORY_EXCHANGE_AUTHORITY:
+            raise ValueError("ACK must remain SHARED_COGNITION_ONLY")
+        if row.get("canon_allowed") is not False:
+            raise ValueError("ACK must remain canon_allowed=false")
+        if row.get("authentication") != MEMORY_EXCHANGE_IDENTITY_AUTHENTICATION:
+            raise ValueError("ACK authentication boundary mismatch")
+
+        if _text(row.get("envelope_id"), "envelope_id") != envelope.envelope_id:
+            raise ValueError("ACK envelope_id mismatch")
+        if _text(row.get("payload_sha256"), "payload_sha256") != envelope.payload_sha256:
+            raise ValueError("ACK payload commitment mismatch")
+        consumer = _text(row.get("consumer_id"), "consumer_id")
+        reason = _text(row.get("reason_code"), "reason_code")
+        try:
+            outcome = ExchangeOutcome(_text(row.get("outcome"), "outcome").upper())
+        except ValueError as exc:
+            raise ValueError("unsupported exchange outcome") from exc
+
+        core = {
+            "schema": MEMORY_EXCHANGE_ACK_SCHEMA,
+            "version": MEMORY_EXCHANGE_VERSION,
+            "envelope_id": envelope.envelope_id,
+            "payload_sha256": envelope.payload_sha256,
+            "consumer_id": consumer,
+            "outcome": outcome.value,
+            "reason_code": reason,
+            "authentication": MEMORY_EXCHANGE_IDENTITY_AUTHENTICATION,
+            "epistemic": MEMORY_EXCHANGE_EPISTEMIC,
+            "authority": MEMORY_EXCHANGE_AUTHORITY,
+            "canon_allowed": False,
+        }
+        expected_ack_id = "pxa:" + _sha256(core)
+        if row.get("ack_id") != expected_ack_id:
+            raise ValueError("ACK commitment mismatch")
+        return cls(
+            ack_id=expected_ack_id,
+            envelope_id=envelope.envelope_id,
+            payload_sha256=envelope.payload_sha256,
+            consumer_id=consumer,
+            outcome=outcome,
+            reason_code=reason,
+        )
+
     def to_packet(self) -> dict[str, Any]:
         return {
             "schema": MEMORY_EXCHANGE_ACK_SCHEMA,
@@ -432,6 +491,16 @@ class MemoryExchangeLedger:
                 raise RuntimeError("child and parent generation_id must match")
         self._envelopes[envelope.envelope_id] = envelope
         return True
+
+    def record_ack_packet(self, packet: Mapping[str, Any]) -> bool:
+        """Validate an external ACK packet and append it to this ledger."""
+        if not isinstance(packet, Mapping):
+            raise ValueError("ACK packet must be a mapping")
+        envelope_id = _text(packet.get("envelope_id"), "envelope_id")
+        envelope = self._envelopes.get(envelope_id)
+        if envelope is None:
+            raise RuntimeError("ack references unknown envelope")
+        return self.record_ack(ExchangeAck.from_packet(envelope, packet))
 
     def record_ack(self, ack: ExchangeAck) -> bool:
         envelope = self._envelopes.get(ack.envelope_id)
