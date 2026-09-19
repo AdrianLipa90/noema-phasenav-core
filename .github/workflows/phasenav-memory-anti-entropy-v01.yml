@@ -1,0 +1,40 @@
+name: PhaseNav memory anti-entropy sync v0.1
+
+on:
+  pull_request:
+    branches:
+      - master
+      - formalism/memory-information-exchange-v01-20260919
+    paths:
+      - 'src/ciel_geometry/phasenav/canon/memory_exchange.py'
+      - 'src/ciel_geometry/phasenav/canon/memory_anti_entropy.py'
+      - 'src/ciel_geometry/phasenav/canon/__init__.py'
+      - 'src/ciel_geometry/phasenav/__init__.py'
+      - 'tests/test_memory_anti_entropy.py'
+      - 'docs/memory_anti_entropy_sync_v01.md'
+      - 'CHANGELOG_APPEND_ONLY.md'
+      - '.github/workflows/phasenav-memory-anti-entropy-v01.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  memory-anti-entropy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install package and pytest
+        run: python -m pip install -e . pytest
+      - name: Compile sync modules
+        run: >-
+          python -m py_compile
+          src/ciel_geometry/phasenav/canon/memory_exchange.py
+          src/ciel_geometry/phasenav/canon/memory_anti_entropy.py
+      - name: Run focused anti-entropy tests
+        run: >-
+          python -m pytest -q
+          tests/test_memory_exchange.py
+          tests/test_memory_anti_entropy.py

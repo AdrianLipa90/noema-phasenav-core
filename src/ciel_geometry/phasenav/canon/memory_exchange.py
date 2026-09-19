@@ -220,6 +220,85 @@ class InformationEnvelope:
             hop_limit=limit,
         )
 
+    @classmethod
+    def from_packet(cls, packet: Mapping[str, Any]) -> "InformationEnvelope":
+        """Validate and hydrate one external envelope packet."""
+        if not isinstance(packet, Mapping):
+            raise ValueError("envelope packet must be a mapping")
+        row = dict(packet)
+        if row.get("schema") != MEMORY_EXCHANGE_SCHEMA:
+            raise ValueError("unsupported memory-exchange schema")
+        if row.get("version") != MEMORY_EXCHANGE_VERSION:
+            raise ValueError("unsupported memory-exchange version")
+        if row.get("epistemic") != MEMORY_EXCHANGE_EPISTEMIC:
+            raise ValueError("envelope must remain epistemic=CHYBA")
+        if row.get("authority") != MEMORY_EXCHANGE_AUTHORITY:
+            raise ValueError("envelope must remain SHARED_COGNITION_ONLY")
+        if row.get("canon_allowed") is not False:
+            raise ValueError("envelope must remain canon_allowed=false")
+
+        payload = row.get("payload")
+        if not isinstance(payload, Mapping):
+            raise ValueError("payload must be a mapping")
+        rebuilt = cls.build(
+            subject_id=_text(row.get("subject_id"), "subject_id"),
+            producer_id=_text(row.get("producer_id"), "producer_id"),
+            generation_id=_text(row.get("generation_id"), "generation_id"),
+            sequence=_strict_int(row.get("sequence"), "sequence", minimum=0),
+            source_layer=_layer(row.get("source_layer"), "source_layer"),
+            target_layer=_layer(row.get("target_layer"), "target_layer"),
+            payload=dict(payload),
+            parent_envelope_ids=_refs(row.get("parent_envelope_ids", ()), "parent_envelope_ids"),
+            provenance=_refs(row.get("provenance", ()), "provenance"),
+            dependencies=_refs(row.get("dependencies", ()), "dependencies"),
+            route_edge_potentials=finite_edge_potentials(row.get("route_edge_potentials", ())),
+            hop_count=_strict_int(row.get("hop_count"), "hop_count", minimum=0),
+            hop_limit=_strict_int(row.get("hop_limit"), "hop_limit", minimum=1),
+        )
+        if row.get("envelope_id") != rebuilt.envelope_id:
+            raise ValueError("envelope_id commitment mismatch")
+        if row.get("payload_sha256") != rebuilt.payload_sha256:
+            raise ValueError("payload_sha256 mismatch")
+
+        transport = row.get("transport")
+        if not isinstance(transport, Mapping):
+            raise ValueError("transport must be a mapping")
+        try:
+            real = float(transport.get("real"))
+            imag = float(transport.get("imag"))
+            phase = float(transport.get("phase"))
+            modulus = float(transport.get("modulus"))
+        except (TypeError, ValueError) as exc:
+            raise ValueError("transport fields must be numeric") from exc
+        if not all(math.isfinite(value) for value in (real, imag, phase, modulus)):
+            raise ValueError("transport fields must be finite")
+        if abs(real - rebuilt.transport_real) > 1.0e-12 or abs(imag - rebuilt.transport_imag) > 1.0e-12:
+            raise ValueError("transport complex value mismatch")
+        phase_error = math.atan2(
+            math.sin(phase - rebuilt.transport_phase),
+            math.cos(phase - rebuilt.transport_phase),
+        )
+        if abs(phase_error) > 1.0e-12 or abs(modulus - 1.0) > 1.0e-12:
+            raise ValueError("transport phase/modulus mismatch")
+
+        claims = row.get("claims")
+        if not isinstance(claims, Mapping):
+            raise ValueError("claims must be a mapping")
+        required_true = ("content_addressed_payload", "causal_lineage", "computational_u1_route_phase")
+        for key in required_true:
+            if claims.get(key) is not True:
+                raise ValueError(f"required envelope claim must be true: {key}")
+        required_false = (
+            "producer_identity_authenticated",
+            "physical_nonlocal_signalling",
+            "physical_channel_identified",
+            "canon_promoted",
+        )
+        for key in required_false:
+            if claims.get(key) is not False:
+                raise ValueError(f"unsupported envelope claim must remain false: {key}")
+        return rebuilt
+
     def to_packet(self) -> dict[str, Any]:
         return {
             "schema": MEMORY_EXCHANGE_SCHEMA,
@@ -465,6 +544,26 @@ class MemoryExchangeLedger:
     def __init__(self) -> None:
         self._envelopes: dict[str, InformationEnvelope] = {}
         self._acks: dict[tuple[str, str], ExchangeAck] = {}
+
+    def envelopes(self) -> tuple[InformationEnvelope, ...]:
+        """Return a deterministic read-only envelope view."""
+        return tuple(sorted(self._envelopes.values(), key=lambda row: (row.sequence, row.envelope_id)))
+
+    def acknowledgements(self) -> tuple[ExchangeAck, ...]:
+        """Return a deterministic read-only ACK view."""
+        return tuple(
+            sorted(
+                self._acks.values(),
+                key=lambda row: (row.envelope_id, row.consumer_id, row.ack_id),
+            )
+        )
+
+    def get_envelope(self, envelope_id: str) -> InformationEnvelope:
+        key = _text(envelope_id, "envelope_id")
+        try:
+            return self._envelopes[key]
+        except KeyError as exc:
+            raise KeyError("unknown envelope_id") from exc
 
     @property
     def envelope_count(self) -> int:
