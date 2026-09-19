@@ -145,6 +145,27 @@ from .semantic_holonomy import (
     u1_semantic_holonomy_phase,
     u1_semantic_transport,
 )
+from .u1_transport import (
+    U1_TRANSPORT_VERSION,
+    finite_edge_potentials,
+    relative_path_holonomy,
+    reversed_edge_potentials,
+    u1_phase,
+    u1_transport,
+)
+from .spectroscopic_holonomy import (
+    SPECTROSCOPIC_HOLONOMY_EPISTEMIC,
+    SPECTROSCOPIC_HOLONOMY_VERSION,
+    RingTransitionCandidate,
+    SpectroscopicHolonomyState,
+    central_difference_jacobian,
+    cycle_rank,
+    fisher_information_diagonal_noise,
+    phase_vibronic_linearization,
+    ring_energy_levels,
+    ring_transition_candidates,
+    wrap_phase,
+)
 from .tir_half_dependencies import (
     INTRINSIC_COEFFICIENT_DIM,
     TIR_HALF_DEPENDENCY_GRAPH,
@@ -250,6 +271,13 @@ __all__ = [
     "SEMANTIC_HOLONOMY_EPISTEMIC", "SEMANTIC_HOLONOMY_VERSION",
     "SemanticHolonomyReceipt", "phase_overlap", "semantic_holonomy_coupling",
     "u1_semantic_holonomy_phase", "u1_semantic_transport",
+    "U1_TRANSPORT_VERSION", "finite_edge_potentials", "relative_path_holonomy",
+    "reversed_edge_potentials", "u1_phase", "u1_transport",
+    "SPECTROSCOPIC_HOLONOMY_EPISTEMIC", "SPECTROSCOPIC_HOLONOMY_VERSION",
+    "RingTransitionCandidate", "SpectroscopicHolonomyState",
+    "central_difference_jacobian", "cycle_rank", "fisher_information_diagonal_noise",
+    "phase_vibronic_linearization", "ring_energy_levels", "ring_transition_candidates",
+    "wrap_phase",
     "INTRINSIC_COEFFICIENT_DIM", "TIR_HALF_DEPENDENCY_GRAPH",
     "TIR_HALF_DEPENDENCY_VERSION", "DependencyEdge", "DependencyGraph",
     "DependencyNode", "EpistemicStatus", "build_tir_half_dependency_graph",
