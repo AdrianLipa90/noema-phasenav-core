@@ -23,6 +23,7 @@ from .u1_transport import (
 )
 
 SPECTROSCOPIC_HOLONOMY_VERSION = "0.1.0"
+SPECTROSCOPIC_HOLONOMY_SCHEMA = "PHASENAV_SPECTROSCOPIC_HOLONOMY_STATE_V0_1"
 SPECTROSCOPIC_HOLONOMY_EPISTEMIC = "CHYBA"
 
 
@@ -108,6 +109,35 @@ class SpectroscopicHolonomyState:
             cycle_phases=phases,
             cycle_holonomies=holonomies,
         )
+
+    def to_packet(self) -> dict[str, object]:
+        """Return a JSON-safe typed packet for downstream read-only consumers."""
+        return {
+            "schema": SPECTROSCOPIC_HOLONOMY_SCHEMA,
+            "version": SPECTROSCOPIC_HOLONOMY_VERSION,
+            "epistemic": self.epistemic,
+            "canon_allowed": self.canon_allowed,
+            "graph": {
+                "vertex_count": self.vertex_count,
+                "edge_count": self.edge_count,
+                "component_count": self.component_count,
+                "beta_1": self.beta_1,
+            },
+            "cycle_edge_potentials": [list(path) for path in self.cycle_edge_potentials],
+            "cycle_phases": list(self.cycle_phases),
+            "cycle_holonomies": [
+                {"real": w.real, "imag": w.imag, "modulus": abs(w)}
+                for w in self.cycle_holonomies
+            ],
+            "claims": {
+                "computational_graph_holonomy": True,
+                "physical_gauge_field": self.physical_gauge_field_claimed,
+                "physical_substrate": self.physical_substrate_claimed,
+                "physical_nonlocal_signalling": False,
+                "hypercharge_identification": False,
+                "weak_boson_identification": False,
+            },
+        }
 
 
 @dataclass(frozen=True)
@@ -257,6 +287,7 @@ def fisher_information_diagonal_noise(
 
 __all__ = [
     "SPECTROSCOPIC_HOLONOMY_EPISTEMIC",
+    "SPECTROSCOPIC_HOLONOMY_SCHEMA",
     "SPECTROSCOPIC_HOLONOMY_VERSION",
     "RingTransitionCandidate",
     "SpectroscopicHolonomyState",
