@@ -243,3 +243,50 @@ def test_lineage_bundle_is_deterministic() -> None:
     )
 
     assert a.export_bundle(child.envelope_id) == b.export_bundle(child.envelope_id)
+
+
+
+def test_external_ack_packet_roundtrips_directly_into_ledger() -> None:
+    ledger = MemoryExchangeLedger()
+    envelope = _root()
+    ledger.append(envelope)
+
+    original = ExchangeAck.build(
+        envelope,
+        consumer_id="GREMLIN-HIVE",
+        outcome="ACCEPTED",
+        reason_code="HIVE_LINEAGE_BUNDLE_INGESTED",
+    )
+    packet = original.to_packet()
+
+    assert ledger.record_ack_packet(packet) is True
+    assert ledger.record_ack_packet(packet) is False
+    bundle = ledger.export_bundle(envelope.envelope_id)
+    assert bundle["acks"] == [packet]
+
+
+def test_external_ack_packet_rejects_tamper_and_unknown_envelope() -> None:
+    ledger = MemoryExchangeLedger()
+    envelope = _root()
+    ledger.append(envelope)
+
+    packet = ExchangeAck.build(
+        envelope,
+        consumer_id="GREMLIN-HIVE",
+        outcome="ACCEPTED",
+    ).to_packet()
+
+    bad_auth = dict(packet)
+    bad_auth["authentication"] = "SIGNED"
+    with pytest.raises(ValueError, match="authentication"):
+        ledger.record_ack_packet(bad_auth)
+
+    bad_id = dict(packet)
+    bad_id["ack_id"] = "pxa:" + ("0" * 64)
+    with pytest.raises(ValueError, match="commitment"):
+        ledger.record_ack_packet(bad_id)
+
+    unknown = dict(packet)
+    unknown["envelope_id"] = "px:" + ("0" * 64)
+    with pytest.raises(RuntimeError, match="unknown envelope"):
+        ledger.record_ack_packet(unknown)
