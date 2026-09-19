@@ -155,6 +155,7 @@ from .u1_transport import (
 )
 from .spectroscopic_holonomy import (
     SPECTROSCOPIC_HOLONOMY_EPISTEMIC,
+    SPECTROSCOPIC_HOLONOMY_SCHEMA,
     SPECTROSCOPIC_HOLONOMY_VERSION,
     RingTransitionCandidate,
     SpectroscopicHolonomyState,
@@ -273,7 +274,8 @@ __all__ = [
     "u1_semantic_holonomy_phase", "u1_semantic_transport",
     "U1_TRANSPORT_VERSION", "finite_edge_potentials", "relative_path_holonomy",
     "reversed_edge_potentials", "u1_phase", "u1_transport",
-    "SPECTROSCOPIC_HOLONOMY_EPISTEMIC", "SPECTROSCOPIC_HOLONOMY_VERSION",
+    "SPECTROSCOPIC_HOLONOMY_EPISTEMIC", "SPECTROSCOPIC_HOLONOMY_SCHEMA",
+    "SPECTROSCOPIC_HOLONOMY_VERSION",
     "RingTransitionCandidate", "SpectroscopicHolonomyState",
     "central_difference_jacobian", "cycle_rank", "fisher_information_diagonal_noise",
     "phase_vibronic_linearization", "ring_energy_levels", "ring_transition_candidates",
