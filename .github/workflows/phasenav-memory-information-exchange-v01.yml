@@ -1,0 +1,37 @@
+name: PhaseNav memory information exchange v0.1
+
+on:
+  pull_request:
+    branches:
+      - master
+      - formalism/spectroscopic-holonomy-bridge-20260919
+    paths:
+      - 'src/ciel_geometry/phasenav/canon/memory_exchange.py'
+      - 'src/ciel_geometry/phasenav/canon/u1_transport.py'
+      - 'src/ciel_geometry/phasenav/canon/__init__.py'
+      - 'src/ciel_geometry/phasenav/__init__.py'
+      - 'tests/test_memory_exchange.py'
+      - 'docs/memory_information_exchange_v01.md'
+      - 'CHANGELOG_APPEND_ONLY.md'
+      - '.github/workflows/phasenav-memory-information-exchange-v01.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  memory-information-exchange:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install package and pytest
+        run: python -m pip install -e . pytest
+      - name: Compile memory exchange module
+        run: >-
+          python -m py_compile
+          src/ciel_geometry/phasenav/canon/memory_exchange.py
+          src/ciel_geometry/phasenav/canon/u1_transport.py
+      - name: Run focused memory exchange tests
+        run: python -m pytest -q tests/test_memory_exchange.py
