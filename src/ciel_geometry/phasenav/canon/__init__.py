@@ -167,6 +167,17 @@ from .memory_exchange import (
     MemoryExchangeLedger,
     MemoryLayer,
 )
+from .memory_consolidation import (
+    CONSOLIDATION_PLAN_SCHEMA,
+    CONSOLIDATION_RECEIPT_SCHEMA,
+    CONSOLIDATION_VERSION,
+    DERIVED_SEMANTIC_KIND,
+    RETENTION_MANIFEST_SCHEMA,
+    RetentionTier,
+    apply_consolidation,
+    build_consolidation_plan,
+    validate_consolidation_plan,
+)
 from .memory_anti_entropy import (
     SYNC_BUCKET_HEX_WIDTH,
     SYNC_DELTA_SCHEMA,
@@ -306,6 +317,10 @@ __all__ = [
     "u1_semantic_holonomy_phase", "u1_semantic_transport",
     "U1_TRANSPORT_VERSION", "finite_edge_potentials", "relative_path_holonomy",
     "reversed_edge_potentials", "u1_phase", "u1_transport",
+    "CONSOLIDATION_PLAN_SCHEMA", "CONSOLIDATION_RECEIPT_SCHEMA",
+    "CONSOLIDATION_VERSION", "DERIVED_SEMANTIC_KIND", "RETENTION_MANIFEST_SCHEMA",
+    "RetentionTier", "apply_consolidation", "build_consolidation_plan",
+    "validate_consolidation_plan",
     "SYNC_BUCKET_HEX_WIDTH", "SYNC_DELTA_SCHEMA", "SYNC_INVENTORY_SCHEMA",
     "SYNC_MANIFEST_SCHEMA", "SYNC_PLAN_SCHEMA", "SYNC_VERSION",
     "apply_delta", "build_bucket_manifest", "build_inventory", "divergent_buckets",
