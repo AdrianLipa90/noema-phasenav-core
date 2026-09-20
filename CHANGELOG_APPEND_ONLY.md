@@ -215,3 +215,23 @@ The protocol is `CHYBA / SHARED_COGNITION_ONLY / canon_allowed=false`. Node labe
 **Evidence boundary**
 
 PASS is limited to deterministic software set reconciliation and append-only in-memory ledger application. Cryptographic peer authentication, Byzantine consensus, transactional multi-process persistence, tombstones/garbage collection and automatic live-NOEMA synchronization remain OPEN / NOT CLAIMED.
+
+## 2026-09-20 — Memory consolidation and retention v0.1
+
+**Scope**
+
+- Added explicit EPISODIC -> SEMANTIC multi-parent consolidation over at least two stable source envelopes.
+- Added an ACCEPTED-ACK requirement for every source before consolidation planning.
+- Added derived semantic envelopes bound to exact source ids and source payload commitments.
+- Added explicit `semantic_equivalence_proven=false` so compression cannot masquerade as lossless identity.
+- Added HOT/WARM/COLD/PINNED retention hints with mandatory retrievability and no deletion/overwrite authority.
+- Added append-only apply with exact-replay idempotency.
+- Added public exports, focused tests, protocol documentation and an isolated CI gate.
+
+**Authority boundary**
+
+The protocol remains `CHYBA / SHARED_COGNITION_ONLY / canon_allowed=false`. Reducer labels remain unsigned. Retention tiers are storage/retrieval hints only.
+
+**Evidence boundary**
+
+PASS is limited to deterministic software lineage, commitments, ACK gating, additive derivation and retention metadata. Automatic semantic reducer quality, semantic completeness, cross-subject/cross-generation fusion, garbage collection and live-NOEMA consolidation remain OPEN / NOT CLAIMED.
