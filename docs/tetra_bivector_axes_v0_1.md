@@ -58,3 +58,36 @@ The remaining gate is to define, before downstream fitting, the relation observa
 \]
 
 for the 36 explicit edge-pair channels.
+
+
+## Canonical relation observable
+
+The 36 relation values are now fixed at representation level by the pre-existing canonical PhaseNav complex overlap. For edge carriers \(E_a^+\) and \(E_b^-\),
+
+\[
+Z_{ab}
+=
+\frac1{36}
+\sum_{k=0}^{35}
+\exp\!\left(i[\phi^-_{b,k}-\phi^+_{a,k}]\right),
+\]
+
+and
+
+\[
+\boxed{
+X_{ab}=\arg Z_{ab},
+\qquad
+R_{ab}=|Z_{ab}|.
+}
+\]
+
+This is the same complex overlap already used by PhaseNav; no new fitted coefficient is introduced. A common phase shift applied to both sheets cancels exactly. If \(Z_{ab}=0\), its phase is undefined and the candidate fails closed.
+
+Status:
+
+- TETRA_EDGE_PAIR_AXIS_LABELS = PASS_EXACT
+- EDGE_PAIR_RELATION_OBSERVABLE = PASS_DEFINITION
+- EDGE_PAIR_RELATION_STRENGTH = PASS_DEFINITION
+- SIX_TETRA_EDGE_PHASE36_CARRIERS_PER_SHEET = OPEN
+- PHYSICAL_EDGE_CARRIER_PROVENANCE = OPEN
