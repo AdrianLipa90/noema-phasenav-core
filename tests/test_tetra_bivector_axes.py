@@ -49,5 +49,36 @@ class TetraBivectorAxisTests(unittest.TestCase):
         self.assertFalse(view["physical_binding"])
         self.assertEqual(view["binding_status"],"LEGACY_ROW_MAJOR_RESHAPE_NOT_DERIVED")
 
+
+
+class TetraEdgePairPhaseObservableTests(unittest.TestCase):
+    def test_constant_edge_phases_are_recovered(self):
+        from ciel_geometry.phasenav.tetra_bivector_axes import phase_overlap_edge_pair_field
+        D=36
+        plus={label:(0.0,)*D for label in EDGE_LABELS}
+        theta={"01":0.1,"02":0.2,"03":0.3,"23":-0.4,"31":0.5,"12":-0.6}
+        minus={label:(value,)*D for label,value in theta.items()}
+        rec=phase_overlap_edge_pair_field(plus,minus,source_receipt="receipt:test-phase")
+        for row in rec.field.matrix6:
+            for j,label in enumerate(EDGE_LABELS):
+                self.assertAlmostEqual(row[j],theta[label],places=12)
+        for row in rec.overlap_abs6:
+            for value in row:
+                self.assertAlmostEqual(value,1.0,places=12)
+
+    def test_common_shift_is_invariant(self):
+        from ciel_geometry.phasenav.tetra_bivector_axes import phase_overlap_edge_pair_field
+        D=36
+        plus={label:tuple(0.01*k+0.03*i for k in range(D)) for i,label in enumerate(EDGE_LABELS)}
+        minus={label:tuple(0.02*k-0.04*i for k in range(D)) for i,label in enumerate(EDGE_LABELS)}
+        a=phase_overlap_edge_pair_field(plus,minus,source_receipt="receipt:a")
+        shift=0.77
+        p2={k:tuple(x+shift for x in v) for k,v in plus.items()}
+        m2={k:tuple(x+shift for x in v) for k,v in minus.items()}
+        b=phase_overlap_edge_pair_field(p2,m2,source_receipt="receipt:b")
+        for ra,rb in zip(a.field.matrix6,b.field.matrix6):
+            for x,y in zip(ra,rb):
+                self.assertAlmostEqual(x,y,places=12)
+
 if __name__=="__main__":
     unittest.main()
