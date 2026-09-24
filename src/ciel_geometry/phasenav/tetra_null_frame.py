@@ -81,3 +81,18 @@ def canonical_antipodal_overlay() -> AntipodalOverlay36:
     hs=tuple(tuple(0.5*(a+b) for a,b in zip(ra,rb)) for ra,rb in zip(plus.matrix6,minus.matrix6))
     hd=tuple(tuple(0.5*(a-b) for a,b in zip(ra,rb)) for ra,rb in zip(plus.matrix6,minus.matrix6))
     return AntipodalOverlay36(BivectorField36(hs),BivectorField36(hd),canonical_bivector_parity())
+
+
+@dataclass(frozen=True)
+class AntipodalSplit4:
+    common_rank1: tuple[tuple[float,...],...]
+    differential_rank3: tuple[tuple[float,...],...]
+    physical_time_space_binding: str="CONDITIONAL"
+    gravity_claim: bool=False
+
+def canonical_antipodal_split4() -> AntipodalSplit4:
+    plus=canonical_plus_frame4()
+    minus=canonical_minus_frame4()
+    common=tuple(tuple(0.5*(a+b) for a,b in zip(ra,rb)) for ra,rb in zip(plus,minus))
+    differential=tuple(tuple(0.5*(a-b) for a,b in zip(ra,rb)) for ra,rb in zip(plus,minus))
+    return AntipodalSplit4(common,differential)
