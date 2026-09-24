@@ -42,4 +42,22 @@ class TetraNullFrameTests(unittest.TestCase):
         for a,b in zip(rel.matrix6,target):
             for x,y in zip(a,b): self.assertAlmostEqual(x,y,places=11)
 
+
+
+class TetraAntipodalSplitTests(unittest.TestCase):
+    def test_common_is_rank_one_shape(self):
+        from ciel_geometry.phasenav.tetra_null_frame import canonical_antipodal_split4
+        s=canonical_antipodal_split4()
+        self.assertTrue(all(abs(x)<1e-12 for row in s.common_rank1[1:] for x in row))
+        self.assertTrue(any(abs(x)>0 for x in s.common_rank1[0]))
+        self.assertTrue(all(abs(x)<1e-12 for x in s.differential_rank3[0]))
+
+    def test_split_reconstructs_plus(self):
+        from ciel_geometry.phasenav.tetra_null_frame import canonical_antipodal_split4
+        s=canonical_antipodal_split4()
+        plus=canonical_plus_frame4()
+        rec=tuple(tuple(a+b for a,b in zip(ra,rb)) for ra,rb in zip(s.common_rank1,s.differential_rank3))
+        for a,b in zip(rec,plus):
+            for x,y in zip(a,b): self.assertAlmostEqual(x,y,places=12)
+
 if __name__=="__main__": unittest.main()
