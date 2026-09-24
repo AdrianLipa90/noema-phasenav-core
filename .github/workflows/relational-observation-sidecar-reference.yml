@@ -1,0 +1,29 @@
+name: Relational observation/evidence sidecar reference
+
+on:
+  pull_request:
+    paths:
+      - 'docs/RELATIONAL_OBSERVATION_SIDECAR_V0_1.md'
+      - 'docs/RELATIONAL_EVIDENCE_SIDECAR_V0_1.md'
+      - 'src/ciel_geometry/phasenav/relational_observation.py'
+      - 'src/ciel_geometry/phasenav/relational_evidence.py'
+      - 'tests/test_relational_observation_sidecar.py'
+      - 'tests/test_relational_evidence_sidecar.py'
+      - '.github/workflows/relational-observation-sidecar-reference.yml'
+  workflow_dispatch:
+
+jobs:
+  reference:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install package and test dependency
+        run: python -m pip install -e ".[dev]"
+      - name: Run relational sidecar tests
+        run: >-
+          python -m pytest -q
+          tests/test_relational_observation_sidecar.py
+          tests/test_relational_evidence_sidecar.py
