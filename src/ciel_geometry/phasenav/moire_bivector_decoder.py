@@ -104,6 +104,20 @@ class Co33Decomposition:
     defect_symmetry_residual: float
     defect_trace: float
 
+    @property
+    def curvature_candidate(self) -> BivectorField36:
+        """Preferred name for the 20D J-self-adjoint traceless sector.
+
+        The historical `defect` field is retained for backward compatibility.
+        Physical curvature still requires an independent differential gate.
+        """
+        return self.defect
+
+    @property
+    def curvature_candidate_ratio(self) -> float:
+        """Frobenius-amplitude ratio of the 20D algebraic-curvature sector."""
+        return self.defect_ratio
+
 
 def decompose_co33(field: BivectorField36) -> Co33Decomposition:
     """Orthogonally decompose Mat(6) = co(3,3) + Q for the wedge pairing.
@@ -112,7 +126,9 @@ def decompose_co33(field: BivectorField36) -> Co33Decomposition:
 
     so(3,3) part: (X-theta_J(X))/2
     scalar conformal part: tr(X)/6 * I
-    Q: J-self-adjoint traceless complement
+    Q: J-self-adjoint traceless complement. Historically called a
+       "simplicity defect"; the preferred representation-level interpretation
+       is a 20D algebraic-curvature candidate after S=JQ.
 
     Dimensions:
         36 = 15 + 1 + 20.
