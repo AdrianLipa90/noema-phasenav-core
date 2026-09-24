@@ -156,3 +156,20 @@ All newly authored Python modules, exports and tests pass local syntax compilati
 **Evidence boundary**
 
 The implementation establishes finite mathematical/software U(1) transport identities. It does not establish a measured physical gauge field, nonlocal signalling, hypercharge, or a physical substrate.
+
+## 2026-09-19 — Spectroscopic holonomy bridge v0.1
+
+**Scope**
+
+- Factored the finite U(1) path algebra into a substrate-neutral transport primitive while preserving the typed `W_sem[A_sem]` semantic API.
+- Added `SpectroscopicHolonomyState` with exact graph cycle rank `beta_1 = E - V + C` and exactly one declared U(1) phase per independent cycle.
+- Added same-endpoint relative-path holonomy, exact N-site ring control spectrum, pairwise kinematic energy-gap candidates, first-order phase-vibronic linearization, spectroscopic Jacobian and Fisher information for diagonal noise.
+- Added public PhaseNav exports, formal theorem-chain documentation and an isolated CI gate that also reruns the existing semantic-holonomy tests.
+
+**Typing boundary**
+
+The generic U(1) algebra is shared; semantic and spectroscopic realizations are not physically identified. In particular, `A_sem` is not promoted to a chemical/electromagnetic field and `W_sem` is not redefined as molecular transport.
+
+**Evidence boundary**
+
+PASS is limited to graph topology, finite U(1) transport identities and declared computational control models. Physical molecular Hamiltonian binding, optical selection rules, measured gauge fields, hypercharge, nonlocal signalling and physical-substrate identification remain OPEN / NOT CLAIMED. Epistemic mode remains `CHYBA`; `canon_allowed=false`.

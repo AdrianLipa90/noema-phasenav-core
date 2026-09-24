@@ -1,0 +1,42 @@
+name: PhaseNav spectroscopic holonomy bridge
+
+on:
+  pull_request:
+    branches:
+      - master
+      - formalism/w-semantic-holonomy-u1-20260919
+    paths:
+      - 'src/ciel_geometry/phasenav/canon/u1_transport.py'
+      - 'src/ciel_geometry/phasenav/canon/semantic_holonomy.py'
+      - 'src/ciel_geometry/phasenav/canon/spectroscopic_holonomy.py'
+      - 'src/ciel_geometry/phasenav/canon/__init__.py'
+      - 'src/ciel_geometry/phasenav/__init__.py'
+      - 'tests/test_semantic_holonomy.py'
+      - 'tests/test_spectroscopic_holonomy.py'
+      - 'docs/spectroscopic_holonomy_bridge.md'
+      - '.github/workflows/phasenav-spectroscopic-holonomy.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  spectroscopic-holonomy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install package and pytest
+        run: python -m pip install -e . pytest
+      - name: Compile holonomy modules
+        run: >-
+          python -m py_compile
+          src/ciel_geometry/phasenav/canon/u1_transport.py
+          src/ciel_geometry/phasenav/canon/semantic_holonomy.py
+          src/ciel_geometry/phasenav/canon/spectroscopic_holonomy.py
+      - name: Run semantic and spectroscopic holonomy tests
+        run: >-
+          python -m pytest -q
+          tests/test_semantic_holonomy.py
+          tests/test_spectroscopic_holonomy.py
