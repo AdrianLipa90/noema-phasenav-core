@@ -280,3 +280,43 @@ def decode_moire_to_coframe_generator(
         co33_residual=decomposition.co33_residual,
         lie_roundtrip_residual=residual,
     )
+
+
+@dataclass(frozen=True)
+class GL4MetricSplit:
+    lorentz_gauge4: tuple[tuple[float,...],...]
+    metric_deformation4: tuple[tuple[float,...],...]
+    first_metric_variation4: tuple[tuple[float,...],...]
+    dimension_ledger: tuple[int,int,int]=(20,6,10)
+
+
+def _inverse4_matrix(a):
+    m=[list(map(float,row))+[1.0 if i==j else 0.0 for j in range(4)] for i,row in enumerate(a)]
+    for col in range(4):
+        pivot=max(range(col,4),key=lambda r:abs(m[r][col]))
+        if abs(m[pivot][col])<1e-15:
+            raise ValueError("metric must be invertible")
+        m[col],m[pivot]=m[pivot],m[col]
+        s=m[col][col]
+        m[col]=[x/s for x in m[col]]
+        for r in range(4):
+            if r==col: continue
+            f=m[r][col]
+            m[r]=[x-f*y for x,y in zip(m[r],m[col])]
+    return tuple(tuple(row[4:]) for row in m)
+
+
+def split_gl4_lorentz_metric(
+    generator4,
+    metric4=((1.0,0.0,0.0,0.0),(0.0,-1.0/3.0,0.0,0.0),(0.0,0.0,-1.0/3.0,0.0),(0.0,0.0,0.0,-1.0/3.0)),
+) -> GL4MetricSplit:
+    h=tuple(tuple(float(x) for x in row) for row in generator4)
+    g=tuple(tuple(float(x) for x in row) for row in metric4)
+    if len(h)!=4 or any(len(r)!=4 for r in h) or len(g)!=4 or any(len(r)!=4 for r in g):
+        raise ValueError("expected 4x4 generator and metric")
+    ginv=_inverse4_matrix(g)
+    hdag=_matmul(_matmul(ginv,_transpose(h)),g)
+    gauge=_scale(_sub(h,hdag),0.5)
+    metric=_scale(_add(h,hdag),0.5)
+    delta_g=_scale(_add(_matmul(_transpose(h),g),_matmul(g,h)),-1.0)
+    return GL4MetricSplit(gauge,metric,delta_g)
