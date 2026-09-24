@@ -109,5 +109,29 @@ class MoireBivectorDecoderTests(unittest.TestCase):
         self.assertLess(receipt.lie_roundtrip_residual, 1e-12)
 
 
+
+
+class GL4MetricSplitTests(unittest.TestCase):
+    def test_lorentz_boost_is_metric_invisible(self):
+        from ciel_geometry.phasenav.moire_bivector_decoder import split_gl4_lorentz_metric, _frob
+        b=0.2
+        h=((0.0,b,0.0,0.0),(3.0*b,0.0,0.0,0.0),(0.0,0.0,0.0,0.0),(0.0,0.0,0.0,0.0))
+        s=split_gl4_lorentz_metric(h)
+        self.assertLess(_frob(s.metric_deformation4),1e-12)
+        self.assertLess(_frob(s.first_metric_variation4),1e-12)
+
+    def test_strain_lives_in_metric_sector(self):
+        from ciel_geometry.phasenav.moire_bivector_decoder import split_gl4_lorentz_metric, _frob
+        h=((0.2,0.0,0.0,0.0),(0.0,0.1,0.0,0.0),(0.0,0.0,-0.05,0.0),(0.0,0.0,0.0,0.08))
+        s=split_gl4_lorentz_metric(h)
+        self.assertLess(_frob(s.lorentz_gauge4),1e-12)
+        self.assertGreater(_frob(s.first_metric_variation4),1e-6)
+
+    def test_generic_reconstructs(self):
+        from ciel_geometry.phasenav.moire_bivector_decoder import split_gl4_lorentz_metric, _frob, _add, _sub
+        h=((.2,.1,0,0),(.25,.3,.12,0),(0,-.08,-.1,.06),(.03,0,.04,.11))
+        s=split_gl4_lorentz_metric(h)
+        self.assertLess(_frob(_sub(_add(s.lorentz_gauge4,s.metric_deformation4),h)),1e-11)
+
 if __name__ == "__main__":
     unittest.main()
