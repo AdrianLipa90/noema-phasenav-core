@@ -95,3 +95,60 @@ def legacy_phase36_row_major_view(values):
         "binding_status":"LEGACY_ROW_MAJOR_RESHAPE_NOT_DERIVED",
         "physical_binding":False,
     }
+
+
+@dataclass(frozen=True)
+class TetraEdgePairPhaseReceipt:
+    field: TetraEdgePairField36
+    overlap_abs6: tuple[tuple[float,...],...]
+    observable: str="ARG_CANONICAL_PHASE36_OVERLAP"
+    candidate_only: bool=True
+
+
+def phase_overlap_edge_pair_field(
+    plus_edges: Mapping[str, tuple[float,...] | list[float]],
+    minus_edges: Mapping[str, tuple[float,...] | list[float]],
+    *,
+    source_receipt: str,
+) -> TetraEdgePairPhaseReceipt:
+    """Build the 6x6 edge-pair field from canonical PhaseNav overlap phases.
+
+    Z_ab = (1/36) sum_k exp(i(phi^-_{b,k} - phi^+_{a,k}))
+    X_ab = arg Z_ab
+    R_ab = |Z_ab|
+
+    No fitted coefficient is used. Exact zero overlap fails closed because its
+    argument is undefined.
+    """
+    from .pnv_runtime import M_36d_inner_product
+
+    if set(plus_edges) != set(EDGE_LABELS) or set(minus_edges) != set(EDGE_LABELS):
+        raise ValueError("both sheets must provide exactly the six canonical edge labels")
+
+    matrix=[]
+    strength=[]
+    for a in EDGE_LABELS:
+        phase_row=[]
+        strength_row=[]
+        va=tuple(float(x) for x in plus_edges[a])
+        if len(va)!=36 or not all(math.isfinite(x) for x in va):
+            raise ValueError(f"invalid plus edge vector {a}")
+        for b in EDGE_LABELS:
+            vb=tuple(float(x) for x in minus_edges[b])
+            if len(vb)!=36 or not all(math.isfinite(x) for x in vb):
+                raise ValueError(f"invalid minus edge vector {b}")
+            re,im=M_36d_inner_product(va,vb)
+            mag=math.hypot(re,im)
+            if mag <= 1e-15:
+                raise ValueError(f"undefined overlap phase for edge pair {(a,b)}")
+            phase_row.append(math.atan2(im,re))
+            strength_row.append(mag)
+        matrix.append(tuple(phase_row))
+        strength.append(tuple(strength_row))
+
+    field=TetraEdgePairField36(
+        tuple(matrix),
+        source_receipt=source_receipt,
+        binding_status="EXPLICIT_TETRA_EDGE_PAIR_PHASE_OVERLAP",
+    )
+    return TetraEdgePairPhaseReceipt(field,tuple(strength))
