@@ -74,6 +74,7 @@ def pair_hyperlayers(left: PhaseMatrix6, right: PhaseMatrix6, *, tol: float = 1e
     for x,y in zip(a,b):
         delta = _short_delta(x,y)
         h = 0.5 * delta
+        # y + delta/2 is the midpoint along the shortest circular arc.
         mean = (y + h) % TAU
         e = 2.0 * math.cos(h)
         means.append(mean); half.append(h); env.append(e); mask.append(abs(e) <= tol)
