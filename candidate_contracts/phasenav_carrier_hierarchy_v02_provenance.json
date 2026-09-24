@@ -1,0 +1,85 @@
+{
+  "receipt_id": "PHASENAV_CARRIER_HIERARCHY_V0_2_PROVENANCE_2026-09-11",
+  "contract_id": "PHASENAV_CARRIER_HIERARCHY_V0_2",
+  "verification_date": "2026-09-11",
+  "status": "CANDIDATE_VALIDATED_ACROSS_DECLARED_SOFTWARE_GATES",
+  "canonical_promotion_authority": false,
+  "main_or_master_merge_authority": false,
+  "physical_binding_verified": false,
+  "physical_ion_binding": "OPEN",
+  "scope": "finite-dimensional representation, execution, bridge, spectroscopy-interface and consumer-boundary software validation",
+  "common_branch": "candidate/600cell-working-layer-v0.1-20260911-v02",
+  "components": [
+    {
+      "role": "execution_owner",
+      "repo": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+      "commit": "6734fbe166579e201346dd24ace542842922e838",
+      "hosted_gate": "carrier-hierarchy",
+      "conclusion": "success"
+    },
+    {
+      "role": "independent_mathematical_validator",
+      "repo": "AdrianLipa90/The-Fundamental-Theory-of-Informational-Relations",
+      "commit": "f95c5661ff283304bde83d514a887f1e0c86c3e5",
+      "hosted_gate": "validate-carrier-hierarchy",
+      "conclusion": "success"
+    },
+    {
+      "role": "connection_curvature_bridge",
+      "repo": "AdrianLipa90/Relational-Field-Closure",
+      "commit": "dca74bd7249f86ee5a9542578db4cae9f0a5362b",
+      "hosted_gate": "bridge-v02",
+      "conclusion": "success"
+    },
+    {
+      "role": "qgt_spectroscopy_interface",
+      "repo": "AdrianLipa90/Resonant-Chemistry",
+      "commit": "d7b2b442e1e568e90cea49f70ce918bf2cd0d04f",
+      "hosted_gate": "spectroscopy-v02",
+      "conclusion": "success"
+    },
+    {
+      "role": "candidate_lifecycle",
+      "repo": "AdrianLipa90/noema-phasenav-core",
+      "commit": "58192294f0542f6c971dcc474679b5df07377bf8",
+      "hosted_gate": "contract-v02",
+      "conclusion": "success",
+      "additional_matrix": ["test (3.10): success", "test (3.11): success", "test (3.12): success"]
+    },
+    {
+      "role": "mas_consumer",
+      "repo": "AdrianLipa90/PhaseNav-MAS-Upgrade",
+      "commit": "2fd49b953105cde1c27c3904b99daa88180437ec",
+      "hosted_gate": "consumer-contract",
+      "conclusion": "success"
+    },
+    {
+      "role": "ciel_noema_consumer",
+      "repo": "AdrianLipa90/CIEL-NOEMA-HTRI-CIELingo-Phasenav",
+      "commit": "e8f504fa5dfe2806b593a40368955facaeb0ccf8",
+      "hosted_gate": "consumer-adapter",
+      "conclusion": "success"
+    },
+    {
+      "role": "time_parameter_adapter",
+      "repo": "AdrianLipa90/Informational-Dynamics-of-Time",
+      "commit": "ad9c25e1078d3991f3b44dbacec2a8b151ee19a2",
+      "hosted_gate": "idt-adapter",
+      "conclusion": "success",
+      "temporal_core_mutated": false
+    }
+  ],
+  "validated_representation_ladder": [
+    {"qubits": 1, "carrier": "H", "complex_dim": 2, "real_dim": 4, "projective_space": "CP^1"},
+    {"qubits": 2, "carrier": "O", "complex_dim": 4, "real_dim": 8, "projective_space": "CP^3"},
+    {"qubits": 3, "carrier": "S_16", "complex_dim": 8, "real_dim": 16, "projective_space": "CP^7"},
+    {"qubits": 4, "carrier": "A_32", "complex_dim": 16, "real_dim": 32, "projective_space": "CP^15"}
+  ],
+  "explicit_non_claims": [
+    "S_16 is not evidence of a realised 16-ion device",
+    "A_32 is not evidence of a realised 32-ion device",
+    "software validation does not establish a physical Cayley-Dickson substrate",
+    "software validation does not establish atomic, chemical, electrophotonic, Standard-Model, gravitational or spacetime binding",
+    "5Q and higher are outside this candidate contract and must fail closed"
+  ]
+}

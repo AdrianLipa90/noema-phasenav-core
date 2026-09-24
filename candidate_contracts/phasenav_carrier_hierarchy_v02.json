@@ -1,0 +1,50 @@
+{
+  "contract_id": "PHASENAV_CARRIER_HIERARCHY_V0_2",
+  "status": "CANDIDATE",
+  "admitted": true,
+  "executable": true,
+  "canonical_default": false,
+  "runtime_default": false,
+  "canon_write_authority": false,
+  "epistemic": "CHYBA",
+  "supported_qubits": [1, 2, 3, 4],
+  "candidate_ceiling_qubits": 4,
+  "carrier_levels": [
+    {"qubits": 1, "label": "H", "complex_dim": 2, "real_dim": 4, "projective_space": "CP^1"},
+    {"qubits": 2, "label": "O", "complex_dim": 4, "real_dim": 8, "projective_space": "CP^3"},
+    {"qubits": 3, "label": "S_16", "complex_dim": 8, "real_dim": 16, "projective_space": "CP^7"},
+    {"qubits": 4, "label": "A_32", "complex_dim": 16, "real_dim": 32, "projective_space": "CP^15"}
+  ],
+  "required_invariants": [
+    "metric_defect_zero_each_promotion",
+    "complex_intertwiner_defect_zero_each_promotion",
+    "unitary_embedded_single_qubit_gates",
+    "unitary_cnot_all_distinct_pairs_2q_to_4q",
+    "old_subsystem_gate_intertwining_zero",
+    "ghz_2q_3q_4q_exact",
+    "ghz_schmidt_rank_two_all_nontrivial_contiguous_splits",
+    "fail_closed_above_4q"
+  ],
+  "upstream": {
+    "pncs": "PHASENAV_CARRIER_HIERARCHY_V0_2",
+    "tir": "TIR_PHASENAV_PROMOTION_GEOMETRY_V0_1 + independent carrier_hierarchy_v02 validator"
+  },
+  "physical_bindings": {
+    "physical_ion_binding": "OPEN",
+    "chemistry": "OPEN",
+    "electrophotonics": "OPEN",
+    "standard_model": "OPEN",
+    "gravity": "OPEN",
+    "spacetime": "OPEN"
+  },
+  "quarantine_on": [
+    "metric_defect_nonzero",
+    "complex_structure_mismatch",
+    "nonunitary_executable_gate",
+    "gate_promotion_intertwiner_nonzero",
+    "ghz_validation_failure",
+    "schmidt_rank_validation_failure",
+    "qubit_count_above_candidate_ceiling",
+    "undeclared_physical_binding"
+  ]
+}
