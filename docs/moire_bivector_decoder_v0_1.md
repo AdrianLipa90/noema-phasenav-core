@@ -198,3 +198,58 @@ This is not a failure of the algebraic decoder. It means the present software ru
 ## 6. Literature crosswalk
 
 The standard exterior-square representation gives the exceptional local relation between \(\mathfrak{sl}(4,\mathbb R)\) and \(\mathfrak{so}(3,3)\). In Plebanski-type gravity, simplicity constraints select the metric/tetrad sector from more general B-field data. The present decoder is a project-specific attempt to feed PhaseNav moire coordinates into that standard geometric gate; it is not itself a standard Plebanski derivation.
+
+
+## 7. Interpretation correction — 2026-09-24
+
+The phrase `simplicity defect` and the corresponding "small Q" promotion intuition are deprecated.
+
+For the declared four-dimensional wedge pairing, the exact complement
+
+\[
+Q=X-X_{geom}
+\]
+
+satisfies
+
+\[
+JQ=Q^TJ,
+\qquad
+\operatorname{tr}Q=0.
+\]
+
+Therefore
+
+\[
+S=JQ
+\]
+
+is a symmetric bilinear form on \(\Lambda^2\) satisfying the four-dimensional algebraic Bianchi condition. The 20-dimensional complement is naturally typed as an **algebraic-curvature candidate**.
+
+The corrected decomposition is
+
+\[
+\boxed{
+\operatorname{Mat}_6
+=
+\mathfrak{co}(3,3)_{16}
+\oplus
+\mathcal K(V)_{20}.
+}
+\]
+
+Accordingly, the historical 20-snapshot runtime experiment in Section 5 remains a valid negative test of the old hypothesis "the 20D sector should be anomalously small", but it is **not** a geometry/gravity promotion gate.
+
+Physical curvature requires the separate differential condition
+
+\[
+JQ(x)
+\stackrel?=
+R_{LC}[e(X_{geom})](x),
+\]
+
+owned by the TIR differential frame/curvature compatibility gate.
+
+A second correction concerns the phase-only edge-pair observable. On the exact canonical tetrahedral edge-transport witness in TIR, 12 of 36 normalized Hilbert--Schmidt overlaps vanish exactly. Their arguments are undefined. Therefore a universal `arg(overlap)` tetrahedral decoder is falsified; the full signed overlap is the valid raw observable for that witness.
+
+The legacy Phase36 relative-phase decoder remains a computational candidate for inputs where every required overlap/phase is defined. It is not promoted as the universal physical tetrahedral relation law.
