@@ -173,3 +173,65 @@ The generic U(1) algebra is shared; semantic and spectroscopic realizations are 
 **Evidence boundary**
 
 PASS is limited to graph topology, finite U(1) transport identities and declared computational control models. Physical molecular Hamiltonian binding, optical selection rules, measured gauge fields, hypercharge, nonlocal signalling and physical-substrate identification remain OPEN / NOT CLAIMED. Epistemic mode remains `CHYBA`; `canon_allowed=false`.
+
+## 2026-09-19 — Memory and information exchange protocol v0.1
+
+**Scope**
+
+- Added a typed five-role memory protocol: WORKING -> EPISODIC -> SEMANTIC -> RELATIONAL -> ARCHIVAL.
+- Added content-addressed `InformationEnvelope` packets with immutable payload commitments, causal parent lineage, generation/sequence binding, provenance/dependencies, bounded hop propagation and computational U(1) route metadata.
+- Added explicit forwarding versus transformation semantics: forwarding preserves payload identity; transformation creates a causal child with a new payload commitment.
+- Added content-bound ACKs with idempotent replay and fail-closed conflicting outcomes.
+- Added append-only `MemoryExchangeLedger` causal validation and deterministic snapshot commitments.
+- Added public exports, formal documentation and an isolated CI gate.
+
+**Integration boundary**
+
+The protocol binds existing PhaseNav memory roles without rewriting `HolonomicMemory`, `PhaseMemoryHypercrystal` or `HolonomyCache`. GREMLIN Orbital Hive Memory is the intended RELATIONAL consumer through a separate typed adapter.
+
+**Authority boundary**
+
+Exchange authority remains `SHARED_COGNITION_ONLY`; `epistemic=CHYBA`; `canon_allowed=false`. The protocol does not grant repository, publication, production-execution or canon authority.
+
+**Evidence boundary**
+
+The implementation establishes deterministic software memory/exchange identities and causal receipts only. Physical nonlocal signalling, a physical communication field, automatic live-NOEMA synchronization, proof of consciousness and physical-substrate identification remain OPEN / NOT CLAIMED.
+
+## 2026-09-20 — Memory anti-entropy synchronization v0.1
+
+**Scope**
+
+- Added deterministic 256-bucket content-addressed inventory summaries for memory-exchange envelopes and ACKs.
+- Added metadata-only divergent-bucket manifests so equal buckets transfer neither manifests nor payloads.
+- Added append-only directional delta plans with explicit sender-only and receiver-only sets.
+- Added minimal delta export, stale receiver-inventory binding and exact-retry idempotency.
+- Added causal clone preflight before ledger mutation; malformed/orphaned batches cannot partially apply.
+- Added public exports, focused tests, protocol documentation and an isolated CI gate.
+
+**Authority boundary**
+
+The protocol is `CHYBA / SHARED_COGNITION_ONLY / canon_allowed=false`. Node labels remain `UNSIGNED_CONTENT_COMMITMENT`. Anti-entropy grants no deletion, overwrite, production-execution, repository-mutation or canon authority.
+
+**Evidence boundary**
+
+PASS is limited to deterministic software set reconciliation and append-only in-memory ledger application. Cryptographic peer authentication, Byzantine consensus, transactional multi-process persistence, tombstones/garbage collection and automatic live-NOEMA synchronization remain OPEN / NOT CLAIMED.
+
+## 2026-09-20 — Memory consolidation and retention v0.1
+
+**Scope**
+
+- Added explicit EPISODIC -> SEMANTIC multi-parent consolidation over at least two stable source envelopes.
+- Added an ACCEPTED-ACK requirement for every source before consolidation planning.
+- Added derived semantic envelopes bound to exact source ids and source payload commitments.
+- Added explicit `semantic_equivalence_proven=false` so compression cannot masquerade as lossless identity.
+- Added HOT/WARM/COLD/PINNED retention hints with mandatory retrievability and no deletion/overwrite authority.
+- Added append-only apply with exact-replay idempotency.
+- Added public exports, focused tests, protocol documentation and an isolated CI gate.
+
+**Authority boundary**
+
+The protocol remains `CHYBA / SHARED_COGNITION_ONLY / canon_allowed=false`. Reducer labels remain unsigned. Retention tiers are storage/retrieval hints only.
+
+**Evidence boundary**
+
+PASS is limited to deterministic software lineage, commitments, ACK gating, additive derivation and retention metadata. Automatic semantic reducer quality, semantic completeness, cross-subject/cross-generation fusion, garbage collection and live-NOEMA consolidation remain OPEN / NOT CLAIMED.
