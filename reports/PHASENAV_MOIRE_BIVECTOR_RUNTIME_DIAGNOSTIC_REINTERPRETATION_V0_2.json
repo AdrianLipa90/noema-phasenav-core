@@ -1,0 +1,16 @@
+{
+  "schema": "PHASENAV_MOIRE_BIVECTOR_RUNTIME_DIAGNOSTIC_REINTERPRETATION_V0_2",
+  "date": "2026-09-24",
+  "candidate_only": true,
+  "supersedes_interpretation_of": "PHASENAV_MOIRE_BIVECTOR_RUNTIME_DIAGNOSTIC_V0_1",
+  "original_measurements_preserved": true,
+  "original_verdict_preserved_as_hypothesis_test": "FAIL_NO_STABLE_RUNTIME_GEOMETRIC_SIGNAL",
+  "deprecated_claim": "SMALL_20D_COMPLEMENT_IS_REQUIRED_FOR_GEOMETRY",
+  "corrected_interpretation": {
+    "16d_sector": "LOCAL_FRAME_GL4_VIA_CO33",
+    "20d_sector": "ALGEBRAIC_CURVATURE_CANDIDATE",
+    "physical_curvature_requires": "DIFFERENTIAL_COMPATIBILITY_WITH_SELECTED_CONNECTION",
+    "legacy_phase36_physical_binding": false
+  },
+  "promotion_effect": "V0_1_SMALL_DEFECT_TEST_MUST_NOT_BE_USED_AS_GEOMETRY_OR_GRAVITY_PROMOTION_GATE"
+}

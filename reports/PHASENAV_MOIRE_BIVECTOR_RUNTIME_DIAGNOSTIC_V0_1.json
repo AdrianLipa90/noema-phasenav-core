@@ -1,0 +1,27 @@
+{
+  "schema": "PHASENAV_MOIRE_BIVECTOR_RUNTIME_DIAGNOSTIC_V0_1",
+  "date": "2026-09-24",
+  "candidate_only": true,
+  "physical_evidence": false,
+  "source": {
+    "aux_phi": "PERSISTENT_AUX_SELF",
+    "aux_feedback_phi": "LOSSLESS_IDENTITY_ECHO",
+    "phi": "LIVE_EVOLVING_SURFACE"
+  },
+  "test": {
+    "snapshots": 20,
+    "null": "within-snapshot permutation of exact AUX 36-value multiset",
+    "alignment": "same 24-way tetrahedral relative pair-frame search applied to observed and null",
+    "null_draws_per_snapshot": 200
+  },
+  "results": {
+    "mean_aligned_defect": 0.5994778234470919,
+    "mean_null_defect": 0.5943498370118544,
+    "median_empirical_p": 0.5398009950248757,
+    "min_empirical_p": 0.09950248756218906,
+    "max_empirical_p": 0.9651741293532339,
+    "fraction_p_lt_0_05": 0.0
+  },
+  "verdict": "FAIL_NO_STABLE_RUNTIME_GEOMETRIC_SIGNAL",
+  "interpretation": "Algebraic decoder remains valid as a candidate representation. Current live software state does not show stable preferential proximity to the proposed 4D geometric sector."
+}
