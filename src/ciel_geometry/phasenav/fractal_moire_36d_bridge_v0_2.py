@@ -41,7 +41,7 @@ def coherence36(left: Sequence[float], right: Sequence[float]) -> complex:
 
 def projective_residual36(left: Sequence[float], right: Sequence[float]) -> float:
     c = coherence36(left, right)
-    return 2.0 * (1.0 - abs(c))
+    return max(0.0, 2.0 * (1.0 - abs(c)))
 
 
 def validate_bridge_packet(
@@ -155,7 +155,7 @@ def validate_bridge_packet(
         }
 
     coh = coherence36(left, right)
-    residual = 2.0 * (1.0 - abs(coh))
+    residual = max(0.0, 2.0 * (1.0 - abs(coh)))
 
     return {
         "schema": SCHEMA,
