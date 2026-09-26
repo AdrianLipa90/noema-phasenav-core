@@ -9,7 +9,7 @@ from ciel_geometry.phasenav.fractal_moire_36d_bridge_v0_12 import (
 
 
 MATRIX_SHA="8781f4a685257eced538daa7462ec4fc48093a6b"
-FRONTIER_SHA="dc1cdbb401dd618738c8a23249fa4c23c8fe5515"
+FRONTIER_SHA="deac8af3ae12ac80f0cfab21b440b6e727c0b342"
 
 
 def _base():
@@ -69,9 +69,9 @@ def _base():
         "arpl_visibility_branch":"research/arpl-infinite-clock-visibility-frontier-v0.1-20260926",
         "arpl_visibility_commit_sha":FRONTIER_SHA,
         "arpl_visibility_source_files":[
-            "proofs/ARPL_INFINITE_CLOCK_FIBRE_VISIBILITY_FRONTIER_V0_1.md",
+            "proofs/ARPL_GRH_SOURCE_PRIME_REPLICATION_THEOREM_V0_1.md",
+            "receipts/ARPL_GRH_SOURCE_PRIME_REPLICATION_THEOREM_V0_1_VALIDATION_20260926.md",
             "src/on_primes/visibility_frontier.py",
-            "receipts/ARPL_INFINITE_CLOCK_FIBRE_VISIBILITY_FRONTIER_V0_1_VALIDATION_20260926.md",
         ],
         "arpl_visibility_pin_witness_ref":"gremlin://grh-exposure-frontier-pin",
     }
