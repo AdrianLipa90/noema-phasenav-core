@@ -1,13 +1,13 @@
 # Fractal Moire-Hilbert -> PhaseNav 36D Bridge v0.1
 
-Status: CANDIDATE_ONLY / REPRESENTATION_BRIDGE / CURRENT-HEAD SAFE
+Status: CANDIDATE_ONLY / REPRESENTATION_BRIDGE / CALIBRATION_SPLIT_ADDED
 Date: 2026-09-26
 
 ## Why this branch exists
 
-The earlier branch `formalism/moire-hyperlayer-36d-v0-1-20260924` contains a useful Moire/coframe/bivector candidate, but it is currently divergent from `master` (ahead 10, behind 69 at audit time).
+The earlier branch `formalism/moire-hyperlayer-36d-v0-1-20260924` contains a useful Moire/coframe/bivector candidate, but it is divergent from current `master`.
 
-This file does not overwrite or silently port that branch. It records the minimal current-head contract required to connect the newer Fractal-Orbital Moire-Hilbert formalism to PhaseNav 36D.
+This branch keeps the current-head bridge separate and adds the calibration distinction discovered on 2026-09-26.
 
 ## Upstream mathematical object
 
@@ -15,7 +15,7 @@ Let
 
     H_MF = integral_F^oplus H_x d mu_F(x)
 
-and let the fractal-orbital algebra be
+and
 
     A_FO = C(F) rtimes_(alpha,omega) G_orb.
 
@@ -28,48 +28,99 @@ If R_ab v = exp(i theta) v, then
 
     D_ab v = 4 sin^2(theta/2) v.
 
-Thus ker(D_ab) is the relational-zero sector on the tested subspace.
+For an identical-lattice homobilayer with lattice constant a and Moire period L_M,
+
+    4 sin^2(theta/2) = (a/L_M)^2.
+
+This is the scalar physical calibration. It does not yet assign physical meaning to the 36D coordinate basis.
 
 ## 36D representation contract
 
 A PhaseNav 36D carrier is a representation/projection, not the full Hilbert space:
 
     Pi_36 : A_FO -> V_36,
-
-with dim(V_36)=36.
+    dim(V_36)=36.
 
 The bridge must explicitly declare:
 - coordinate ordering;
-- whether the carrier is phase-only, bivector, semantic or another typed 36D object;
+- carrier type;
 - information discarded by Pi_36;
-- whether a reconstruction map exists;
-- whether common global U(1) is quotiented.
+- reconstruction contract;
+- whether common global U(1) is quotiented;
+- the physical orbital-group representation, if any.
 
-For phase-coordinate carriers theta^(a), theta^(b) in R^36, define
+For phase-coordinate carriers theta^(a), theta^(b), define
 
-    C_ab^(36) = (1/36) sum_j exp(i(theta_j^(b)-theta_j^(a)))
+    delta_j = wrap(theta_j^(b)-theta_j^(a))
 
-and the global-U(1)-blind projective residual
+and
 
-    delta_ab^2 = 2(1-|C_ab^(36)|).
+    C_ab = (1/36) sum_j exp(i delta_j).
 
-This residual is a representation-level observable. It is not automatically a metric on spacetime and is not curvature.
+Three different observables must not be conflated.
 
-## Relation to the historical Moire hyperlayer candidate
+### Raw relational residual
 
-The older candidate uses a signed shortest relative phase in each 6x6 channel and then decomposes Mat(6) into a co(3,3) geometric sector plus a 20D complement.
+    D_raw = (1/36) sum_j 4 sin^2(delta_j/2)
+          = 2 - 2 Re(C_ab).
 
-That construction may be reintroduced only through a forward-port/rebase with its tests. This current-head bridge does not claim that every 36D PhaseNav state is a bivector matrix.
+### Projective/shape residual
+
+    D_shape = 2(1-|C_ab|).
+
+This is global-U(1)-blind.
+
+### Coherent-phase residual
+
+    D_coh = 2(|C_ab|-Re(C_ab)) >= 0.
+
+Exact decomposition:
+
+    D_raw = D_shape + D_coh.
+
+Calibration consequence:
+if every channel is shifted by the same theta, then
+
+    D_raw = 4 sin^2(theta/2),
+    D_shape = 0.
+
+Therefore the old projective residual cannot be used by itself as a physical
+uniform-twist observable. Quotienting common phase before establishing the
+physical orbital representation can erase the signal one is trying to
+calibrate.
+
+## Physical orbital representation gate
+
+A physical 36D twist binding requires an explicit representation such as
+
+    rho_36 : SO(2) -> End(V_36)
+
+with a typed generator J_36:
+
+    rho_36(theta) = exp(theta J_36).
+
+A coordinate-wise common quantum phase is not automatically the same object as
+a physical lattice rotation. Until rho_36/J_36 is identified and calibrated,
+live PhaseNav 36D values remain dimensionless computational state.
+
+## Relation to historical Moire hyperlayer candidate
+
+The historical candidate uses signed shortest relative phases in a 6x6 phase
+matrix and decomposes Mat(6) into co(3,3) plus a 20D complement.
+
+That branch remains useful as a candidate representation because it retains
+channelwise relative phase instead of immediately quotienting it away.
+However it is not automatically the unique physical rho_36 and must be
+forward-ported and calibrated before promotion.
 
 ## Arithmetic phase input
 
-The On-Primes branch `feat/arithmetic-relational-phase-law-v0.1` supplies exact finite cyclic characters
+The On-Primes Arithmetic Relational Phase Law supplies exact cyclic characters
 
-    chi_(q,a)(n)=exp(2 pi i a n/q)
+    chi_(q,a)(n)=exp(2 pi i a n/q).
 
-and exact separation signatures.
-
-Such characters may populate or modulate an admitted PhaseNav representation only through a typed adapter. Their arithmetic exactness does not by itself establish a physical interaction.
+These may enter a typed representation layer. Arithmetic exactness does not
+establish a physical prime interaction.
 
 ## Fractal covariance
 
@@ -77,32 +128,31 @@ For a unitary scale action D_r require
 
     D_r U_g D_r^(-1) = U_(alpha_r(g)).
 
-The corresponding relation tower is
+For a scale word w,
 
     R_ab^(w) = D_w^(-1) R_ab D_w.
 
-A 36D implementation must state whether Pi_36 intertwines this action:
+A 36D implementation must test whether Pi_36 intertwines this action.
 
-    Pi_36(D_w^(-1) a D_w) ?= rho_w(Pi_36(a)).
+## Mandatory promotion tests
 
-If this equality is not tested, scale covariance is OPEN.
-
-## Mandatory tests for promotion
-
-1. exact 36 finite coordinates for a 36D phase carrier;
-2. finite-value fail-closed validation;
-3. common-phase invariance where the representation is projective;
-4. layer-exchange conjugation/sign test;
-5. zero residual for identical relations;
-6. nonzero residual control for heterogeneous relative phase;
-7. explicit information-loss ledger for Pi_36;
-8. replay against the historical Moire-hyperlayer candidate only after a clean rebase.
+1. exactly 36 finite coordinates;
+2. fail-closed validation;
+3. raw residual identity D_raw = 2 - 2 Re(C);
+4. projective residual identity D_shape = 2(1-|C|);
+5. exact split D_raw = D_shape + D_coh;
+6. common-phase blind-spot control;
+7. layer-exchange symmetry;
+8. relational zero for identical inputs;
+9. information-loss ledger;
+10. explicit rho_36/J_36 physical orbital binding before dimensional conversion;
+11. historical Moire-hyperlayer replay only after clean forward-port.
 
 ## Firewall
 
 Not established here:
+- unique physical 36D realization;
 - physical gravity from Moire;
-- unique 36D realization of H_MF;
 - prime-driven physical dynamics;
-- equivalence of local residual and winding;
-- universal physical validity of the fractal-orbital algebra.
+- equivalence of winding and local residual;
+- conversion of live phi/aux_phi to a physical length before rho_36/J_36 calibration.
