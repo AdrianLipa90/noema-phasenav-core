@@ -28,7 +28,7 @@ def _base_packet():
 
 def test_projective_residual_is_common_phase_blind():
     p = _base_packet()
-    assert projective_residual36(p["left_phase36"], p["right_phase36"]) < 1e-12
+    residual = projective_residual36(p["left_phase36"], p["right_phase36"])\n    assert 0.0 <= residual < 1e-12
 
 
 def test_projective_residual_detects_heterogeneous_relative_phase():
