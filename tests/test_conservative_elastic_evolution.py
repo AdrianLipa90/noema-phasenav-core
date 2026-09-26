@@ -46,7 +46,9 @@ def test_fourier_mode_discrete_eigenvalue():
     q=2*math.pi*m/n
     k2=4*math.sin(q/2)**2/dx**2
     eig=-(P.mu/P.rho0)*k2-(P.eta/P.rho0)*k2*k2
-    assert max(abs(a[j]-eig*u[j]) for j in range(n))<1e-10
+    max_err=max(abs(a[j]-eig*u[j]) for j in range(n))
+    # D4/dx^4 amplifies float64 cancellation; use a scale-aware roundoff gate.
+    assert max_err < 5e-11*max(1.0,abs(eig))
 
 
 def test_energy_ledger_is_nonnegative():
