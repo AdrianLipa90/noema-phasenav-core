@@ -13,7 +13,7 @@ formalism/fractal-moire-hilbert-36d-bridge-v0.11-20260926
 
 Immediate compare before receipt:
 
-ahead_by = 3  
+ahead_by = 7  
 behind_by = 0
 
 ## Provenance surfaces
@@ -157,7 +157,7 @@ The v0.12 contract rejects:
 
 GitHub combined status on implementation head
 
-68bcb2d62f6718c306efc03b25bb16bff59e3e75
+73c24b0d0077583ac2c2b97712b6684e3ca942c5
 
 returned no status checks.
 
@@ -175,3 +175,26 @@ UNCONDITIONAL_GENERIC_INFINITE_EXPOSURE = OPEN
 PHYSICAL_OBSERVABILITY = NOT_PROMOTED
 
 canon_allowed = false.
+
+
+## Provenance refresh note
+
+The visibility source pin was refreshed from the earlier frontier snapshot to
+the clean theorem snapshot
+
+\[
+\boxed{
+deac8af3ae12ac80f0cfab21b440b6e727c0b342.
+}
+\]
+
+No theorem semantics changed in this refresh.
+
+Current candidate branch compare:
+
+ahead_by = 7  
+behind_by = 0
+
+relative to v0.11.
+
+Hosted status on the refreshed branch head remained empty.
