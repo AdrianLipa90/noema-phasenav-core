@@ -7,7 +7,7 @@ from ciel_geometry.phasenav.fractal_moire_36d_bridge_v0_11 import (
     validate_bridge_packet_v11,
 )
 
-SOURCE_SHA="98e5cb10460a233946ce7e2afdbc521b6a234886"
+SOURCE_SHA="8781f4a685257eced538daa7462ec4fc48093a6b"
 
 
 def _base():
