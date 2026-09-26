@@ -115,6 +115,36 @@ def encode_so2_log_phase36(
     )
 
 
+def encode_homobilayer_period_phase36(
+    lattice_constant: float,
+    moire_period: float,
+    *,
+    source_id: str,
+    derivation_id: str = "PNV_HOMOBILAYER_MOIRE_PERIOD_TO_SO2_LOG_PHASE_V1",
+) -> Phase36Record:
+    """Encode a measured/calculated homobilayer Moire period into the typed basis.
+
+    The physical relation is L_M=a/[2 sin(|theta|/2)]. This returns the
+    principal non-negative twist branch. Orientation sign requires an
+    independent handedness/orientation witness.
+    """
+    a = float(lattice_constant)
+    L = float(moire_period)
+    if not math.isfinite(a) or a <= 0.0:
+        raise Phase36AdapterError("lattice_constant must be finite and positive")
+    if not math.isfinite(L) or L <= 0.0:
+        raise Phase36AdapterError("moire_period must be finite and positive")
+    x = a / (2.0 * L)
+    if x > 1.0 + 1e-15:
+        raise Phase36AdapterError("moire_period is too small for the homobilayer relation")
+    theta = 2.0 * math.asin(min(1.0, x))
+    return encode_so2_log_phase36(
+        theta,
+        source_id=source_id,
+        derivation_id=derivation_id,
+    )
+
+
 def relative_log_matrix36(
     reference: Phase36Record,
     target: Phase36Record,
