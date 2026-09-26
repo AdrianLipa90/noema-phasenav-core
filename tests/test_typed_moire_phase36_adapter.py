@@ -7,6 +7,7 @@ from ciel_geometry.phasenav.typed_moire_phase36_adapter import (
     Phase36AdapterError,
     Phase36Record,
     adapt_typed_phase36_to_bivector36_so2,
+    encode_homobilayer_period_phase36,
     encode_so2_log_phase36,
     physical_moire_period,
 )
@@ -66,7 +67,7 @@ def test_off_axis_phase_component_fails_closed():
         derivation_id=target.derivation_id,
         source_id="corrupt",
     )
-    with pytest.raises(Phase36AdapterError, match="off the calibrated SO\(2\) generator axis"):
+    with pytest.raises(Phase36AdapterError, match=r"off the calibrated SO\(2\) generator axis"):
         adapt_typed_phase36_to_bivector36_so2(ref, corrupted)
 
 
@@ -81,6 +82,23 @@ def test_graphene_magic_angle_period():
     binding = adapt_typed_phase36_to_bivector36_so2(ref, target)
     L = physical_moire_period(binding, 0.246)
     assert abs(L - 12.6) < 0.05
+
+
+def test_measured_period_forward_binding():
+    ref = encode_so2_log_phase36(0.0, source_id="ref")
+    target = encode_homobilayer_period_phase36(
+        0.246,
+        12.6,
+        source_id="stm:tilak-2021:12.6nm",
+    )
+    binding = adapt_typed_phase36_to_bivector36_so2(ref, target)
+    assert abs(math.degrees(binding.theta_radians) - 1.12) < 0.01
+    assert abs(physical_moire_period(binding, 0.246) - 12.6) < 1e-10
+
+
+def test_invalid_period_geometry_fails_closed():
+    with pytest.raises(Phase36AdapterError, match="too small"):
+        encode_homobilayer_period_phase36(1.0, 0.1, source_id="impossible")
 
 
 def test_record_validation():
