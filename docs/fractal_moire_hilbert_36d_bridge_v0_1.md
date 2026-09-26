@@ -1,13 +1,16 @@
 # Fractal Moire-Hilbert -> PhaseNav 36D Bridge v0.1
 
-Status: CANDIDATE_ONLY / REPRESENTATION_BRIDGE / CALIBRATION_SPLIT_ADDED
+Status: CANDIDATE_ONLY / REPRESENTATION_BRIDGE / TYPED_BIVECTOR36_SO2_CALIBRATED
 Date: 2026-09-26
 
 ## Why this branch exists
 
 The earlier branch `formalism/moire-hyperlayer-36d-v0-1-20260924` contains a useful Moire/coframe/bivector candidate, but it is divergent from current `master`.
 
-This branch keeps the current-head bridge separate and adds the calibration distinction discovered on 2026-09-26.
+This branch keeps the current-head bridge separate and records the calibrated distinction between:
+- generic PhaseNav 36D state;
+- phase-coordinate 36D carriers;
+- the physically typed BIVECTOR_OPERATOR_36 carrier.
 
 ## Upstream mathematical object
 
@@ -28,90 +31,98 @@ If R_ab v = exp(i theta) v, then
 
     D_ab v = 4 sin^2(theta/2) v.
 
-For an identical-lattice homobilayer with lattice constant a and Moire period L_M,
+For an identical-lattice homobilayer,
+
+    L_M = a/[2 sin(|theta|/2)],
+
+so
 
     4 sin^2(theta/2) = (a/L_M)^2.
 
-This is the scalar physical calibration. It does not yet assign physical meaning to the 36D coordinate basis.
-
-## 36D representation contract
-
-A PhaseNav 36D carrier is a representation/projection, not the full Hilbert space:
-
-    Pi_36 : A_FO -> V_36,
-    dim(V_36)=36.
-
-The bridge must explicitly declare:
-- coordinate ordering;
-- carrier type;
-- information discarded by Pi_36;
-- reconstruction contract;
-- whether common global U(1) is quotiented;
-- the physical orbital-group representation, if any.
+## Generic phase-coordinate 36D split
 
 For phase-coordinate carriers theta^(a), theta^(b), define
 
-    delta_j = wrap(theta_j^(b)-theta_j^(a))
-
-and
-
+    delta_j = wrap(theta_j^(b)-theta_j^(a)),
     C_ab = (1/36) sum_j exp(i delta_j).
 
-Three different observables must not be conflated.
+Then
 
-### Raw relational residual
+    D_raw   = 2 - 2 Re(C_ab),
+    D_shape = 2(1-|C_ab|),
+    D_coh   = 2(|C_ab|-Re(C_ab)),
 
-    D_raw = (1/36) sum_j 4 sin^2(delta_j/2)
-          = 2 - 2 Re(C_ab).
-
-### Projective/shape residual
-
-    D_shape = 2(1-|C_ab|).
-
-This is global-U(1)-blind.
-
-### Coherent-phase residual
-
-    D_coh = 2(|C_ab|-Re(C_ab)) >= 0.
-
-Exact decomposition:
+with the exact identity
 
     D_raw = D_shape + D_coh.
 
-Calibration consequence:
-if every channel is shifted by the same theta, then
+A uniform common phase is visible in D_raw but erased by D_shape. Therefore a
+global-U(1)-blind quotient cannot be used by itself as a physical uniform-twist
+observable.
 
-    D_raw = 4 sin^2(theta/2),
-    D_shape = 0.
+## Typed physical Bivector36 orbital representation
 
-Therefore the old projective residual cannot be used by itself as a physical
-uniform-twist observable. Quotienting common phase before establishing the
-physical orbital representation can erase the signal one is trying to
-calibrate.
+For the typed carrier BIVECTOR_OPERATOR_36, physical x-y rotation is represented by
 
-## Physical orbital representation gate
+    rho_36(theta) = Lambda^2 R_xy(theta),
 
-A physical 36D twist binding requires an explicit representation such as
+where R_xy(theta) is the ordinary spatial SO(2) rotation embedded in
+(t,x,y,z), and rho_36 is stored as a 6x6 operator (36 real coefficients) in the
+basis
 
-    rho_36 : SO(2) -> End(V_36)
+    (01,02,03,23,31,12).
 
-with a typed generator J_36:
+This gives an explicit physical orbital generator
 
-    rho_36(theta) = exp(theta J_36).
+    J_36 = d/dtheta rho_36(theta)|_(theta=0).
 
-A coordinate-wise common quantum phase is not automatically the same object as
-a physical lattice rotation. Until rho_36/J_36 is identified and calibrated,
-live PhaseNav 36D values remain dimensionless computational state.
+Its only nonzero entries are
 
-## Relation to historical Moire hyperlayer candidate
+    J[01,02] = -1,
+    J[02,01] = +1,
+    J[23,31] = -1,
+    J[31,23] = +1.
 
-The historical candidate uses signed shortest relative phases in a 6x6 phase
-matrix and decomposes Mat(6) into co(3,3) plus a 20D complement.
+The exact representation trace is
 
-That branch remains useful as a candidate representation because it retains
-channelwise relative phase instead of immediately quotienting it away.
-However it is not automatically the unique physical rho_36 and must be
-forward-ported and calibrated before promotion.
+    tr rho_36(theta) = 2 + 4 cos(theta).
+
+Hence the calibrated typed 36D residual is
+
+    D_biv36
+      = [6 - tr rho_36(theta)]/2
+      = 4 sin^2(theta/2)
+      = (a/L_M)^2.
+
+Thus the physical orbital-axis calibration is CLOSED for this typed carrier.
+
+The principal inverse is
+
+    |theta| = arccos([tr rho_36 - 2]/4),
+
+and
+
+    L_M = a/sqrt(D_biv36).
+
+## Scope boundary
+
+PASS:
+- scalar homobilayer Moire calibration;
+- generic 36D raw/shape/coherent split;
+- typed BIVECTOR_OPERATOR_36 SO(2) representation;
+- explicit J_36;
+- exact group law;
+- exact trace-to-twist map;
+- exact twist-to-Moire-length map after declaring lattice constant a.
+
+OPEN:
+- identifying arbitrary legacy PhaseNav phi vectors with BIVECTOR_OPERATOR_36;
+- unique physical semantics for every generic 36D carrier;
+- historical 6x6 phase-coordinate carrier promotion;
+- curvature/gravity interpretation.
+
+Live phi/aux_phi remain dimensionless generic computational state unless they
+are explicitly and verifiably admitted into the typed bivector carrier.
 
 ## Arithmetic phase input
 
@@ -132,27 +143,29 @@ For a scale word w,
 
     R_ab^(w) = D_w^(-1) R_ab D_w.
 
-A 36D implementation must test whether Pi_36 intertwines this action.
+A 36D implementation must test whether its typed projection intertwines this
+action.
 
-## Mandatory promotion tests
+## Promotion tests
 
-1. exactly 36 finite coordinates;
-2. fail-closed validation;
-3. raw residual identity D_raw = 2 - 2 Re(C);
-4. projective residual identity D_shape = 2(1-|C|);
-5. exact split D_raw = D_shape + D_coh;
-6. common-phase blind-spot control;
-7. layer-exchange symmetry;
-8. relational zero for identical inputs;
-9. information-loss ledger;
-10. explicit rho_36/J_36 physical orbital binding before dimensional conversion;
-11. historical Moire-hyperlayer replay only after clean forward-port.
+1. exact carrier type declaration;
+2. exactly 36 finite coefficients where a 36-coefficient representation is used;
+3. fail-closed validation;
+4. generic residual split identities;
+5. common-phase blind-spot control;
+6. Bivector36 SO(2) group law;
+7. J_36 generator structure;
+8. tr rho_36(theta)=2+4cos(theta);
+9. D_biv36=(a/L_M)^2;
+10. inverse trace-to-angle mapping;
+11. explicit information-loss ledger for any projection from H_MF;
+12. historical Moire-hyperlayer replay only after clean forward-port.
 
 ## Firewall
 
-Not established here:
-- unique physical 36D realization;
+Not established:
+- generic PhaseNav 36D = physical bivector operator;
 - physical gravity from Moire;
 - prime-driven physical dynamics;
-- equivalence of winding and local residual;
-- conversion of live phi/aux_phi to a physical length before rho_36/J_36 calibration.
+- winding = local residual;
+- physical-unit conversion for untyped live phi/aux_phi.
