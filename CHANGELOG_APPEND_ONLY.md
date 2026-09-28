@@ -247,12 +247,13 @@ PASS is limited to deterministic software lineage, commitments, ACK gating, addi
 - Bound the default numerical-rank threshold to machine precision
   `eps * max(shape) * sigma_max`; fitted cutoffs are not silently introduced.
 - Added complex-projective Fubini--Study/Pancharatnam orbit receipts.
-- Added a 4D Pluecker simplicity gate and Euclidean Hodge self-dual /
-  anti-self-dual `3+3` split.
-- Added principal-angle comparison of numerical subspaces.
+- Added a 4D exterior-wedge primitive, Pluecker simplicity gate and Euclidean
+  Hodge self-dual / anti-self-dual `3+3` split.
+- Added principal-angle comparison, Grassmann distances and a closed
+  Bargmann-triangle projective holonomy receipt.
 - Added tensor unfold/fold, mode products, Schmidt decomposition,
-  operator-Schmidt decomposition and TT-SVD/MPS factorization with explicit
-  truncation residuals.
+  Schmidt-spectrum entropy scalars, operator-Schmidt decomposition,
+  TT-SVD/MPS and Tucker/HOSVD factorization with explicit truncation residuals.
 - Added rank-revealing boundary-state compression and a streaming incremental
   boundary basis for atomized contractions.
 - Added operator-Schmidt boundary-capacity accounting; CZ rank 2 and SWAP rank 4
@@ -267,7 +268,7 @@ treated as a conditioning guarantee.
 
 **Validation**
 
-Focused local suite: **15 passed**. Full repository pytest is **NOT RUN** in
+Focused local suite: **20 passed**. Full repository pytest is **NOT RUN** in
 this session because the checkout could not be reconstructed through DNS.
 
 **Evidence boundary**
