@@ -122,10 +122,10 @@ atomization and orbital/tensor geometry:
 
 - singular-spectrum scalars with a machine-epsilon default rank threshold;
 - complex-projective Fubini--Study / Pancharatnam orbit receipts;
-- 4D Pluecker simplicity and Euclidean Hodge 3+3 decomposition;
-- principal subspace angles;
-- tensor unfolding, mode products, Schmidt and operator-Schmidt decomposition;
-- TT-SVD / MPS factorization with explicit truncation accounting;
+- 4D exterior wedge, Pluecker simplicity and Euclidean Hodge 3+3 decomposition;
+- principal subspace angles, Grassmann distances and closed Bargmann-triangle holonomy;
+- tensor unfolding, mode products, Schmidt/operator-Schmidt decomposition and Schmidt-spectrum entropies;
+- TT-SVD / MPS and Tucker/HOSVD factorizations with explicit truncation accounting;
 - boundary-state linear-rank compression, streaming basis construction and
   operator-Schmidt boundary-capacity bounds.
 
