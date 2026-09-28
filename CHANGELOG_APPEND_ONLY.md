@@ -316,3 +316,36 @@ The layer is a finite computational/mathematical candidate only.
 `canon_allowed=false`. No physical-QPU claim, generic 100-qubit small-memory
 claim, IBM d=36 width reduction, or quantum-advantage conclusion is promoted.
 The repository main branch is not modified by this candidate update.
+
+
+## 2026-09-29 — Channel / transfer / Krylov primitives v0.17
+
+**Scope**
+
+- Added normalized state, density-matrix, partial-trace, von Neumann,
+  Renyi-2, min-entropy, purity and mutual-information primitives.
+- Added Kraus, Choi and column-vectorized superoperator channel
+  representations with CP/TP/unitality residual receipts.
+- Added Pauli-transfer matrices and signed-permutation diagnostics for local
+  channel routing.
+- Added squared-PTM second-moment transport and the exact local-Haar + CZ
+  support transition with no fitted coefficient.
+- Added transfer-spectrum and finite channel fixed-point diagnostics.
+- Added fail-closed Woodbury low-rank inverse updates.
+- Added fully reorthogonalized Hermitian Lanczos/Krylov projection with
+  orthogonality and recurrence residuals.
+- Recorded the exact nonzero local-Haar + CZ support-sector spectrum
+  `1, 1/3, -1/9` and stationary weights `1/5, 1/5, 3/5`.
+
+**Validation**
+
+Focused local suite: **24 passed**.
+Python syntax compilation: **PASS**.
+Full-repository pytest: **NOT RUN** in this session.
+
+**Evidence boundary**
+
+The local support transition is a parameter-free second-moment identity, not a
+global XEB result.  No measured IBM noise channel, physical-QPU execution,
+global RCS speedup or quantum-advantage conclusion is promoted.
+`canon_allowed=false`.  The repository main branch is not modified.
