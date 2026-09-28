@@ -38,6 +38,10 @@ distance and open-path Pancharatnam phase. The distance and fidelity are
 projective quantities; the open-path phase is common-gauge invariant but is not
 claimed to be invariant under independent endpoint gauges.
 
+### Exterior wedge and Pluecker simplicity
+
+`wedge2_4d` builds the canonical six-component exterior product directly from two 4D vectors.
+
 ### Pluecker simplicity
 
 For the ordered 4D bivector basis
@@ -67,10 +71,24 @@ B_\pm=\frac12(B\pm *B),
 with explicit reconstruction residual. This exposes the `3+3` self-dual and
 anti-self-dual sectors without promoting them to a physical field.
 
-### Principal angles
+### Principal angles and Grassmann geometry
 
 `principal_angles` compares orbital subspaces through the singular values of
 `Q_A^* Q_B`, giving a basis-independent relation between finite subspaces.
+`grassmann_distance` adds chordal, geodesic and projector-Frobenius distances,
+including unequal-rank subspaces.
+
+### Bargmann triangle
+
+`bargmann_triangle` evaluates the closed three-point product
+
+\[
+\langle a|b\rangle\langle b|c\rangle\langle c|a\rangle,
+\]
+
+returning its gauge-invariant phase, strength and Fubini--Study perimeter. This
+provides a closed projective holonomy primitive distinct from the open-path
+Pancharatnam phase.
 
 ## 3. Tensor primitives
 
@@ -79,9 +97,11 @@ Implemented primitives:
 - mode unfolding/folding;
 - n-mode matrix product;
 - Schmidt decomposition across an arbitrary declared tensor-product cut;
+- Schmidt-spectrum scalar information: purity, participation ratio, von Neumann, Renyi-2 and min entropy;
 - operator-Schmidt decomposition of bipartite operators;
 - numerically exact-to-declared-threshold or explicitly truncated TT-SVD / MPS factorization;
 - TT/MPS reconstruction;
+- Tucker/HOSVD factorization and reconstruction with per-mode ranks and a declared HOSVD error upper bound;
 - rank-revealing compression of many boundary-state branches;
 - streaming incremental boundary basis;
 - branch/rank capacity bounds from operator-Schmidt ranks.
