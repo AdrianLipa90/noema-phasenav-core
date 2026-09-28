@@ -1,0 +1,48 @@
+{
+  "base_branch": "formalism/fractal-moire-hilbert-36d-bridge-v0.14-20260928",
+  "base_commit": "8bbe5f7143114f51157a5c3b0c79cfac10bc88ea",
+  "branch": "formalism/orbital-scalar-tensor-primitives-v0.15-20260928",
+  "canon_allowed": false,
+  "full_repository_pytest": "NOT_RUN_DNS_BLOCKED_FOR_CHECKOUT",
+  "gremlin_alignment": [
+    "rank",
+    "nullity",
+    "singular_values",
+    "conditioning",
+    "fail-closed threshold receipts"
+  ],
+  "implemented": [
+    "spectral scalar invariants",
+    "complex-projective Fubini-Study/Pancharatnam orbit",
+    "4D Pluecker simplicity gate",
+    "Euclidean Hodge 3+3 split",
+    "principal subspace angles",
+    "tensor unfold/fold/mode product",
+    "Schmidt decomposition",
+    "operator-Schmidt decomposition",
+    "TT-SVD/MPS exact-or-explicit-truncated factorization",
+    "boundary-state rank compression",
+    "streaming incremental boundary basis",
+    "operator-Schmidt boundary capacity bound"
+  ],
+  "main_modified": false,
+  "physical_field_claim": false,
+  "physical_qpu_claim": false,
+  "schema": "PHASENAV_ORBITAL_SCALAR_TENSOR_PRIMITIVES_V0_15",
+  "sha256": {
+    "orbital_scalar_tensor.py": "53e683aa94d7c71a72d63515610c1348bed607451852ed008c4b66a8dbfee106",
+    "orbital_scalar_tensor_primitives_v0_15.md": "c8b540324e3740ad7d8e508bf0dd5702970166923e1ab1ca92594c7e18d80cb5",
+    "test_orbital_scalar_tensor.py": "f60e6f8cc833be00419e48717ed740828777377281b25b0ad0f41ba4b8183d9d"
+  },
+  "status": "CANDIDATE_VALIDATED_TARGETED",
+  "targeted_tests": {
+    "command": "python3 -m pytest -q test_orbital_scalar_tensor.py",
+    "count": 15,
+    "failed": 0,
+    "passed": 15
+  },
+  "tether_guard": {
+    "failures": [],
+    "status": "ACTIVE"
+  }
+}
