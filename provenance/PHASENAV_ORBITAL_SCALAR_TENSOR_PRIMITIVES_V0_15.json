@@ -14,13 +14,15 @@
   "implemented": [
     "spectral scalar invariants",
     "complex-projective Fubini-Study/Pancharatnam orbit",
-    "4D Pluecker simplicity gate",
+    "4D exterior wedge and Pluecker simplicity gate",
     "Euclidean Hodge 3+3 split",
-    "principal subspace angles",
+    "principal subspace angles and Grassmann distances",
+    "closed Bargmann-triangle projective holonomy",
     "tensor unfold/fold/mode product",
-    "Schmidt decomposition",
+    "Schmidt decomposition and Schmidt-spectrum entropies",
     "operator-Schmidt decomposition",
-    "TT-SVD/MPS exact-or-explicit-truncated factorization",
+    "TT-SVD/MPS exact-to-declared-threshold or explicit truncation",
+    "Tucker/HOSVD multilinear factorization",
     "boundary-state rank compression",
     "streaming incremental boundary basis",
     "operator-Schmidt boundary capacity bound"
@@ -30,16 +32,16 @@
   "physical_qpu_claim": false,
   "schema": "PHASENAV_ORBITAL_SCALAR_TENSOR_PRIMITIVES_V0_15",
   "sha256": {
-    "orbital_scalar_tensor.py": "53e683aa94d7c71a72d63515610c1348bed607451852ed008c4b66a8dbfee106",
-    "orbital_scalar_tensor_primitives_v0_15.md": "c8b540324e3740ad7d8e508bf0dd5702970166923e1ab1ca92594c7e18d80cb5",
-    "test_orbital_scalar_tensor.py": "f60e6f8cc833be00419e48717ed740828777377281b25b0ad0f41ba4b8183d9d"
+    "orbital_scalar_tensor.py": "bd2f5ebb4b824b5b47be904f59db674fc6722d363dfe3e0c22950157c7e9675d",
+    "orbital_scalar_tensor_primitives_v0_15.md": "22432c06a4ef4c9ebe50bbfb33bee97a94571db84921844634b86978c9a55398",
+    "test_orbital_scalar_tensor.py": "6b9107953055d3d738e30c49d9a5dc8ec4522015519d6eee333bb4385dcca3c2"
   },
   "status": "CANDIDATE_VALIDATED_TARGETED",
   "targeted_tests": {
     "command": "python3 -m pytest -q test_orbital_scalar_tensor.py",
-    "count": 15,
+    "count": 20,
     "failed": 0,
-    "passed": 15
+    "passed": 20
   },
   "tether_guard": {
     "failures": [],
