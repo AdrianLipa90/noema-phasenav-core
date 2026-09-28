@@ -1,0 +1,20 @@
+{
+  "schema": "PHASENAV_TETRA_NULL_FRAME_PARITY_V0_1",
+  "date": "2026-09-24",
+  "candidate_only": true,
+  "physical_gravity_claim": false,
+  "status": "PASS",
+  "tests": {
+    "count": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "checks": [
+    "tetrahedral lifted rays are Minkowski-null with expected mutual inner products",
+    "antipodal layer equals scaled spatial parity",
+    "bivector parity gives exact 3+3 sign split",
+    "generic deformed frame pair recovers the imposed GL4 relative frame",
+    "constant parity remains explicitly non-gravitational"
+  ],
+  "next_gate": "DYNAMICAL_DEFORMATION_OF_TETRA_NULL_FRAMES"
+}
