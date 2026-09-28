@@ -1,0 +1,64 @@
+{
+  "base_commit": "733146f1bbe467ace9883b2a5628734570b76e60",
+  "branch": "formalism/mixed-representation-contraction-v0.16-20260928",
+  "canon_allowed": false,
+  "epistemic_boundary": {
+    "generic_100q_small_memory": false,
+    "ibm_d36_width_reduced_to_static_graph_width": false,
+    "physical_qpu": false,
+    "quantum_advantage_claim": false
+  },
+  "hashes": {
+    "RCS_MIXED_REP_PROBE_V0_16.json": "bc0b7cc41f16ba6ae06c9c1638da3d04df723e351cee16c084bdb048cbd35a2b",
+    "mixed_representation.py": "dd6bc50879581a6f449511100a006d96a2b9a998c4465ed8ee9ba7804e6ec889",
+    "mixed_representation_contraction_v0_16.md": "ff7e4253963b481ee3edc6610bbfcaf8a472654ae2ffc7255710a6f9962c68af",
+    "test_mixed_representation.py": "34dd7cfa3f087e9203f83db1714d602159e19114102ccd48c158853c129b1b96"
+  },
+  "primitives": [
+    "QuadraticPhasePolynomial",
+    "AbelianChargeRule",
+    "BlockSparseTensor",
+    "clifford_unitary",
+    "matchgate_unitary",
+    "polar_decompose",
+    "schur_complement",
+    "route_atom",
+    "greedy_contraction_plan",
+    "slice_to_memory_budget",
+    "min_fill_graph_width",
+    "min_degree_graph_width",
+    "content_digest",
+    "plan_disk_shards"
+  ],
+  "rcs_probe": {
+    "boundary": "Static interaction-graph widths are not spacetime tensor-network contraction width and not IBM C_amp.",
+    "cz_clifford": true,
+    "cz_matchgate": false,
+    "d36_cz_total": 918,
+    "generic_su2_clifford": false,
+    "grid10x10_minfill_upper_width": 13,
+    "interaction_graph_minfill_upper_width_61": 7,
+    "matching_sizes": [
+      29,
+      22,
+      29,
+      22
+    ],
+    "max_terms_per_phase_atom": 29,
+    "phase_atoms_d36": 36
+  },
+  "schema": "PHASENAV_MIXED_REPRESENTATION_CONTRACTION_V0_16",
+  "status": "CANDIDATE_ONLY",
+  "validation": {
+    "full_repository_pytest": "NOT_RUN",
+    "py_compile": "PASS",
+    "v0_15_focused_pytest": {
+      "failed": 0,
+      "passed": 20
+    },
+    "v0_16_focused_pytest": {
+      "failed": 0,
+      "passed": 23
+    }
+  }
+}
