@@ -8,7 +8,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from orbital_scalar_tensor import (
     IncrementalBoundaryBasis,
     boundary_capacity,
+    bargmann_triangle,
     compress_boundary_states,
+    grassmann_distance,
     fold,
     hodge_split_euclidean_4d,
     mode_product,
@@ -18,10 +20,14 @@ from orbital_scalar_tensor import (
     projective_orbit,
     reconstruct_operator_schmidt,
     reconstruct_tensor_train,
+    reconstruct_tucker,
     schmidt_decompose,
+    schmidt_entropy,
     spectral_scalars,
     tensor_train_svd,
+    tucker_hosvd,
     unfold,
+    wedge2_4d,
 )
 
 
@@ -158,3 +164,47 @@ def test_incremental_boundary_basis_detects_dependence():
     dep=b.add([2,3,0,0])
     assert not dep["accepted"]
     assert b.rank==2
+
+
+def test_wedge2_4d_is_plucker_simple():
+    u=np.array([1.0,2.0,-1.0,0.5])
+    v=np.array([0.2,-0.7,1.1,3.0])
+    b=wedge2_4d(u,v)
+    assert plucker_simplicity(b).simple
+
+
+def test_bargmann_triangle_independent_gauges_invariant():
+    a=np.array([1,1j],dtype=complex)/math.sqrt(2)
+    b=np.array([1,1],dtype=complex)/math.sqrt(2)
+    c=np.array([1,np.exp(0.3j)],dtype=complex)/math.sqrt(2)
+    r1=bargmann_triangle(a,b,c)
+    r2=bargmann_triangle(np.exp(.2j)*a,np.exp(-.7j)*b,np.exp(1.1j)*c)
+    assert math.isclose(r1.phase,r2.phase,abs_tol=1e-12)
+    assert math.isclose(r1.strength,r2.strength,abs_tol=1e-12)
+
+
+def test_grassmann_distance_detects_dimension_mismatch():
+    a=np.eye(4)[:,:2]
+    b=np.eye(4)[:,:3]
+    r=grassmann_distance(a,b)
+    assert r.rank_a==2 and r.rank_b==3
+    assert max(abs(x) for x in r.principal_angles)<1e-8
+    assert math.isclose(r.projector_frobenius_distance,1.0,abs_tol=1e-12)
+
+
+def test_schmidt_entropy_bell_is_one_bit():
+    r=schmidt_entropy([1/math.sqrt(2),1/math.sqrt(2)])
+    assert r.numerical_rank==2
+    assert math.isclose(r.purity,0.5,abs_tol=1e-12)
+    assert math.isclose(r.von_neumann_bits,1.0,abs_tol=1e-12)
+    assert math.isclose(r.renyi2_bits,1.0,abs_tol=1e-12)
+    assert math.isclose(r.min_entropy_bits,1.0,abs_tol=1e-12)
+
+
+def test_tucker_hosvd_exact_reconstruction():
+    rng=np.random.default_rng(101)
+    t=rng.normal(size=(3,4,2))+1j*rng.normal(size=(3,4,2))
+    core,factors,receipt=tucker_hosvd(t)
+    rec=reconstruct_tucker(core,factors)
+    assert receipt.exact_within_numerical_rank
+    assert np.allclose(rec,t,atol=1e-11)
