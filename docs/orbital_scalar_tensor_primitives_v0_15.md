@@ -75,8 +75,7 @@ anti-self-dual sectors without promoting them to a physical field.
 
 `principal_angles` compares orbital subspaces through the singular values of
 `Q_A^* Q_B`, giving a basis-independent relation between finite subspaces.
-`grassmann_distance` adds chordal, geodesic and projector-Frobenius distances,
-including unequal-rank subspaces.
+`grassmann_distance` adds chordal, geodesic and projector-Frobenius distances. For unequal-rank subspaces, unmatched dimensions are explicitly extended by principal angle `pi/2`, and the dimension gap is recorded.
 
 ### Bargmann triangle
 
