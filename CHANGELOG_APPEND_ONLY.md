@@ -235,3 +235,44 @@ The protocol remains `CHYBA / SHARED_COGNITION_ONLY / canon_allowed=false`. Redu
 **Evidence boundary**
 
 PASS is limited to deterministic software lineage, commitments, ACK gating, additive derivation and retention metadata. Automatic semantic reducer quality, semantic completeness, cross-subject/cross-generation fusion, garbage collection and live-NOEMA consolidation remain OPEN / NOT CLAIMED.
+
+
+## 2026-09-28 — Orbital / scalar / tensor primitives v0.15
+
+**Scope**
+
+- Added singular-spectrum scalar receipts: numerical rank, right-nullity,
+  spectral/Frobenius/nuclear norms, stable rank, entropy rank, conditioning and
+  log singular volume.
+- Bound the default numerical-rank threshold to machine precision
+  `eps * max(shape) * sigma_max`; fitted cutoffs are not silently introduced.
+- Added complex-projective Fubini--Study/Pancharatnam orbit receipts.
+- Added a 4D Pluecker simplicity gate and Euclidean Hodge self-dual /
+  anti-self-dual `3+3` split.
+- Added principal-angle comparison of numerical subspaces.
+- Added tensor unfold/fold, mode products, Schmidt decomposition,
+  operator-Schmidt decomposition and TT-SVD/MPS factorization with explicit
+  truncation residuals.
+- Added rank-revealing boundary-state compression and a streaming incremental
+  boundary basis for atomized contractions.
+- Added operator-Schmidt boundary-capacity accounting; CZ rank 2 and SWAP rank 4
+  are regression controls.
+- Added formal documentation, public package exports and provenance receipt.
+
+**GREMLIN alignment**
+
+Rank, nullity, singular spectrum and conditioning remain separate observables.
+Numerical dependence always carries the threshold used; full rank is not
+treated as a conditioning guarantee.
+
+**Validation**
+
+Focused local suite: **15 passed**. Full repository pytest is **NOT RUN** in
+this session because the checkout could not be reconstructed through DNS.
+
+**Evidence boundary**
+
+This is a finite computational/mathematical candidate layer only.
+`canon_allowed=false`; no physical QPU, physical spacetime, measured gauge
+field or generic low-entanglement claim is promoted. The repository main branch
+is not modified by this candidate update.
