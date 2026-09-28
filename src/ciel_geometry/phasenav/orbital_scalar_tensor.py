@@ -288,6 +288,7 @@ def bargmann_triangle(a, b, c) -> BargmannTriangleReceipt:
 class GrassmannReceipt:
     rank_a: int
     rank_b: int
+    dimension_gap: int
     principal_angles: tuple[float, ...]
     chordal_distance: float
     geodesic_distance: float
@@ -312,10 +313,12 @@ def grassmann_distance(subspace_a, subspace_b) -> GrassmannReceipt:
         sv=np.clip(np.linalg.svd(qa.conj().T@qb,compute_uv=False).real,0.0,1.0)
         angles=np.arccos(sv)
         cos2_sum=float(np.dot(sv,sv))
-    chordal=float(math.sqrt(max(0.0,min(ra,rb)-cos2_sum)))
-    geodesic=float(np.linalg.norm(angles))
+    gap=abs(ra-rb)
+    # Extend unmatched dimensions by pi/2, making the distance explicit across unequal-rank spans.
+    chordal=float(math.sqrt(max(0.0,min(ra,rb)-cos2_sum+gap)))
+    geodesic=float(math.sqrt(float(np.dot(angles,angles))+gap*(math.pi/2.0)**2))
     projector=float(math.sqrt(max(0.0,ra+rb-2.0*cos2_sum)))
-    return GrassmannReceipt(ra,rb,tuple(float(x) for x in angles),chordal,geodesic,projector)
+    return GrassmannReceipt(ra,rb,gap,tuple(float(x) for x in angles),chordal,geodesic,projector)
 
 
 def unfold(tensor, mode: int) -> np.ndarray:
