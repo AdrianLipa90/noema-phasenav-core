@@ -113,3 +113,22 @@ Software states remain distinct from scientific states. `implemented`, `tested`,
 ## License
 
 Copyright © 2026 Adrian Lipa. See `LICENSE`.
+
+
+## Orbital / scalar / tensor primitives v0.15
+
+The candidate v0.15 layer adds substrate-neutral primitives for rank-revealing
+atomization and orbital/tensor geometry:
+
+- singular-spectrum scalars with a machine-epsilon default rank threshold;
+- complex-projective Fubini--Study / Pancharatnam orbit receipts;
+- 4D Pluecker simplicity and Euclidean Hodge 3+3 decomposition;
+- principal subspace angles;
+- tensor unfolding, mode products, Schmidt and operator-Schmidt decomposition;
+- TT-SVD / MPS factorization with explicit truncation accounting;
+- boundary-state linear-rank compression, streaming basis construction and
+  operator-Schmidt boundary-capacity bounds.
+
+The layer is `CANDIDATE_ONLY`, keeps `canon_allowed=false`, and makes no
+physical-QPU, physical-spacetime or measured-field claim. See
+`docs/orbital_scalar_tensor_primitives_v0_15.md`.
