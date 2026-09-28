@@ -277,3 +277,42 @@ This is a finite computational/mathematical candidate layer only.
 `canon_allowed=false`; no physical QPU, physical spacetime, measured gauge
 field or generic low-entanglement claim is promoted. The repository main branch
 is not modified by this candidate update.
+
+
+## 2026-09-28 — Mixed-representation contraction primitives v0.16
+
+**Scope**
+
+- Added exact quadratic phase-polynomial atoms for CZ/RZ computational-basis
+  phases with exact restriction/slicing.
+- Added fail-closed Abelian `Z` / `Z_n` block-sparse sector tensors with an
+  explicit zero tolerance.
+- Added finite Clifford and two-qubit matchgate/Gaussian routing predicates.
+- Added polar decomposition to separate unitary/orbital transport from positive
+  singular weights.
+- Added fail-closed Schur-complement interior elimination with an explicit
+  condition-number gate and no silent pseudoinverse.
+- Added a deterministic mixed-representation router with all policy thresholds
+  included in the returned receipt.
+- Added pairwise tensor-network contraction orders, exact external slicing to a
+  memory budget, content-addressed disk-shard planning and graph-width upper
+  bounds using min-fill and scalable minimum-degree elimination.
+- Added an RCS structure probe: ABCD matching sizes 29/22/29/22, 918 CZ terms at
+  d=36, 36 quadratic CZ-layer atoms, CZ Clifford PASS, CZ matchgate FAIL, and
+  generic SU(2) Clifford FAIL.
+- Explicitly recorded that the static interaction-graph widths are not the
+  spacetime tensor-network width and not the IBM `C_amp` value.
+
+**Validation**
+
+Focused local v0.15 suite: **20 passed**.
+Focused local v0.16 suite: **23 passed**.
+Python syntax compilation: **PASS**.
+Full-repository pytest: **NOT RUN** in this session.
+
+**Evidence boundary**
+
+The layer is a finite computational/mathematical candidate only.
+`canon_allowed=false`. No physical-QPU claim, generic 100-qubit small-memory
+claim, IBM d=36 width reduction, or quantum-advantage conclusion is promoted.
+The repository main branch is not modified by this candidate update.
