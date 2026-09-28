@@ -132,3 +132,25 @@ atomization and orbital/tensor geometry:
 The layer is `CANDIDATE_ONLY`, keeps `canon_allowed=false`, and makes no
 physical-QPU, physical-spacetime or measured-field claim. See
 `docs/orbital_scalar_tensor_primitives_v0_15.md`.
+
+
+## Mixed-representation contraction primitives v0.16
+
+The candidate v0.16 layer extends atomized PhaseNav execution with:
+
+- exact quadratic computational-basis phase polynomials for CZ/RZ atoms;
+- fail-closed Abelian block-sparse charge sectors;
+- Clifford and two-qubit matchgate routing predicates;
+- polar and Schur boundary-reduction primitives;
+- a typed mixed-representation router across phase-polynomial, stabilizer,
+  Gaussian, MPS/TT, Tucker, dense and generic tensor-network paths;
+- explicit greedy contraction, slicing-to-memory and content-addressed disk-shard plans;
+- min-fill and scalable min-degree graph-width upper-bound receipts.
+
+The released 61-qubit RCS topology is represented as alternating local generic
+SU(2) atoms and compact quadratic CZ-layer atoms; no static interaction-graph
+width is promoted as the full spacetime tensor-network contraction width.
+
+Focused local validation: v0.15 **20 passed**, v0.16 **23 passed**.
+The layer remains `CANDIDATE_ONLY` with `canon_allowed=false`.
+See `docs/mixed_representation_contraction_v0_16.md`.
