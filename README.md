@@ -154,3 +154,25 @@ width is promoted as the full spacetime tensor-network contraction width.
 Focused local validation: v0.15 **20 passed**, v0.16 **23 passed**.
 The layer remains `CANDIDATE_ONLY` with `canon_allowed=false`.
 See `docs/mixed_representation_contraction_v0_16.md`.
+
+
+## Channel / transfer / Krylov primitives v0.17
+
+The candidate v0.17 layer adds:
+
+- density, partial-trace and information-scalar primitives;
+- Kraus, Choi and superoperator channel representations;
+- Pauli-transfer matrices with signed-permutation routing diagnostics;
+- exact unitary second-moment transport;
+- the parameter-free local-Haar + CZ support transition used by the RCS audit;
+- transfer-spectrum and channel-fixed-point receipts;
+- fail-closed Woodbury low-rank updates;
+- fully reorthogonalized Hermitian Lanczos/Krylov projection.
+
+For the local-Haar + CZ support channel, the nonzero sector has eigenvalues
+`1, 1/3, -1/9` and stationary support weights `1/5, 1/5, 3/5`.
+This is a local second-moment identity, not a global XEB result.
+
+Focused local validation: **24 passed** plus `py_compile PASS`.
+The layer remains `CANDIDATE_ONLY` with `canon_allowed=false`.
+See `docs/channel_transfer_krylov_v0_17.md`.
