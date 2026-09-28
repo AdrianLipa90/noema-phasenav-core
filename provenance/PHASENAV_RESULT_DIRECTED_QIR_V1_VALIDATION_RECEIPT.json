@@ -1,0 +1,49 @@
+{
+  "schema": "PHASENAV_RESULT_DIRECTED_QIR_V1_VALIDATION_RECEIPT",
+  "date": "2026-09-25",
+  "status": "TARGETED_LOCAL_TEST_PASS",
+  "authority": "CANDIDATE_ONLY",
+  "branch": "feat/result-directed-quantum-gate-ir-v1-20260925",
+  "artifacts": {
+    "src/ciel_geometry/phasenav/quantum_gate_ir.py": {
+      "blob_sha": "ded06fae12de298c7dd12a52a74b8637a0d86016"
+    },
+    "tests/test_quantum_gate_ir.py": {
+      "blob_sha": "4ebc1c90f994567c633d4001817bc1d97e0be8d4"
+    }
+  },
+  "tests": {
+    "targeted_unit_tests": {
+      "passed": 5,
+      "failed": 0
+    },
+    "cross_repo_e2e": {
+      "status": "PASS",
+      "paired_repo": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+      "paired_branch": "feat/quantum-gate-language-v01-20260925",
+      "qir_hash_match": true,
+      "logical_qubits": 1000000,
+      "active_logical_qubits": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "workspace_qubits": 8,
+      "q28_address_qubits": 6,
+      "total_materialized_qubits": 14,
+      "native_gate_count": 22
+    }
+  },
+  "claims": {
+    "physical_qpu": false,
+    "quantum_advantage": false,
+    "full_global_state_materialized": false,
+    "full_repository_regression_suite": false
+  },
+  "note": "New files are isolated candidate modules; no master/main mutation and no canonical promotion."
+}
