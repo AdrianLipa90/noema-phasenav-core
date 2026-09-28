@@ -148,6 +148,15 @@ def projective_orbit(a, b) -> ProjectiveOrbitReceipt:
 PAIR_BASIS_4D = ((0, 1), (0, 2), (0, 3), (2, 3), (3, 1), (1, 2))
 
 
+def wedge2_4d(u, v) -> tuple[float, ...]:
+    """Exterior product u wedge v in the canonical 01,02,03,23,31,12 basis."""
+    a = _finite_array(u, name="u", ndim=1, complex_ok=False)
+    b = _finite_array(v, name="v", ndim=1, complex_ok=False)
+    if a.size != 4 or b.size != 4:
+        raise ValueError("wedge2_4d requires two four-component vectors")
+    return tuple(float(a[i] * b[j] - a[j] * b[i]) for i, j in PAIR_BASIS_4D)
+
+
 @dataclass(frozen=True)
 class PluckerReceipt:
     relation_value: float
@@ -235,6 +244,78 @@ def principal_angles(subspace_a, subspace_b) -> tuple[float, ...]:
     s = np.linalg.svd(qa.conj().T @ qb, compute_uv=False)
     s = np.clip(s.real, 0.0, 1.0)
     return tuple(float(math.acos(float(x))) for x in s)
+
+
+@dataclass(frozen=True)
+class BargmannTriangleReceipt:
+    phase: float
+    strength: float
+    overlap_ab: float
+    overlap_bc: float
+    overlap_ca: float
+    fubini_study_perimeter: float
+    schema: str = SCHEMA
+    epistemic: str = EPISTEMIC
+    canon_allowed: bool = CANON_ALLOWED
+
+
+def bargmann_triangle(a, b, c) -> BargmannTriangleReceipt:
+    """Gauge-invariant three-point Bargmann phase on complex projective space."""
+    vectors=[]
+    for name, raw in (("a", a), ("b", b), ("c", c)):
+        v=_finite_array(raw, name=name, ndim=1)
+        n=float(np.linalg.norm(v))
+        if n==0.0:
+            raise ValueError("Bargmann vectors must be non-zero")
+        vectors.append(v/n)
+    va,vb,vc=vectors
+    if not (va.shape==vb.shape==vc.shape):
+        raise ValueError("Bargmann vectors must have equal shape")
+    zab=complex(np.vdot(va,vb)); zbc=complex(np.vdot(vb,vc)); zca=complex(np.vdot(vc,va))
+    product=zab*zbc*zca
+    if abs(product)==0.0:
+        raise ValueError("Bargmann phase is undefined for zero closed-overlap product")
+    mags=[min(1.0,max(0.0,abs(z))) for z in (zab,zbc,zca)]
+    return BargmannTriangleReceipt(
+        phase=float(math.atan2(product.imag,product.real)),
+        strength=float(abs(product)),
+        overlap_ab=float(mags[0]), overlap_bc=float(mags[1]), overlap_ca=float(mags[2]),
+        fubini_study_perimeter=float(math.fsum(math.acos(x) for x in mags)),
+    )
+
+
+@dataclass(frozen=True)
+class GrassmannReceipt:
+    rank_a: int
+    rank_b: int
+    principal_angles: tuple[float, ...]
+    chordal_distance: float
+    geodesic_distance: float
+    projector_frobenius_distance: float
+    schema: str = SCHEMA
+    epistemic: str = EPISTEMIC
+    canon_allowed: bool = CANON_ALLOWED
+
+
+def grassmann_distance(subspace_a, subspace_b) -> GrassmannReceipt:
+    """Basis-independent finite-subspace distances from principal angles."""
+    a=_finite_array(subspace_a,name="subspace_a",ndim=2)
+    b=_finite_array(subspace_b,name="subspace_b",ndim=2)
+    if a.shape[0]!=b.shape[0]:
+        raise ValueError("subspaces must live in the same ambient dimension")
+    qa=_column_space_basis(a); qb=_column_space_basis(b)
+    ra,rb=qa.shape[1],qb.shape[1]
+    if ra==0 or rb==0:
+        angles=np.zeros(0,dtype=float)
+        cos2_sum=0.0
+    else:
+        sv=np.clip(np.linalg.svd(qa.conj().T@qb,compute_uv=False).real,0.0,1.0)
+        angles=np.arccos(sv)
+        cos2_sum=float(np.dot(sv,sv))
+    chordal=float(math.sqrt(max(0.0,min(ra,rb)-cos2_sum)))
+    geodesic=float(np.linalg.norm(angles))
+    projector=float(math.sqrt(max(0.0,ra+rb-2.0*cos2_sum)))
+    return GrassmannReceipt(ra,rb,tuple(float(x) for x in angles),chordal,geodesic,projector)
 
 
 def unfold(tensor, mode: int) -> np.ndarray:
@@ -335,6 +416,52 @@ def schmidt_decompose(state, dims: Sequence[int], cut: int, *, rtol: float | Non
         right_dim=right,
     )
     return u[:, :retained], s[:retained], vh[:retained, :], receipt
+
+
+@dataclass(frozen=True)
+class SchmidtEntropyReceipt:
+    numerical_rank: int
+    threshold: float
+    purity: float
+    participation_ratio: float
+    von_neumann_nats: float
+    von_neumann_bits: float
+    renyi2_bits: float
+    min_entropy_bits: float
+    max_weight: float
+    schema: str = SCHEMA
+    epistemic: str = EPISTEMIC
+    canon_allowed: bool = CANON_ALLOWED
+
+
+def schmidt_entropy(singular_values, *, rtol: float | None = None, atol: float = 0.0) -> SchmidtEntropyReceipt:
+    """Scalar information invariants of a Schmidt spectrum.
+
+    The coefficients are normalized internally through p_i=s_i^2/sum_j s_j^2.
+    Rank uses the same declared numerical threshold as the tensor primitives.
+    """
+    svals=np.asarray(singular_values,dtype=float).reshape(-1)
+    if svals.size==0 or not np.all(np.isfinite(svals)) or np.any(svals<0.0):
+        raise ValueError("singular_values must be a non-empty finite nonnegative vector")
+    total=float(np.dot(svals,svals))
+    if total==0.0:
+        raise ValueError("Schmidt spectrum must have non-zero norm")
+    threshold=_rank_threshold(svals,(svals.size,svals.size),rtol=rtol,atol=atol)
+    rank=int(np.count_nonzero(svals>threshold))
+    p=(svals*svals)/total
+    nz=p[p>0.0]
+    purity=float(np.dot(p,p))
+    svn_nats=-float(np.sum(nz*np.log(nz)))
+    maxw=float(np.max(p))
+    return SchmidtEntropyReceipt(
+        numerical_rank=rank, threshold=float(threshold), purity=purity,
+        participation_ratio=float(1.0/purity),
+        von_neumann_nats=svn_nats,
+        von_neumann_bits=float(svn_nats/math.log(2.0)),
+        renyi2_bits=float(-math.log2(purity)),
+        min_entropy_bits=float(-math.log2(maxw)),
+        max_weight=maxw,
+    )
 
 
 @dataclass(frozen=True)
@@ -474,6 +601,67 @@ def reconstruct_tensor_train(cores: Sequence[np.ndarray]) -> np.ndarray:
     if current.shape[0] != 1 or current.shape[-1] != 1:
         raise ValueError("terminal TT ranks must be one")
     return np.squeeze(current, axis=(0, -1))
+
+
+@dataclass(frozen=True)
+class TuckerReceipt:
+    original_shape: tuple[int, ...]
+    mode_ranks: tuple[int, ...]
+    thresholds: tuple[float, ...]
+    discarded_l2_upper_bound: float
+    exact_within_numerical_rank: bool
+    core_elements: int
+    factor_elements: int
+    dense_elements: int
+    schema: str = SCHEMA
+    epistemic: str = EPISTEMIC
+    canon_allowed: bool = CANON_ALLOWED
+
+
+def tucker_hosvd(tensor, *, rtol: float | None = None, atol: float = 0.0, max_ranks: Sequence[int] | None = None):
+    """HOSVD/Tucker factorization with per-mode rank receipts.
+
+    The square root of the summed discarded mode-spectrum energies is a standard
+    HOSVD reconstruction-error upper bound, not a claim of optimal multilinear rank.
+    """
+    t=_finite_array(tensor,name="tensor")
+    if t.ndim<2:
+        raise ValueError("tucker_hosvd requires tensor rank >= 2")
+    if max_ranks is None:
+        caps=(None,)*t.ndim
+    else:
+        caps=tuple(int(x) for x in max_ranks)
+        if len(caps)!=t.ndim or any(x<1 for x in caps):
+            raise ValueError("max_ranks must contain one positive rank per tensor mode")
+    factors=[]; ranks=[]; thresholds=[]; discarded_sq=0.0; exact=True
+    for mode in range(t.ndim):
+        mat=unfold(t,mode)
+        u,svals,_=np.linalg.svd(mat,full_matrices=False)
+        numerical,retained,threshold=_retained_rank(svals,mat.shape,rtol=rtol,atol=atol,max_rank=caps[mode])
+        if retained<numerical:
+            exact=False
+        discarded_sq+=float(np.dot(svals[retained:],svals[retained:]))
+        factors.append(u[:,:retained]); ranks.append(retained); thresholds.append(float(threshold))
+    core=t.copy()
+    for mode,factor in enumerate(factors):
+        core=mode_product(core,factor.conj().T,mode)
+    return core,tuple(factors),TuckerReceipt(
+        original_shape=tuple(int(x) for x in t.shape), mode_ranks=tuple(ranks), thresholds=tuple(thresholds),
+        discarded_l2_upper_bound=float(math.sqrt(discarded_sq)), exact_within_numerical_rank=exact,
+        core_elements=int(core.size), factor_elements=int(sum(f.size for f in factors)), dense_elements=int(t.size),
+    )
+
+
+def reconstruct_tucker(core, factors: Sequence[np.ndarray]) -> np.ndarray:
+    out=_finite_array(core,name="core")
+    factors=tuple(_finite_array(f,name="factor",ndim=2) for f in factors)
+    if len(factors)!=out.ndim:
+        raise ValueError("one Tucker factor is required per core mode")
+    for mode,factor in enumerate(factors):
+        if factor.shape[1]!=out.shape[mode]:
+            raise ValueError("Tucker factor input rank does not match core mode")
+        out=mode_product(out,factor,mode)
+    return out
 
 
 @dataclass(frozen=True)
@@ -625,12 +813,14 @@ __all__ = [
     "SCHEMA", "EPISTEMIC", "CANON_ALLOWED",
     "SpectralScalars", "spectral_scalars",
     "ProjectiveOrbitReceipt", "projective_orbit",
-    "PAIR_BASIS_4D", "PluckerReceipt", "plucker_simplicity",
+    "PAIR_BASIS_4D", "wedge2_4d", "PluckerReceipt", "plucker_simplicity",
     "HodgeSplit4D", "hodge_split_euclidean_4d", "principal_angles",
+    "BargmannTriangleReceipt", "bargmann_triangle", "GrassmannReceipt", "grassmann_distance",
     "unfold", "fold", "mode_product",
-    "SchmidtReceipt", "schmidt_decompose",
+    "SchmidtReceipt", "schmidt_decompose", "SchmidtEntropyReceipt", "schmidt_entropy",
     "OperatorSchmidtReceipt", "operator_schmidt_decompose", "reconstruct_operator_schmidt",
     "TensorTrainReceipt", "tensor_train_svd", "reconstruct_tensor_train",
+    "TuckerReceipt", "tucker_hosvd", "reconstruct_tucker",
     "BoundaryBasisReceipt", "compress_boundary_states",
     "BoundaryCapacityReceipt", "boundary_capacity",
     "IncrementalBoundaryBasis",
