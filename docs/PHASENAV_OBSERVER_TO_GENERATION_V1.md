@@ -72,6 +72,32 @@ T^{36}=(S^1)^{36}.
 All position coordinates are gauge-wrapped to \([0,2\pi)\). Position and tangent
 vectors remain distinct types.
 
+## 2.1 No-early-collapse invariant
+
+The encoded observation is a typed update to the full dynamical state; it is not a global conversion of the system to a bit.
+
+[
+\boxed{
+\Sigma_t
+\rightarrow
+\text{observation/update}
+\rightarrow
+\Sigma_{t+1}
+}
+]
+
+A classical result is produced only by a named measurement/protocol boundary
+
+[
+\mathcal M_c:\Sigma\rightarrow y_c.
+]
+
+If channel \(c\) is two-outcome, \(y_c\in\{0,1\}\). Other channels may have multi-valued or continuous outcomes.
+
+The pre-measurement state and provenance remain available after the projection. This is the application-level no-early-collapse rule formalized in `PHASENAV_QUANTUM_APPLICATION_STATE_V0_1`.
+
+This computational rule does not by itself assert physical wave-function collapse or physical quantum hardware.
+
 ## 3. Observer
 
 The computational observer is
