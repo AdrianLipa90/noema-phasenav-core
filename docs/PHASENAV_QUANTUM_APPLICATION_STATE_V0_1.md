@@ -1,5 +1,7 @@
 # PhaseNav Quantum Application State v0.1
 
+Schema: `PHASENAV_QUANTUM_APPLICATION_STATE_V0_1`
+
 Status: `CANDIDATE_CONTRACT / T36_NATIVE / NO_EARLY_COLLAPSE / BACKEND_EXPLICIT`
 
 ## State
