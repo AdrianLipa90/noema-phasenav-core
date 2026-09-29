@@ -90,10 +90,50 @@
       "type": "boolean"
     },
     "observation": {
-      "type": [
-        "object",
-        "null"
-      ],
+      "oneOf": [
+        {
+          "$ref": "#/$defs/observation"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "observed"
+        ],
+        "properties": {
+          "observed": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "observation"
+        ],
+        "properties": {
+          "observation": {
+            "$ref": "#/$defs/observation"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "observation": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "observation": {
+      "type": "object",
       "additionalProperties": false,
       "required": [
         "observable_id",
@@ -123,28 +163,5 @@
         }
       }
     }
-  },
-  "allOf": [
-    {
-      "if": {
-        "properties": {
-          "observed": {
-            "const": true
-          }
-        }
-      },
-      "then": {
-        "required": [
-          "observation"
-        ]
-      },
-      "else": {
-        "properties": {
-          "observation": {
-            "type": "null"
-          }
-        }
-      }
-    }
-  ]
+  }
 }
