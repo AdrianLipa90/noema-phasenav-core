@@ -1,0 +1,34 @@
+{
+  "schema": "PHASENAV_QUANTUM_APPLICATION_STATE_V0_1",
+  "status": "CANDIDATE_CONTRACT",
+  "dimension": 36,
+  "carrier": "T^36",
+  "flatten_sidecars_into_t36": false,
+  "state_components": [
+    "phi36",
+    "amplitude_field",
+    "relation_tensor",
+    "scalar_fields",
+    "tau",
+    "residual_field",
+    "provenance"
+  ],
+  "invariant": {
+    "never_collapse_early": true,
+    "implicit_boolean_projection": false,
+    "provenance_survives_measurement": true
+  },
+  "measurement": {
+    "explicit_channel_required": true,
+    "binary_outcome_allowed": true,
+    "binary_outcome_required": false,
+    "post_measurement_state_typed": true
+  },
+  "backends": [
+    "CLASSICAL_PHASE_SIMULATION",
+    "ANALOG_PHASE_RUNTIME",
+    "QPU_PHYSICAL"
+  ],
+  "physical_quantum_claim_default": false,
+  "pncs_contract": "PNCS_QUANTUM_APPLICATION_RUNTIME_V0_31"
+}

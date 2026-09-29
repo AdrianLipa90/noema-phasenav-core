@@ -90,12 +90,16 @@ PhaseNav now has a candidate language-independent state contract for PNCS quantu
 
 - `docs/PHASENAV_QUANTUM_APPLICATION_STATE_V0_1.md`
 - `schemas/phasenav_quantum_application_state_v0_1.schema.json`
+- `candidate_contracts/phasenav_quantum_application_state_v01.json`
+- `docs/PHASENAV_QUANTUM_APPLICATION_STATE_V0_1_NO_EARLY_COLLAPSE_BRANCH.md`
 
 The running state may contain multiple active alternatives, exact 36D phase carriers, normalized amplitudes, relational tensors, scalar fields, residual structure and provenance. Classical transport/test/release booleans remain interface metadata.
 
 The core invariant is `NEVER_COLLAPSE_EARLY`: a binary `0/1` value is produced only by an explicit declared two-outcome observation boundary.
 
 This is a quantum-state application architecture contract. Physical QPU execution remains a separate evidence class.
+
+The preserved no-early-collapse branch additionally types execution receipts as `CLASSICAL_PHASE_SIMULATION`, `ANALOG_PHASE_RUNTIME`, or `QPU_PHYSICAL`; its original contract text is retained separately rather than overwriting the multi-alternative state contract.
 
 ## Repository integrity audit
 
