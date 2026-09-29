@@ -235,3 +235,117 @@ The protocol remains `CHYBA / SHARED_COGNITION_ONLY / canon_allowed=false`. Redu
 **Evidence boundary**
 
 PASS is limited to deterministic software lineage, commitments, ACK gating, additive derivation and retention metadata. Automatic semantic reducer quality, semantic completeness, cross-subject/cross-generation fusion, garbage collection and live-NOEMA consolidation remain OPEN / NOT CLAIMED.
+
+
+## 2026-09-28 — Orbital / scalar / tensor primitives v0.15
+
+**Scope**
+
+- Added singular-spectrum scalar receipts: numerical rank, right-nullity,
+  spectral/Frobenius/nuclear norms, stable rank, entropy rank, conditioning and
+  log singular volume.
+- Bound the default numerical-rank threshold to machine precision
+  `eps * max(shape) * sigma_max`; fitted cutoffs are not silently introduced.
+- Added complex-projective Fubini--Study/Pancharatnam orbit receipts.
+- Added a 4D exterior-wedge primitive, Pluecker simplicity gate and Euclidean
+  Hodge self-dual / anti-self-dual `3+3` split.
+- Added principal-angle comparison, Grassmann distances and a closed
+  Bargmann-triangle projective holonomy receipt.
+- Added tensor unfold/fold, mode products, Schmidt decomposition,
+  Schmidt-spectrum entropy scalars, operator-Schmidt decomposition,
+  TT-SVD/MPS and Tucker/HOSVD factorization with explicit truncation residuals.
+- Added rank-revealing boundary-state compression and a streaming incremental
+  boundary basis for atomized contractions.
+- Added operator-Schmidt boundary-capacity accounting; CZ rank 2 and SWAP rank 4
+  are regression controls.
+- Added formal documentation, public package exports and provenance receipt.
+
+**GREMLIN alignment**
+
+Rank, nullity, singular spectrum and conditioning remain separate observables.
+Numerical dependence always carries the threshold used; full rank is not
+treated as a conditioning guarantee.
+
+**Validation**
+
+Focused local suite: **20 passed**. Full repository pytest is **NOT RUN** in
+this session because the checkout could not be reconstructed through DNS.
+
+**Evidence boundary**
+
+This is a finite computational/mathematical candidate layer only.
+`canon_allowed=false`; no physical QPU, physical spacetime, measured gauge
+field or generic low-entanglement claim is promoted. The repository main branch
+is not modified by this candidate update.
+
+
+## 2026-09-28 — Mixed-representation contraction primitives v0.16
+
+**Scope**
+
+- Added exact quadratic phase-polynomial atoms for CZ/RZ computational-basis
+  phases with exact restriction/slicing.
+- Added fail-closed Abelian `Z` / `Z_n` block-sparse sector tensors with an
+  explicit zero tolerance.
+- Added finite Clifford and two-qubit matchgate/Gaussian routing predicates.
+- Added polar decomposition to separate unitary/orbital transport from positive
+  singular weights.
+- Added fail-closed Schur-complement interior elimination with an explicit
+  condition-number gate and no silent pseudoinverse.
+- Added a deterministic mixed-representation router with all policy thresholds
+  included in the returned receipt.
+- Added pairwise tensor-network contraction orders, exact external slicing to a
+  memory budget, content-addressed disk-shard planning and graph-width upper
+  bounds using min-fill and scalable minimum-degree elimination.
+- Added an RCS structure probe: ABCD matching sizes 29/22/29/22, 918 CZ terms at
+  d=36, 36 quadratic CZ-layer atoms, CZ Clifford PASS, CZ matchgate FAIL, and
+  generic SU(2) Clifford FAIL.
+- Explicitly recorded that the static interaction-graph widths are not the
+  spacetime tensor-network width and not the IBM `C_amp` value.
+
+**Validation**
+
+Focused local v0.15 suite: **20 passed**.
+Focused local v0.16 suite: **23 passed**.
+Python syntax compilation: **PASS**.
+Full-repository pytest: **NOT RUN** in this session.
+
+**Evidence boundary**
+
+The layer is a finite computational/mathematical candidate only.
+`canon_allowed=false`. No physical-QPU claim, generic 100-qubit small-memory
+claim, IBM d=36 width reduction, or quantum-advantage conclusion is promoted.
+The repository main branch is not modified by this candidate update.
+
+
+## 2026-09-29 — Channel / transfer / Krylov primitives v0.17
+
+**Scope**
+
+- Added normalized state, density-matrix, partial-trace, von Neumann,
+  Renyi-2, min-entropy, purity and mutual-information primitives.
+- Added Kraus, Choi and column-vectorized superoperator channel
+  representations with CP/TP/unitality residual receipts.
+- Added Pauli-transfer matrices and signed-permutation diagnostics for local
+  channel routing.
+- Added squared-PTM second-moment transport and the exact local-Haar + CZ
+  support transition with no fitted coefficient.
+- Added transfer-spectrum and finite channel fixed-point diagnostics.
+- Added fail-closed Woodbury low-rank inverse updates.
+- Added fully reorthogonalized Hermitian Lanczos/Krylov projection with
+  orthogonality and recurrence residuals.
+- Recorded the exact nonzero local-Haar + CZ support-sector spectrum
+  `1, 1/3, -1/9` and stationary weights `1/5, 1/5, 3/5`.
+
+**Validation**
+
+Focused local suite: **24 passed**.
+Python syntax compilation: **PASS**.
+Full-repository pytest: **NOT RUN** in this session.
+
+**Evidence boundary**
+
+The local support transition is a parameter-free second-moment identity, not a
+global XEB result.  No measured IBM noise channel, physical-QPU execution,
+global RCS speedup or quantum-advantage conclusion is promoted.
+`canon_allowed=false`.  The repository main branch is not modified.

@@ -1,0 +1,91 @@
+{
+  "base_commit": "dba89ba04480218af138bd235b322494e80ca895",
+  "branch": "formalism/channel-transfer-krylov-primitives-v0.17-20260929",
+  "canon_allowed": false,
+  "epistemic_boundary": {
+    "global_rcs_speedup": false,
+    "global_xeb_from_local_support_only": false,
+    "measured_ibm_noise_channel": false,
+    "physical_qpu": false
+  },
+  "haar_local_cz_support": {
+    "basis": [
+      "00",
+      "10",
+      "01",
+      "11"
+    ],
+    "fitted_parameters": false,
+    "global_xeb_claim": false,
+    "matrix": [
+      [
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0.3333333333333333,
+        0,
+        0.2222222222222222
+      ],
+      [
+        0,
+        0,
+        0.3333333333333333,
+        0.2222222222222222
+      ],
+      [
+        0,
+        0.6666666666666666,
+        0.6666666666666666,
+        0.5555555555555556
+      ]
+    ],
+    "nonzero_sector_eigenvalues": [
+      1,
+      0.3333333333333333,
+      -0.1111111111111111
+    ],
+    "nonzero_stationary_distribution": [
+      0.2,
+      0.2,
+      0.6
+    ]
+  },
+  "hashes": {
+    "channel_transfer.py": "9db84a5c2a537f38b8e550d9ca02cd876f97601ad6993a6fd095b25d8d97067a",
+    "channel_transfer_krylov_v0_17.md": "376d2f6cab21cf26a53c482f784c1c279b1f691be2adb93f15c67718ddbee929",
+    "test_channel_transfer.py": "0e669b0032439619394504f9d56eb55901c4ae22dfa8e5172bcc4b6a39694c79"
+  },
+  "primitives": [
+    "density_matrix",
+    "partial_trace",
+    "entropy_receipt",
+    "mutual_information",
+    "apply_channel",
+    "choi_from_kraus",
+    "kraus_from_choi",
+    "superoperator_from_kraus",
+    "channel_receipt",
+    "pauli_transfer_matrix",
+    "ptm_receipt",
+    "pauli_second_moment_transition",
+    "haar_local_cz_support_transition",
+    "transfer_spectrum",
+    "channel_fixed_point",
+    "woodbury_inverse_update",
+    "lanczos_hermitian"
+  ],
+  "schema": "PHASENAV_CHANNEL_TRANSFER_KRYLOV_V0_17",
+  "status": "CANDIDATE_ONLY",
+  "validation": {
+    "focused_pytest": {
+      "failed": 0,
+      "passed": 24
+    },
+    "full_repository_pytest": "NOT_RUN",
+    "py_compile": "PASS"
+  }
+}

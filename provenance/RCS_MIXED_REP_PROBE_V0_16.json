@@ -1,0 +1,21 @@
+{
+  "boundary": "interaction-graph widths are topology upper bounds only; they are not the spacetime tensor-network contraction width or IBM C_amp",
+  "cz_clifford": true,
+  "cz_matchgate": false,
+  "d36_cz_total": 918,
+  "generic_su2_clifford": false,
+  "grid10x10_fill_edges": 354,
+  "grid10x10_minfill_upper_width": 13,
+  "interaction_graph_fill_edges_61": 121,
+  "interaction_graph_minfill_upper_width_61": 7,
+  "matching_sizes": [
+    29,
+    22,
+    29,
+    22
+  ],
+  "max_terms_per_phase_atom": 29,
+  "phase_atoms_d36": 36,
+  "phase_terms_d36": 918,
+  "schema": "PHASENAV_RCS_MIXED_REP_PROBE_V0_16"
+}
