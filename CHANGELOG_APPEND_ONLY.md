@@ -349,3 +349,35 @@ The local support transition is a parameter-free second-moment identity, not a
 global XEB result.  No measured IBM noise channel, physical-QPU execution,
 global RCS speedup or quantum-advantage conclusion is promoted.
 `canon_allowed=false`.  The repository main branch is not modified.
+
+
+## 2026-09-29 — Global support-transfer audit v0.18
+
+**Scope**
+
+- Lifted the exact v0.17 Haar-local + CZ support transition to labelled
+  many-site dynamics.
+- Added exact dense controls up to 20 support bits and cross-checked labelled
+  MPS evolution against the dense process.
+- Added vectorized Monte-Carlo trajectory validation for the full released
+  61-site ABCD topology.
+- Added physical-row atomization for the 8x8-minus-3 IBM subgrid, keeping
+  horizontal gates inside row atoms and vertical gates on adjacent row bonds.
+- Added explicit numerical-rank, bond-cap and SVD-workspace fail-closed stops.
+- Recorded 100k-trajectory d=36 support statistics and exact-tensorization
+  resource-growth probes.
+- Identified the next required abstraction as an adaptive separator tree rather
+  than a fixed one-bit or one-row MPS decomposition.
+
+**Validation**
+
+Focused v0.18 suites: **9 passed**.
+Python syntax compilation: **PASS**.
+Full-repository pytest: **NOT RUN**.
+
+**Evidence boundary**
+
+The support process is a second-moment/operator-support model, not amplitude
+simulation or XEB. The exact full d=36 MPS contraction was not completed.
+No IBM `C_amp` reduction, physical-QPU execution or quantum-advantage
+conclusion is promoted. `canon_allowed=false`.
