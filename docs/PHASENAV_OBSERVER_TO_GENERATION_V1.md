@@ -76,7 +76,7 @@ vectors remain distinct types.
 
 The encoded observation is a typed update to the full dynamical state; it is not a global conversion of the system to a bit.
 
-[
+$
 \boxed{
 \Sigma_t
 \rightarrow
@@ -84,13 +84,13 @@ The encoded observation is a typed update to the full dynamical state; it is not
 \rightarrow
 \Sigma_{t+1}
 }
-]
+$
 
 A classical result is produced only by a named measurement/protocol boundary
 
-[
+$
 \mathcal M_c:\Sigma\rightarrow y_c.
-]
+$
 
 If channel \(c\) is two-outcome, \(y_c\in\{0,1\}\). Other channels may have multi-valued or continuous outcomes.
 
