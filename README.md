@@ -201,3 +201,27 @@ workspace budget.
 Focused validation: **9 passed**, `py_compile PASS`.
 The layer remains `CANDIDATE_ONLY` with `canon_allowed=false`.
 See `docs/global_support_transfer_v0_18.md`.
+
+
+## Adaptive separator tree v0.19
+
+The candidate v0.19 layer adds exact fixed-cardinality graph cuts using
+SciPy/HiGHS MILP, dynamic operator-Schmidt cut weights and recursive separator
+trees for atomized execution planning.
+
+For the released IBM 61-site graph at d=36, exact near-balanced cuts are:
+
+- 27/34: 6 static edges, 54 dynamic CZ-capacity bits;
+- 28/33: 7 edges, 63 bits;
+- 29/32: 7 edges, 63 bits;
+- 30/31: 7 edges, 63 bits.
+
+The Pareto frontier is therefore 27/34 versus 30/31: lower maximum separator
+versus better balance. Recursive exact-half cuts below those roots produce
+leaf atoms of at most eight vertices without hiding the trade behind a fitted
+scalar score.
+
+Focused validation: **6 passed**, `py_compile PASS`.
+Static graph separators are not promoted as the full spacetime contraction
+width or IBM `C_amp`. The layer remains `CANDIDATE_ONLY`.
+See `docs/adaptive_separator_tree_v0_19.md`.

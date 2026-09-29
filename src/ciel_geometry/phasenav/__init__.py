@@ -196,6 +196,24 @@ from .row_block_support import (
     evolve_row_block_mps,
 )
 
+from .adaptive_separator import (
+    SCHEMA as ADAPTIVE_SEPARATOR_SCHEMA,
+    EPISTEMIC as ADAPTIVE_SEPARATOR_EPISTEMIC,
+    CANON_ALLOWED as ADAPTIVE_SEPARATOR_CANON_ALLOWED,
+    SeparatorError,
+    canonical_edges,
+    schedule_occurrences,
+    dynamic_edge_weights,
+    FixedSizeCutReceipt,
+    minimum_fixed_size_cut,
+    ParetoCutReceipt,
+    pareto_fixed_size_cuts,
+    SeparatorTreeNode,
+    build_balanced_separator_tree,
+    SeparatorTreeSummary,
+    summarize_separator_tree,
+)
+
 from .canon import (
     ATOMIC_ORBITAL_ADAPTER_STATUS,
     ATOMIC_ORBITAL_ADAPTER_VERSION,
@@ -678,4 +696,19 @@ __all__ = [
     "RowBlockMPS",
     "ibm61_rows",
     "evolve_row_block_mps",
+    "ADAPTIVE_SEPARATOR_SCHEMA",
+    "ADAPTIVE_SEPARATOR_EPISTEMIC",
+    "ADAPTIVE_SEPARATOR_CANON_ALLOWED",
+    "SeparatorError",
+    "canonical_edges",
+    "schedule_occurrences",
+    "dynamic_edge_weights",
+    "FixedSizeCutReceipt",
+    "minimum_fixed_size_cut",
+    "ParetoCutReceipt",
+    "pareto_fixed_size_cuts",
+    "SeparatorTreeNode",
+    "build_balanced_separator_tree",
+    "SeparatorTreeSummary",
+    "summarize_separator_tree",
 ]
