@@ -381,3 +381,31 @@ The support process is a second-moment/operator-support model, not amplitude
 simulation or XEB. The exact full d=36 MPS contraction was not completed.
 No IBM `C_amp` reduction, physical-QPU execution or quantum-advantage
 conclusion is promoted. `canon_allowed=false`.
+
+
+## 2026-09-29 — Adaptive separator tree v0.19
+
+**Scope**
+
+- Added exact fixed-cardinality minimum cuts using SciPy/HiGHS MILP.
+- Added schedule-aware edge weights in log2 operator-Schmidt capacity units.
+- Added Pareto filtering over cut capacity and cardinality imbalance instead of
+  an arbitrary weighted scalar objective.
+- Added recursive exact-half separator trees with explicit leaf-size bounds.
+- Reproduced an optimal 27/34 six-edge cut on the released IBM 61-site
+  interaction graph and compared it with exact 28/33, 29/32 and 30/31 cuts.
+- Added two explicit leaf<=8 separator-tree policies corresponding to the two
+  near-balanced Pareto roots.
+
+**Validation**
+
+Focused v0.19 suite: **6 passed**.
+Python syntax compilation: **PASS**.
+Full-repository pytest: **NOT RUN**.
+
+**Evidence boundary**
+
+Dynamic cut weights are structural capacity accounting, not measured Schmidt
+rank. Static interaction separators are not the circuit spacetime contraction
+width and do not establish an IBM `C_amp` reduction or quantum-advantage
+conclusion. `canon_allowed=false`.
