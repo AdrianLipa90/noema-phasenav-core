@@ -113,3 +113,115 @@ Software states remain distinct from scientific states. `implemented`, `tested`,
 ## License
 
 Copyright © 2026 Adrian Lipa. See `LICENSE`.
+
+
+## Orbital / scalar / tensor primitives v0.15
+
+The candidate v0.15 layer adds substrate-neutral primitives for rank-revealing
+atomization and orbital/tensor geometry:
+
+- singular-spectrum scalars with a machine-epsilon default rank threshold;
+- complex-projective Fubini--Study / Pancharatnam orbit receipts;
+- 4D exterior wedge, Pluecker simplicity and Euclidean Hodge 3+3 decomposition;
+- principal subspace angles, Grassmann distances and closed Bargmann-triangle holonomy;
+- tensor unfolding, mode products, Schmidt/operator-Schmidt decomposition and Schmidt-spectrum entropies;
+- TT-SVD / MPS and Tucker/HOSVD factorizations with explicit truncation accounting;
+- boundary-state linear-rank compression, streaming basis construction and
+  operator-Schmidt boundary-capacity bounds.
+
+The layer is `CANDIDATE_ONLY`, keeps `canon_allowed=false`, and makes no
+physical-QPU, physical-spacetime or measured-field claim. See
+`docs/orbital_scalar_tensor_primitives_v0_15.md`.
+
+
+## Mixed-representation contraction primitives v0.16
+
+The candidate v0.16 layer extends atomized PhaseNav execution with:
+
+- exact quadratic computational-basis phase polynomials for CZ/RZ atoms;
+- fail-closed Abelian block-sparse charge sectors;
+- Clifford and two-qubit matchgate routing predicates;
+- polar and Schur boundary-reduction primitives;
+- a typed mixed-representation router across phase-polynomial, stabilizer,
+  Gaussian, MPS/TT, Tucker, dense and generic tensor-network paths;
+- explicit greedy contraction, slicing-to-memory and content-addressed disk-shard plans;
+- min-fill and scalable min-degree graph-width upper-bound receipts.
+
+The released 61-qubit RCS topology is represented as alternating local generic
+SU(2) atoms and compact quadratic CZ-layer atoms; no static interaction-graph
+width is promoted as the full spacetime tensor-network contraction width.
+
+Focused local validation: v0.15 **20 passed**, v0.16 **23 passed**.
+The layer remains `CANDIDATE_ONLY` with `canon_allowed=false`.
+See `docs/mixed_representation_contraction_v0_16.md`.
+
+
+## Channel / transfer / Krylov primitives v0.17
+
+The candidate v0.17 layer adds:
+
+- density, partial-trace and information-scalar primitives;
+- Kraus, Choi and superoperator channel representations;
+- Pauli-transfer matrices with signed-permutation routing diagnostics;
+- exact unitary second-moment transport;
+- the parameter-free local-Haar + CZ support transition used by the RCS audit;
+- transfer-spectrum and channel-fixed-point receipts;
+- fail-closed Woodbury low-rank updates;
+- fully reorthogonalized Hermitian Lanczos/Krylov projection.
+
+For the local-Haar + CZ support channel, the nonzero sector has eigenvalues
+`1, 1/3, -1/9` and stationary support weights `1/5, 1/5, 3/5`.
+This is a local second-moment identity, not a global XEB result.
+
+Focused local validation: **24 passed** plus `py_compile PASS`.
+The layer remains `CANDIDATE_ONLY` with `canon_allowed=false`.
+See `docs/channel_transfer_krylov_v0_17.md`.
+
+
+## Global support-transfer audit v0.18
+
+The candidate v0.18 layer lifts the exact local Haar-SU(2)+CZ support channel to
+the released 61-site IBM topology.
+
+It adds exact dense controls for small systems, labelled MPS support evolution,
+Monte-Carlo trajectory validation, physical-row block atomization and explicit
+resource-stop receipts.
+
+On the 61-site d=36 topology, 100,000 local support trajectories complete in
+about 3.1 s on the current ordinary host and give final mean support weight
+45.64694 +/- 0.01085 (standard error). This is a second-moment/operator-support
+statistic, not quantum output sampling or XEB.
+
+Exact rank-revealing tensorizations expose the current bottleneck: the bit-MPS
+route reaches retained bond 884 and then requires rank 1323 before completing
+depth 36; the row-block route removes SWAP routing but encounters a
+41,943,040-element SVD matrix after seven matching layers under the declared
+workspace budget.
+
+Focused validation: **9 passed**, `py_compile PASS`.
+The layer remains `CANDIDATE_ONLY` with `canon_allowed=false`.
+See `docs/global_support_transfer_v0_18.md`.
+
+
+## Adaptive separator tree v0.19
+
+The candidate v0.19 layer adds exact fixed-cardinality graph cuts using
+SciPy/HiGHS MILP, dynamic operator-Schmidt cut weights and recursive separator
+trees for atomized execution planning.
+
+For the released IBM 61-site graph at d=36, exact near-balanced cuts are:
+
+- 27/34: 6 static edges, 54 dynamic CZ-capacity bits;
+- 28/33: 7 edges, 63 bits;
+- 29/32: 7 edges, 63 bits;
+- 30/31: 7 edges, 63 bits.
+
+The Pareto frontier is therefore 27/34 versus 30/31: lower maximum separator
+versus better balance. Recursive exact-half cuts below those roots produce
+leaf atoms of at most eight vertices without hiding the trade behind a fitted
+scalar score.
+
+Focused validation: **6 passed**, `py_compile PASS`.
+Static graph separators are not promoted as the full spacetime contraction
+width or IBM `C_amp`. The layer remains `CANDIDATE_ONLY`.
+See `docs/adaptive_separator_tree_v0_19.md`.

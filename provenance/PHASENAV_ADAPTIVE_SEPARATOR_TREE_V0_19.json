@@ -1,0 +1,122 @@
+{
+  "base_commit": "5734f64b8db8b50e993a7d78945e027702a56e70",
+  "branch": "formalism/adaptive-separator-tree-v0.19-20260929",
+  "canon_allowed": false,
+  "epistemic_boundary": {
+    "dynamic_cut_weight_is_capacity_upper_accounting_not_actual_schmidt_rank": true,
+    "ibm_camp_reduction_claim": false,
+    "physical_qpu": false,
+    "quantum_advantage_claim": false,
+    "static_separator_not_spacetime_contraction_width": true
+  },
+  "hashes": {
+    "IBM61_ADAPTIVE_SEPARATOR_PROBE_V0_19.json": "fd6995df3c8dcdfb8504ae133c7286e05fd939242ba7c4c421999c180f53f84d",
+    "adaptive_separator.py": "1f78d97cf8e14af6381f3f3daa273eb358daa90b374f29d7e48df16a44345ee5",
+    "test_adaptive_separator.py": "5df8a00c9af2a238e667a4b49b43ca9bcf145b88ae638087b1c8db57cf385a6a"
+  },
+  "ibm61": {
+    "depth": 36,
+    "edge_count": 102,
+    "edge_dynamic_weight_bits": 9.0,
+    "near_balanced_candidates": [
+      {
+        "dynamic_cut_weight_bits": 54.0,
+        "edge_cut_count": 6,
+        "optimal": true,
+        "sizes": [
+          27,
+          34
+        ],
+        "target_size": 27
+      },
+      {
+        "dynamic_cut_weight_bits": 63.0,
+        "edge_cut_count": 7,
+        "optimal": true,
+        "sizes": [
+          28,
+          33
+        ],
+        "target_size": 28
+      },
+      {
+        "dynamic_cut_weight_bits": 63.0,
+        "edge_cut_count": 7,
+        "optimal": true,
+        "sizes": [
+          29,
+          32
+        ],
+        "target_size": 29
+      },
+      {
+        "dynamic_cut_weight_bits": 63.0,
+        "edge_cut_count": 7,
+        "optimal": true,
+        "sizes": [
+          30,
+          31
+        ],
+        "target_size": 30
+      }
+    ],
+    "pareto_target_sizes": [
+      27,
+      30
+    ],
+    "root_27_cut_edges": [
+      [
+        27,
+        34
+      ],
+      [
+        28,
+        35
+      ],
+      [
+        29,
+        36
+      ],
+      [
+        30,
+        37
+      ],
+      [
+        32,
+        38
+      ],
+      [
+        33,
+        39
+      ]
+    ],
+    "tree_27": {
+      "leaf_count": 10,
+      "max_cut_weight": 54.0,
+      "max_depth": 4,
+      "max_edge_cut_count": 6,
+      "max_leaf_size": 8,
+      "sum_cut_weight": 324.0,
+      "sum_edge_cut_count": 36
+    },
+    "tree_30": {
+      "leaf_count": 8,
+      "max_cut_weight": 63.0,
+      "max_depth": 3,
+      "max_edge_cut_count": 7,
+      "max_leaf_size": 8,
+      "sum_cut_weight": 261.0,
+      "sum_edge_cut_count": 29
+    }
+  },
+  "schema": "PHASENAV_ADAPTIVE_SEPARATOR_TREE_V0_19",
+  "status": "CANDIDATE_ONLY",
+  "validation": {
+    "focused_pytest": {
+      "failed": 0,
+      "passed": 6
+    },
+    "full_repository_pytest": "NOT_RUN",
+    "py_compile": "PASS"
+  }
+}

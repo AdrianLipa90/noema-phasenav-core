@@ -1,0 +1,70 @@
+{
+  "base_commit": "e70f795d754422cf63c0bfe3fe2b38cb235b2c9d",
+  "branch": "formalism/global-support-transfer-v0.18-20260929",
+  "canon_allowed": false,
+  "epistemic_boundary": {
+    "full_d36_exact_mps_completed": false,
+    "ibm_camp_reduction_claim": false,
+    "monte_carlo_not_xeb": true,
+    "physical_qpu": false,
+    "quantum_advantage_claim": false,
+    "support_second_moment_not_amplitude_simulation": true
+  },
+  "hashes": {
+    "IBM61_GLOBAL_SUPPORT_PROBE_V0_18.json": "e7b328f974b92a2c4dfadbee6e37cdbe8912626cbecd88c8fb8370e3d092d246",
+    "IBM61_ORDERING_PROBE_V0_18.json": "5d1ae766f1ed1c1bbbc6c05f3dba234b7536d9706808ad0f79fc84ac908fa4c2",
+    "IBM61_ROW_BLOCK_MPS_PROBE_V0_18.json": "e3f5b297eab7c68ef36405d391a30cfcbe7361ae00f82ba9eed979e5c9a890bc",
+    "global_support_transfer.py": "1f2e992379ddc3d876a287f9d63918fde701e5decab1022e7ba3f9a816a64ea5",
+    "row_block_support.py": "f9d2b7089056fbac97090a67d1ce4df16f19e2dd383871d6852bba4952bce128",
+    "test_global_support_transfer.py": "976561335fa9e89c9b213416796dac8b3a424bc383fe28d35a7efb77f38239a3",
+    "test_row_block_support.py": "b0be04201cce6f4f931f1b5def0ea71374c1116eb8351d0a1452b319d51e2680"
+  },
+  "ibm61_support_probe": {
+    "bit_mps_cap1024": {
+      "aborted": true,
+      "layers_completed": 10,
+      "next_required_rank_from_abort": 1323,
+      "normalization": 0.9999999999999932,
+      "pair_updates": 276,
+      "peak_bond": 884,
+      "total_discarded_l2_numerical": 7.267011485588407e-12
+    },
+    "depth": 36,
+    "initial_active": 8,
+    "monte_carlo_100k": {
+      "final_mean_weight": 45.64694,
+      "final_weight_stderr": 0.010849113484365161,
+      "site_active_probability_mean": 0.7483104918032787,
+      "wall_s": 3.087222524000026
+    },
+    "row_block_mps_budget": {
+      "aborted": true,
+      "layers_completed": 7,
+      "matrix_raw_bytes_float64": 335544320,
+      "memory_budget_matrix_elements": 25000000,
+      "next_svd_matrix_elements": 41943040,
+      "normalization": 0.9999999999999926,
+      "peak_bond": 32,
+      "row_sizes": [
+        7,
+        8,
+        8,
+        8,
+        7,
+        7,
+        8,
+        8
+      ]
+    }
+  },
+  "schema": "PHASENAV_GLOBAL_SUPPORT_TRANSFER_V0_18",
+  "status": "CANDIDATE_ONLY",
+  "validation": {
+    "focused_pytest": {
+      "failed": 0,
+      "passed": 9
+    },
+    "full_repository_pytest": "NOT_RUN",
+    "py_compile": "PASS"
+  }
+}
