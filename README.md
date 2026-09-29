@@ -27,6 +27,17 @@ src/ciel_geometry/phasenav/
 
 Importing `pnv_runtime` does **not** write runtime artifacts or mutate `/dev/shm`. Runtime materialization is an explicit operation only.
 
+## Quantum application state contract
+
+Candidate contract:
+
+- `docs/PHASENAV_QUANTUM_APPLICATION_STATE_V0_1.md`
+- `candidate_contracts/phasenav_quantum_application_state_v01.json`
+
+PhaseNav keeps the full 36D phase carrier plus typed amplitude/relation/scalar/residual/provenance state until an explicit observation boundary. Binary 0/1 is permitted as the outcome of a declared two-outcome measurement, not as a forced representation of the internal application state.
+
+Backend receipts distinguish classical phase simulation, analog phase runtime and physical QPU execution. The state model alone is not evidence of physical quantum execution.
+
 ## Canonical fallback
 
 Historical PhaseNav expected `glossary.pnv` / `glossarius/ciel_omega_glossary.json`. Those files are not present in the current repository. v0.14 repairs that compatibility boundary by rebuilding the runtime view from the canonical card registry.
