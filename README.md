@@ -176,3 +176,28 @@ This is a local second-moment identity, not a global XEB result.
 Focused local validation: **24 passed** plus `py_compile PASS`.
 The layer remains `CANDIDATE_ONLY` with `canon_allowed=false`.
 See `docs/channel_transfer_krylov_v0_17.md`.
+
+
+## Global support-transfer audit v0.18
+
+The candidate v0.18 layer lifts the exact local Haar-SU(2)+CZ support channel to
+the released 61-site IBM topology.
+
+It adds exact dense controls for small systems, labelled MPS support evolution,
+Monte-Carlo trajectory validation, physical-row block atomization and explicit
+resource-stop receipts.
+
+On the 61-site d=36 topology, 100,000 local support trajectories complete in
+about 3.1 s on the current ordinary host and give final mean support weight
+45.64694 +/- 0.01085 (standard error). This is a second-moment/operator-support
+statistic, not quantum output sampling or XEB.
+
+Exact rank-revealing tensorizations expose the current bottleneck: the bit-MPS
+route reaches retained bond 884 and then requires rank 1323 before completing
+depth 36; the row-block route removes SWAP routing but encounters a
+41,943,040-element SVD matrix after seven matching layers under the declared
+workspace budget.
+
+Focused validation: **9 passed**, `py_compile PASS`.
+The layer remains `CANDIDATE_ONLY` with `canon_allowed=false`.
+See `docs/global_support_transfer_v0_18.md`.
