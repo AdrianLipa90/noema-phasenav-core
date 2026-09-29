@@ -84,6 +84,19 @@ assert len(crystal) >= 34770
 results = crystal.retrieve("Berry connection holonomy", top_k=5)
 ```
 
+## Quantum application state candidate
+
+PhaseNav now has a candidate language-independent state contract for PNCS quantum applications:
+
+- `docs/PHASENAV_QUANTUM_APPLICATION_STATE_V0_1.md`
+- `schemas/phasenav_quantum_application_state_v0_1.schema.json`
+
+The running state may contain multiple active alternatives, exact 36D phase carriers, normalized amplitudes, relational tensors, scalar fields, residual structure and provenance. Classical transport/test/release booleans remain interface metadata.
+
+The core invariant is `NEVER_COLLAPSE_EARLY`: a binary `0/1` value is produced only by an explicit declared two-outcome observation boundary.
+
+This is a quantum-state application architecture contract. Physical QPU execution remains a separate evidence class.
+
 ## Repository integrity audit
 
 ```text
