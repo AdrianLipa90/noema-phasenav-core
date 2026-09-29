@@ -1,0 +1,53 @@
+{
+  "schema": "PHASENAV_QUANTUM_APPLICATION_STATE_RECEIPT_V0_1",
+  "date": "2026-09-29",
+  "repository": "AdrianLipa90/noema-phasenav-core",
+  "base_branch": "master",
+  "base_head_at_audit": "b4e282dfcc0a613d38197ada8e922cfbb41112b7",
+  "feature_branch": "feat/quantum-app-no-early-collapse-20260929",
+  "implementation_head_before_receipt": "2eb2541d1211376a2669fb1892c65812e55ed16a",
+  "policy": {
+    "never_collapse_early": true,
+    "boolean_internal_ontology": false,
+    "classical_projection_boundary_explicit": true,
+    "local_execution_primary": true,
+    "remote_provider_required": false,
+    "physical_quantum_claim_default": false,
+    "qpu_physical_required_for_physical_quantum_claim": true,
+    "main_mutated": false
+  },
+  "files": [
+    {
+      "path": "README.md",
+      "blob_sha": "7cc108dde42194ba5c85a043c459a900ab7ad6af"
+    },
+    {
+      "path": "candidate_contracts/phasenav_quantum_application_state_v01.json",
+      "blob_sha": "51e7e9af130f067b0dd22861259551e27dec465e"
+    },
+    {
+      "path": "docs/PHASENAV_OBSERVER_TO_GENERATION_V1.md",
+      "blob_sha": "b39854b4356b4231ab01a60efe4809dea34da1ee"
+    },
+    {
+      "path": "docs/PHASENAV_QUANTUM_APPLICATION_STATE_V0_1.md",
+      "blob_sha": "f4ebb263da7d9b1e66964523fe70a63d707ebf81"
+    },
+    {
+      "path": "tests/test_quantum_application_state_contract_v01.py",
+      "blob_sha": "b6aba8fbe0b8380bc08969afaed2f00507dad2f4"
+    }
+  ],
+  "validation": {
+    "static_contract_audit": "PASS",
+    "display_math_delimiters": "PASS",
+    "cross_repository_contract_ids": "PASS",
+    "pnv1_statement_and_opcode_static_parse": "PASS",
+    "json_parse": "PASS",
+    "gremlin_scheduler_measurement_invariants": "NOT_APPLICABLE",
+    "pytest_execution": "NOT_RUN_IN_THIS_SESSION",
+    "full_repository_regression": "NOT_RUN_IN_THIS_SESSION",
+    "promotion_allowed": false
+  },
+  "authority": "FEATURE_BRANCH_ONLY / NO_MAIN_MERGE / NO_CANON_PROMOTION"
+}
