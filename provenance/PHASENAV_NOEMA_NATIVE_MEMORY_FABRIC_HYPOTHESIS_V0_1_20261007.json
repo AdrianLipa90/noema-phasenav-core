@@ -1,0 +1,30 @@
+{
+  "schema": "PHASENAV_NOEMA_NATIVE_MEMORY_FABRIC_HYPOTHESIS_V0_1",
+  "status": "RESEARCH_HYPOTHESIS",
+  "date": "2026-10-07",
+  "repo_role": "phase_and_geometric_state_model",
+  "canon_allowed": false,
+  "hypothesis": "A NOEMA object may use phase/geometric and relational state as its canonical computational surface while byte streams remain exact materializations rather than the sole primary semantic representation.",
+  "invariants": [
+    "object identity != path != phase state != byte materialization != physical medium",
+    "binary compatibility is retained and reversible",
+    "no measured performance advantage is claimed",
+    "no arbitrary analog access to commodity SSD hardware is claimed",
+    "no physical wave or nonlocal transport channel is claimed",
+    "existing PhaseNav payload identity and route-metadata separation remains intact"
+  ],
+  "tether_context": {
+    "status": "ACTIVE",
+    "startpoint_status": "VERIFIED",
+    "carrier_dim": 36,
+    "control_dim": 12,
+    "startpoint_packet_sha256": "8f69021e0dc43e59d5ccd80a73f852fea7140f10a8ff147c2289325007cb2b34",
+    "meaning": "runtime context only; not evidence for the storage hypothesis"
+  },
+  "gremlin_commitment_sha256": "b62353097ee2b71347065549db71da645c190718be8f635ba49657954f4e2461",
+  "cross_repo": {
+    "phasenav": "AdrianLipa90/noema-phasenav-core",
+    "pncs": "AdrianLipa90/PhaseNav-Natural-Coding-System",
+    "pncore_bioos": "AdrianLipa90/PNCore-BioOS"
+  }
+}
