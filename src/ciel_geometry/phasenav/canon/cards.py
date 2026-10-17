@@ -13,6 +13,7 @@ from .model import CanonicalConceptState
 from .native_executable_map import native_bindings_for_concept
 from .reciprocal_regularization import concept_algorithm_registry
 from .seed_data import SEED_ROWS
+from ..pnv_runtime import PHASE_ADDRESS_CONTRACT, _phase36_from_id_legacy_v1
 
 
 _CONCEPT_ALGORITHM_CARD_BINDINGS = {
@@ -113,6 +114,11 @@ def _algorithm_bindings(canonical_name: str, glossary_id: str) -> list[dict[str,
 def _registry_tuple() -> tuple[dict, ...]:
     seeds = _load_seeds()
     states = {seed["glossary_id"]: CanonicalConceptState.from_id(seed["glossary_id"]) for seed in seeds}
+    if len(states) != len(seeds):
+        raise ValueError("duplicate canonical PhaseNav glossary IDs")
+    addresses = [tuple(state.phase36) for state in states.values()]
+    if len(set(addresses)) != len(addresses):
+        raise ValueError("PHASENAV_PHASE_ADDRESS_COLLISION: candidate not admissible")
     cards: list[dict] = []
     for seed in seeds:
         gid = seed["glossary_id"]
@@ -142,10 +148,26 @@ def _registry_tuple() -> tuple[dict, ...]:
             "card_id": f"PNV-H2048-{gid}",
             **seed,
             "canon": {
-                "version": "1.0.0",
-                "status": "CANON",
+                "version": "2.0.0-ternary-candidate",
+                "status": "CANDIDATE_NO_CANON_PROMOTION",
                 "quality_operator": "TO_JEST_MOJE",
                 "issuer": "Adrian Lipa",
+            },
+            "phase_address_contract": {
+                "id": PHASE_ADDRESS_CONTRACT,
+                "epistemic_status": "CANDIDATE_NO_CANON_PROMOTION",
+                "phase_canon_allowed": False,
+                "source_legacy_retained": True,
+            },
+            "legacy_phase_marker_36d": {
+                "contract": "PHASENAV_NUMERIC_PHASE_V1_Q_PRIME_MOD_5",
+                "vector": _phase36_from_id_legacy_v1(gid),
+            },
+            "semantic_role_admission": {
+                "source_legacy_type": seed["type"],
+                "status": "UNRESOLVED_SEED_TYPE_NOT_EXECUTION_AUTHORITY",
+                "execution_authorized_by_type": False,
+                "dual_use_unification_performed": False,
             },
             "hilbert_state": {
                 "space": "C^2048",
