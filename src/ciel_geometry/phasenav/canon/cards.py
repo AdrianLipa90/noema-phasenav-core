@@ -148,8 +148,8 @@ def _registry_tuple() -> tuple[dict, ...]:
             "card_id": f"PNV-H2048-{gid}",
             **seed,
             "canon": {
-                "version": "2.0.0-ternary-candidate",
-                "status": "CANDIDATE_NO_CANON_PROMOTION",
+                "version": "1.0.0",
+                "status": "CANON",
                 "quality_operator": "TO_JEST_MOJE",
                 "issuer": "Adrian Lipa",
             },
@@ -162,12 +162,6 @@ def _registry_tuple() -> tuple[dict, ...]:
             "legacy_phase_marker_36d": {
                 "contract": "PHASENAV_NUMERIC_PHASE_V1_Q_PRIME_MOD_5",
                 "vector": _phase36_from_id_legacy_v1(gid),
-            },
-            "semantic_role_admission": {
-                "source_legacy_type": seed["type"],
-                "status": "UNRESOLVED_SEED_TYPE_NOT_EXECUTION_AUTHORITY",
-                "execution_authorized_by_type": False,
-                "dual_use_unification_performed": False,
             },
             "hilbert_state": {
                 "space": "C^2048",
