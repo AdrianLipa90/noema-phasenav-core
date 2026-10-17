@@ -28,6 +28,7 @@ from ..pnv_runtime import (
     M_collatz_hash,
     _phase36_from_id,
     _phase_precise,
+    _ternary_phase_offset,
 )
 
 HILBERT_DIM = 2048
@@ -35,7 +36,7 @@ HILBERT_BITS = 11
 PHASE_DIM = 36
 COMPLEMENT_MASK = HILBERT_DIM - 1
 ETA_M_36D = PHASE_DIM * KAPPA
-CANON_VERSION = "1.0.0"
+CANON_VERSION = "2.0.0-ternary-candidate"
 
 _Q_PRIMES = (3, 5, 7, 11, 13, 17)
 
@@ -45,7 +46,9 @@ def _numeric_eid(eid: object) -> int | None:
         value = int(str(eid).lstrip("Ff"))
     except (TypeError, ValueError):
         return None
-    return max(1, value)
+    if value < 1:
+        raise ValueError("numeric canonical phase ID must be positive")
+    return value
 
 
 def _full_phase_vector(eid: object) -> tuple[float, ...]:
@@ -63,6 +66,7 @@ def _full_phase_vector(eid: object) -> tuple[float, ...]:
             + ALPHA_M * TAU * (i % L3)
             + L_RATIO * TAU * (i // L3)
             + (qk % L5) * TAU / L3
+            + _ternary_phase_offset(numeric, i)
         ) % TAU
         phases.append(round(phi, 10))
     return tuple(phases)
@@ -89,7 +93,7 @@ class Hilbert2048State:
 
     amplitudes: tuple[complex, ...]
     source_id: str
-    generator: str = "tir_metatime_collatz_h2048_v1"
+    generator: str = "tir_metatime_collatz_h2048_v2_ternary_candidate"
 
     def __post_init__(self) -> None:
         if len(self.amplitudes) != HILBERT_DIM:
@@ -162,7 +166,7 @@ class CanonicalConceptState:
         expected = tuple(_phase36_from_id(eid))
         if phase36 != expected:
             raise AssertionError(
-                "H2048→T36 projection violates legacy PhaseNav phase contract"
+                "H2048→T36 projection violates candidate ternary36 phase contract"
             )
 
         p_plus, p_minus = hilbert.channel_weights()
