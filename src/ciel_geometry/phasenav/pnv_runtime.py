@@ -77,7 +77,26 @@ def _phase_precise(h_int, i):
     return float((_dec.Decimal(int(h_int) * (i + 1)) * ln2_over_12) % tau_d)
 
 
-def _phase36_from_id(eid):
+PHASE_ADDRESS_CONTRACT = "PNCS_TERNARY36_IDENTITY_V0_2_CANDIDATE"
+TERNARY_CONTROL_GROUPS = 12
+TERNARY_CONTROL_CAPACITY = 3 ** TERNARY_CONTROL_GROUPS
+
+
+def _ternary_phase_offset(k, i):
+    """Reversible 12-trit address, repeated over 36 phase lanes and C^2048.
+
+    Each of 12 trits modulates three adjacent phase lanes by 2π/3.
+    This is a candidate phase ADDRESS, not semantic identity or authority.
+    """
+    if type(k) is not int or not 1 <= k <= TERNARY_CONTROL_CAPACITY:
+        raise ValueError("phase address outside 12-trit canonical capacity")
+    if type(i) is not int or i < 0:
+        raise ValueError("phase lane index must be nonnegative")
+    digit = ((k - 1) // (3 ** ((i // 3) % TERNARY_CONTROL_GROUPS))) % 3
+    return digit * TAU / 3.0
+
+
+def _phase36_from_id_legacy_v1(eid):
     try:
         k = max(1, int(str(eid).lstrip("Ff")))
     except (ValueError, TypeError):
@@ -94,6 +113,34 @@ def _phase36_from_id(eid):
         ) % TAU
         out.append(round(phi, 10))
     return out
+
+
+def _phase36_from_id(eid):
+    """Collision-free candidate numeric PhaseNav address for 1..3**12.
+
+    Historical mapping is preserved as _phase36_from_id_legacy_v1.
+    Non-numeric IDs retain the historical hash-based projection and
+    require independent semantic identity, as before.
+    """
+    try:
+        k = int(str(eid).lstrip("Ff"))
+    except (ValueError, TypeError):
+        return _phase36_from_id_legacy_v1(eid)
+    if not 1 <= k <= TERNARY_CONTROL_CAPACITY:
+        raise ValueError("numeric phase ID outside supported 12-trit range")
+    qk = _quark_prime(k)
+    out = []
+    for i in range(VECTOR_DIM):
+        phi = (
+            KAPPA * TAU
+            + ALPHA_M * TAU * (i % L3)
+            + L_RATIO * TAU * (i // L3)
+            + (qk % L5) * TAU / L3
+            + _ternary_phase_offset(k, i)
+        ) % TAU
+        out.append(round(phi, 10))
+    return out
+
 
 
 def _gauge_lock_36(vec):
